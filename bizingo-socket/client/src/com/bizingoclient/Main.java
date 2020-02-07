@@ -24,11 +24,11 @@ public class Main extends Application {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));
         stage.setTitle("Bizingo");
 
-        Parent fxmlmain = FXMLLoader.load(getClass().getResource("app/menu/menuController.fxml"));
-        menuScene = new Scene(fxmlmain, 960, 720);
-        Parent fxmlListImage = FXMLLoader.load(getClass().getResource("app/game/mainController.fxml"));
+        Parent fxmlMenu = FXMLLoader.load(getClass().getResource("app/menu/menuController.fxml"));
+        menuScene = new Scene(fxmlMenu, 960, 720);
+        Parent fxmlMainGame = FXMLLoader.load(getClass().getResource("app/mainGame/mainGameController.fxml"));
 
-        mainGameScene = new Scene(fxmlListImage, 1366, 768);
+        mainGameScene = new Scene(fxmlMainGame, 1366, 768);
 
         primaryStage.setTitle("Bizingo");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));
@@ -45,9 +45,9 @@ public class Main extends Application {
                 break;
 
             case "game":
-                notifyAllListeners("game",data, stage);
                 stage.setScene(mainGameScene);
                 stage.setResizable(false);
+                notifyAllListeners("game",data, stage);
                 break;
         }
     }

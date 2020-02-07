@@ -1,6 +1,7 @@
 package com.bizingoclient.app.menu;
 
 
+import com.bizingoclient.app.ConnectionConfig;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
@@ -25,6 +26,9 @@ import com.bizingoclient.Main;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.controlsfx.control.textfield.CustomTextField;
+
+import java.io.IOException;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -126,11 +130,18 @@ public class MenuController {
     public void connect(ActionEvent event) {
         if(!"".equalsIgnoreCase(nicknameField.getText()) && avatarSelect.getSelectionModel().getSelectedIndex() != -1){
             //conectar ao servidor
+            try {
+                String host = ConnectionConfig.HOST.getValue();
+                int port = Integer.parseInt(ConnectionConfig.PORT.getValue());
+                Socket socket = new Socket(host, port);
+                Main.changeScreen("game", socket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else{
             warningDialog.show();
         }
-        //Main.changeScreen("listImage", "");
     }
 
     private void loadWarningDialog(){

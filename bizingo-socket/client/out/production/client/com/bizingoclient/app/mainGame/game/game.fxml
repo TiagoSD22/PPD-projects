@@ -4,7 +4,7 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="540.0" prefWidth="720.0" style="-fx-background-color: #000100;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.game.body.BodyController">
+<AnchorPane fx:id="root" prefHeight="540.0" prefWidth="720.0" style="-fx-background-color: #000100;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.mainGame.game.GameController">
     <stylesheets>
         <URL value="@stylesheet.css" />
     </stylesheets>

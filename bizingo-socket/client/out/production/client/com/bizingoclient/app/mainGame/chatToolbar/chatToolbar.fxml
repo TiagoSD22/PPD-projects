@@ -3,7 +3,7 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="anchorPaneToobar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="581.0" prefWidth="81.0" style="-fx-border-radius: 0 20 20 0; -fx-background-radius: 0 20 20 0;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.game.chatToolbar.ChatToolbarController">
+<AnchorPane fx:id="anchorPaneToobar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="581.0" prefWidth="81.0" style="-fx-border-radius: 0 20 20 0; -fx-background-radius: 0 20 20 0;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController">
    <children>
       <ToolBar fx:id="actionToolbar" orientation="VERTICAL" prefHeight="581.0" prefWidth="212.0" style="-fx-background-color: #001021; -fx-border-radius: 0 20 20 0; -fx-background-radius: 0 20 20 0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
    </children>
