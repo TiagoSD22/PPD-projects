@@ -1,0 +1,34 @@
+.slider > .track {
+    -fx-background-color: #F7A800;
+}
+
+.slider > .thumb {
+    -fx-background-color: #F7A800;
+}
+
+.slider > .colored-track {
+    -fx-background-color: #F7A800;
+}
+
+.slider > .animated-thumb {
+    -fx-background-color: #F7A800;
+}
+
+.slider{
+    -fx-tick-label-fill: white;
+}
+
+.jfx-combo-box {
+    -fx-prompt-text-fill: #FFFFFF;
+}
+
+.drawModeComboBox > .jfx-text-field {
+    -jfx-focus-color: #FFFFFF;
+    -jfx-unfocus-color: #FFFFFF;
+    -fx-prompt-text-fill: #FFFFFF;
+}
+
+.jfx-combo-box > .cell{
+    -fx-text-fill: #F7A800;
+    -fx-font: 12px "Arial";
+}

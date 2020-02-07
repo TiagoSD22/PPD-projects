@@ -1,0 +1,21 @@
+.text-field{
+    -fx-text-inner-color: white;
+    -jfx-focus-color: #F7A800;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: #1B2328;
+    -fx-text-fill: black;
+}
+
+.list-view .list-cell:odd {
+    -fx-background-color: #1B2328;
+    -fx-text-fill: black;
+}
+
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
+
+}
