@@ -3,7 +3,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -21,14 +21,10 @@
             <Cursor fx:constant="HAND" />
          </cursor></JFXButton>
       <TextArea fx:id="textInput" layoutX="5.0" layoutY="721.0" prefHeight="35.0" prefWidth="304.0" style="-fx-background-radius: 20 20 20 20;" wrapText="true" />
-      <ScrollPane fx:id="messageArea" hbarPolicy="NEVER" layoutX="5.0" layoutY="82.0" pannable="true" prefHeight="627.0" prefWidth="380.0">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-        </content>
-      </ScrollPane>
+      <ListView fx:id="messageArea" layoutX="5.0" layoutY="82.0" prefHeight="627.0" prefWidth="380.0" />
       <StackPane fx:id="otherPlayerInfoRegion" alignment="CENTER_LEFT" layoutX="5.0" layoutY="7.0" prefHeight="69.0" prefWidth="380.0">
          <children>
-            <ImageView fx:id="otherPlayerAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" x="-5.0">
+            <ImageView fx:id="otherPlayerAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" translateY="-1.0" x="-5.0">
                <StackPane.margin>
                   <Insets left="5.0" />
                </StackPane.margin></ImageView>

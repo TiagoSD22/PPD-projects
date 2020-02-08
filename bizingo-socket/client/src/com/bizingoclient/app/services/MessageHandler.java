@@ -73,6 +73,7 @@ public class MessageHandler {
                             chatController.setOtherPlayerNickname(otherClientNickname);
                         } else {
                             System.out.println("Mensagem recebida do servidor: " + msg.getText());
+                            chatController.displayIncomingMessage(otherClientAvatar, msg.getText());
                         }
                     }
                 }
@@ -91,6 +92,7 @@ public class MessageHandler {
                 ConnectionConfig.HOST.getValue());
         try {
             output.writeObject(msg);
+            chatController.displayOwnMessage(avatar, text);
         } catch (IOException e) {
             e.printStackTrace();
         }
