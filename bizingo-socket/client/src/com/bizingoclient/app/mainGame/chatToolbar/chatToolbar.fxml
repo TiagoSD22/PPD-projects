@@ -8,6 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="anchorPaneToobar" maxHeight="770.0" maxWidth="390.0" minHeight="770.0" minWidth="390.0" prefHeight="770.0" prefWidth="390.0" style="-fx-border-radius: 0 20 20 0; -fx-background-color: #FFFFFF; -fx-background-radius: 0 20 20 0;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController">
@@ -35,6 +36,14 @@
                <StackPane.margin>
                   <Insets left="80.0" top="20.0" />
                </StackPane.margin>
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Seu oponente">
+               <StackPane.margin>
+                  <Insets bottom="20.0" left="80.0" />
+               </StackPane.margin>
+               <font>
+                  <Font name="System Italic" size="13.0" />
+               </font>
             </Text>
          </children>
       </StackPane>

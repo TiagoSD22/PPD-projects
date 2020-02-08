@@ -65,10 +65,10 @@ public class Main extends Application {
 
         mainGameScene = new Scene(fxmlMainGame, 1366, 768);
 
-        primaryStage.setTitle("Bizingo");
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));
-        primaryStage.setScene(menuScene);
-        primaryStage.show();
+        stage.setTitle("Bizingo");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));
+        stage.setScene(menuScene);
+        stage.show();
     }
 
     @Override

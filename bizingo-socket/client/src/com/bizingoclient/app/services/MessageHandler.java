@@ -21,11 +21,14 @@ public class MessageHandler {
     private GameController gameController;
     private MainGameController mainController;
 
+    private String nickname;
+    private Image avatar;
+
     private String otherClientNickname;
     private Image otherClientAvatar;
 
-    public MessageHandler(Socket socket, MainGameController mainController, ChatToolbarController chatController, GameController gameController,
-                          String nickname, String avatar) {
+    public MessageHandler(Socket socket, MainGameController mainController, ChatToolbarController chatController,
+                          GameController gameController, String nickname, String avatar) {
         this.socket = socket;
         this.mainController = mainController;
         this.chatController = chatController;
@@ -39,6 +42,8 @@ public class MessageHandler {
         }
 
         startListen();
+        this.nickname = nickname;
+        this.avatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + avatar));
         sendHandshake(nickname, avatar);
     }
 

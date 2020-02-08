@@ -23,7 +23,7 @@ public class Application {
         ServerSocket server = initServer();
         ArrayList<Socket> clients = new ArrayList<>();
         if (server != null) {
-            while (number_of_connections != 2) {
+            while (number_of_connections != 90) {
                 System.out.println("Aguardando conexao!");
                 try {
                     Socket clientSocket = server.accept();
