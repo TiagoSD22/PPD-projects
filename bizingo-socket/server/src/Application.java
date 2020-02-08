@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Application {
 
-    private static final int SERVER_PORT = 5002;
+    private static final int SERVER_PORT = 5005;
 
     private static ServerSocket initServer() {
         try {
@@ -34,10 +34,9 @@ public class Application {
                     e.printStackTrace();
                 }
             }
-            ServerClientHandler sch1 = new ServerClientHandler(clients.get(0), clients.get(1));
-            ServerClientHandler sch2 = new ServerClientHandler(clients.get(1), clients.get(0));
-            sch1.start();
-            sch2.start();
+            System.out.println("Par de clientes conectados, iniciando jogo.");
+            ServerClientHandler sch1 = new ServerClientHandler(clients.get(0), clients.get(1), server);
+            ServerClientHandler sch2 = new ServerClientHandler(clients.get(1), clients.get(0), server);
         }
     }
 }

@@ -32,3 +32,13 @@
     -fx-text-fill: #F7A800;
     -fx-font: 12px "Arial";
 }
+
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+.text-area .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+.text-area .scroll-pane .content{
+    -fx-background-color: transparent;
+}

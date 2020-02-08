@@ -2,7 +2,7 @@ package com.bizingoclient.app;
 
 public enum ConnectionConfig {
     HOST("127.0.0.1"),
-    PORT("5002");
+    PORT("5005");
 
     private String value;
 

@@ -1,6 +1,9 @@
 package com.bizingoclient.app.menu;
 
 
+import bizingo.commons.Message;
+import com.bizingoclient.Main;
+import com.bizingoclient.app.Avatars;
 import com.bizingoclient.app.ConnectionConfig;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
@@ -22,30 +25,34 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import com.bizingoclient.Main;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.controlsfx.control.textfield.CustomTextField;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.io.File;
 
 
 public class MenuController {
 
-    @FXML private AnchorPane menuRoot;
-    @FXML private ImageView avatarPreview;
-    @FXML private StackPane avatarRegion;
+    @FXML
+    private AnchorPane menuRoot;
+    @FXML
+    private ImageView avatarPreview;
+    @FXML
+    private StackPane avatarRegion;
     private Circle clip;
-    @FXML private ComboBox avatarSelect;
+    @FXML
+    private ComboBox avatarSelect;
     private Map<String, Image> avatarMap = new HashMap<String, Image>();
-    @FXML private JFXButton connectButton;
-    @FXML private CustomTextField nicknameField;
+    @FXML
+    private JFXButton connectButton;
+    @FXML
+    private CustomTextField nicknameField;
     private JFXDialog warningDialog;
+
 
     @FXML
     public void initialize() {
@@ -57,7 +64,7 @@ public class MenuController {
         avatarPreview.setFitHeight(32);
         clip.setStroke(Color.WHITE);
         clip.setStrokeWidth(1);
-        clip.setFill(Color.rgb(0 ,0 ,0, 0.7));
+        clip.setFill(Color.rgb(0, 0, 0, 0.7));
         avatarRegion.getChildren().add(clip);
         clip.toBack();
 
@@ -68,11 +75,10 @@ public class MenuController {
         loadWarningDialog();
     }
 
-    private void loadAvatarIcons(){
-        File avatarsFolder = new File(getClass().getResource("/assets/avatars").getFile());
-        for(File fileIcon: Objects.requireNonNull(avatarsFolder.listFiles())){
-            Image icon = new Image(fileIcon.toURI().toString());
-            avatarMap.put(fileIcon.getName(), icon);
+    private void loadAvatarIcons() {
+        for (String avatarName : Avatars.avatarNames) {
+            Image icon = new Image(getClass().getResourceAsStream("/assets/avatars/" + avatarName));
+            avatarMap.put(avatarName, icon);
         }
     }
 
@@ -94,10 +100,9 @@ public class MenuController {
                     imageView.setImage(avatarMap.get(name));
                     setPrefWidth(64);
                     setPrefHeight(64);
-                    if(setGraphic) {
+                    if (setGraphic) {
                         setGraphic(imageView);
-                    }
-                    else{
+                    } else {
                         setText("#" + String.valueOf(collection.indexOf(name) + 1));
                     }
                 }
@@ -105,8 +110,8 @@ public class MenuController {
         };
     }
 
-    private void setAvatarIconOnSelectBox(){
-        ObservableList<String> selectItems = FXCollections.observableArrayList (avatarMap.keySet());
+    private void setAvatarIconOnSelectBox() {
+        ObservableList<String> selectItems = FXCollections.observableArrayList(avatarMap.keySet());
         avatarSelect.setItems(selectItems);
 
         avatarSelect.setCellFactory(param -> avatarCellFactory(selectItems, true));
@@ -128,23 +133,42 @@ public class MenuController {
     }
 
     public void connect(ActionEvent event) {
-        if(!"".equalsIgnoreCase(nicknameField.getText()) && avatarSelect.getSelectionModel().getSelectedIndex() != -1){
-            //conectar ao servidor
+        if (!"".equalsIgnoreCase(nicknameField.getText()) && avatarSelect.getSelectionModel().getSelectedIndex() != -1) {
             try {
                 String host = ConnectionConfig.HOST.getValue();
                 int port = Integer.parseInt(ConnectionConfig.PORT.getValue());
                 Socket socket = new Socket(host, port);
-                Main.changeScreen("game", socket);
+                /*OutputStream out = socket.getOutputStream();
+                ObjectOutputStream output = new ObjectOutputStream(out);
+                InputStream in = socket.getInputStream();
+                ObjectInputStream input = new ObjectInputStream(in);
+                boolean ready = false;
+                System.out.println("Aguardando servidor");
+                while (!ready) {
+                    Message msg = (Message) input.readObject();
+                    if (msg != null) {
+                        if (msg.getText().equalsIgnoreCase("starting")) {
+                            ready = true;
+                        }
+                    }
+                }
+                System.out.println("Estou pronto");*/
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("socket", socket);
+                data.put("nickname", nicknameField.getText());
+                data.put("avatar", avatarSelect.getSelectionModel().getSelectedItem());
+
+                Main.changeScreen("game", data);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else{
+        } else {
             warningDialog.show();
         }
     }
 
-    private void loadWarningDialog(){
+    private void loadWarningDialog() {
         JFXDialogLayout content = new JFXDialogLayout();
         content.setHeading(new Text("Informe seu nome de jogador e selecione um avatar"));
         Text info = new Text("Por favor, digite um nome de jogador no campo Nickname e escolha um avatar para poder " +
@@ -160,7 +184,7 @@ public class MenuController {
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#002D73"), CornerRadii.EMPTY, Insets.EMPTY )));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#002D73"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override

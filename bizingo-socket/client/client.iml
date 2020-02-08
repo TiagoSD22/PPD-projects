@@ -12,8 +12,8 @@
     <orderEntry type="library" name="jfoenix-8.0.8" level="project" />
     <orderEntry type="library" name="fontawesomefx-8.2" level="project" />
     <orderEntry type="library" name="controlsfx-8.40.11" level="project" />
-    <orderEntry type="library" name="charm-glisten-4.4.1" level="project" />
-    <orderEntry type="library" name="charm-glisten-6.0.2" level="project" />
     <orderEntry type="library" name="charm-glisten-4.4.5" level="project" />
+    <orderEntry type="library" name="commons-io-2.6" level="project" />
+    <orderEntry type="library" name="commons" level="project" />
   </component>
 </module>

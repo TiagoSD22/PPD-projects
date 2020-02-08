@@ -4,10 +4,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #000100;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.mainGame.MainGameController">
+<AnchorPane fx:id="mainPane" maxHeight="768.0" maxWidth="1366.0" minHeight="768.0" minWidth="1366.0" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #000100;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.mainGame.MainGameController">
    <children>
 
-      <VBox alignment="CENTER" layoutX="155.0" layoutY="63.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="869.0" AnchorPane.bottomAnchor="141.0" AnchorPane.leftAnchor="155.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="63.0">
+      <VBox alignment="CENTER" layoutX="155.0" layoutY="-3.0" maxHeight="768.0" minHeight="768.0" minWidth="-Infinity" prefHeight="768.0" prefWidth="869.0" AnchorPane.bottomAnchor="133.0" AnchorPane.leftAnchor="155.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-3.0">
          <children>
             <fx:include fx:id="game" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" source="game/game.fxml" VBox.vgrow="NEVER" />
          </children>
@@ -15,7 +15,7 @@
             <Insets bottom="5.0" right="5.0" />
          </padding>
       </VBox>
-      <VBox layoutX="-1.0" layoutY="44.0" prefHeight="589.0" prefWidth="212.0" AnchorPane.bottomAnchor="135.0" AnchorPane.leftAnchor="-1.0" AnchorPane.topAnchor="44.0">
+      <VBox layoutX="-1.0" layoutY="-2.0" minHeight="768.0" prefHeight="768.0" prefWidth="212.0" AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="-1.0" AnchorPane.topAnchor="-2.0">
          <children>
             <fx:include fx:id="chatToolbar" source="chatToolbar/chatToolbar.fxml" />
          </children>

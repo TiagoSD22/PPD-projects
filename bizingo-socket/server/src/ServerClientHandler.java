@@ -1,46 +1,62 @@
+import bizingo.commons.Message;
+import bizingo.commons.MessageType;
+
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerClientHandler extends Thread {
     private Socket source, destination;
-    private InputStream inputS;
-    private InputStreamReader inputSR;
-    private BufferedReader bufferedR;
+    private ObjectOutputStream own;
+    private ObjectOutputStream output;
+    private ObjectInputStream input;
+    private ServerSocket server;
 
-    public ServerClientHandler(Socket source, Socket destination) {
-        this.source = source;
-        this.destination = destination;
+    public ServerClientHandler(Socket source, Socket destination, ServerSocket server) {
         try {
-            inputS = this.source.getInputStream();
-            inputSR = new InputStreamReader(inputS);
-            bufferedR = new BufferedReader(inputSR);
+            this.source = source;
+            this.destination = destination;
+            this.server = server;
+            output = new ObjectOutputStream(this.destination.getOutputStream());
+            input = new ObjectInputStream(this.source.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.start();
+    }
+
+    private void forwardMessage(Message msg) {
+        try {
+            output.writeObject(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendMessageToClient(BufferedWriter bfw, String msg){
+    private void sendStartMessage() {
+        Message msg = new Message(MessageType.TEXT.getValue(), "starting",
+                server.getInetAddress().getHostAddress(), source.getInetAddress().getHostAddress());
         try {
-            bfw.write(msg);
-            bfw.flush();
+            own.writeObject(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void run() {
-        try {
-            OutputStream out = this.destination.getOutputStream();
-            Writer outWriter = new OutputStreamWriter(out);
-            BufferedWriter bfw = new BufferedWriter(outWriter);
-            String msg = this.bufferedR.readLine();
+        System.out.println("Cliente iniciado com socket: " + source);
+        //sendStartMessage();
 
-            while (!("Desisto".equalsIgnoreCase(msg)) && (msg != null)) {
-                msg = this.bufferedR.readLine();
-                System.out.println("Mensagem recebida por " +
-                        this.source.getInetAddress().getHostAddress() +
-                        ": " + msg);
-                sendMessageToClient(bfw, msg);
+        try {
+            Message msg;
+            while (true) {
+                msg = (Message) input.readObject();
+                if (msg != null) {
+                    System.out.println("Mensagem recebida por " +
+                            this.source.getInetAddress().getHostAddress() +
+                            ": " + msg.getText());
+                    forwardMessage(msg);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
