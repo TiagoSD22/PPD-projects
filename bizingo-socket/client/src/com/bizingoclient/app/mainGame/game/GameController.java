@@ -29,6 +29,7 @@ public class GameController {
     private ImageView playerColorIndicator;
     @FXML
     private Text playerTurnIndicator;
+    private Group board;
 
     private MainGameController main;
     private BizingoBoard bizingoBoard;
@@ -62,7 +63,7 @@ public class GameController {
     }
 
     private void drawBoard() {
-        Group board = new Group();
+        board = new Group();
         Double x0, y0;
         x0 = 0.0;
         y0 = -50.0;
@@ -185,6 +186,8 @@ public class GameController {
             }
         }
 
+        bizingoBoard.addNeighbourhood();
+
         boardBase.getChildren().add(board);
         board.setTranslateX(0);
         board.setTranslateY(-40);
@@ -242,10 +245,25 @@ public class GameController {
                 BizingoCell c = bizingoBoard.getCellMap().get(t);
                 if (c.getContent() != CellContent.EMPTY) {
                     if (c.getColor() == playerColor) {
-                        if (selectedCell == null) {
-                            selectedCell = c;
-                        } else {
-                            //movendo peca
+                        selectedCell = c;
+                    }
+                }
+                else{
+                    if(selectedCell != null){ //movendo peca
+                        if(selectedCell.getNeighboursSameColor().contains(c)){
+                            Polygon old = bizingoBoard.getCellMap().getKey(selectedCell);
+                            Circle piece = bizingoBoard.getPieceMap().get(old);
+                            Double newX = t.getPoints().get(0);
+                            Double newY = t.getPoints().get(1);
+                            piece.setLayoutX(newX);
+                            if(c.getColor() == CellColor.DARK){
+                                piece.setLayoutY(newY + 30);
+                            }
+                            else {
+                                piece.setLayoutY(newY + 20);
+                            }
+                            bizingoBoard.moveCellPiece(selectedCell, c);
+                            selectedCell = null;
                         }
                     }
                 }
