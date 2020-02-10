@@ -7,7 +7,7 @@
 <AnchorPane fx:id="mainPane" maxHeight="768.0" maxWidth="1366.0" minHeight="768.0" minWidth="1366.0" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #000100;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.mainGame.MainGameController">
    <children>
 
-      <VBox alignment="CENTER" layoutX="155.0" layoutY="-3.0" maxHeight="768.0" minHeight="768.0" minWidth="-Infinity" prefHeight="768.0" prefWidth="869.0" AnchorPane.bottomAnchor="133.0" AnchorPane.leftAnchor="155.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-3.0">
+      <VBox alignment="CENTER" layoutX="389.0" layoutY="8.0" maxHeight="768.0" minHeight="627.0" minWidth="-Infinity" prefHeight="768.0" prefWidth="978.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="389.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="8.0">
          <children>
             <fx:include fx:id="game" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" source="game/game.fxml" VBox.vgrow="NEVER" />
          </children>

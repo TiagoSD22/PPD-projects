@@ -1,5 +1,6 @@
 package com.bizingoclient.app.services;
 
+import bizingo.commons.GameConfig;
 import bizingo.commons.Message;
 import bizingo.commons.MessageType;
 import com.bizingoclient.app.ConnectionConfig;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import static bizingo.commons.MessageType.HANDSHAKE;
 
 public class MessageHandler {
     private Socket socket;
@@ -48,7 +51,7 @@ public class MessageHandler {
     }
 
     private void sendHandshake(String nickname, String avatar) {
-        Message msg = new Message(MessageType.HANDSHAKE.getValue(), "handshake", socket.getInetAddress().getHostAddress(),
+        Message msg = new Message(HANDSHAKE.getValue(), "handshake", socket.getInetAddress().getHostAddress(),
                 ConnectionConfig.HOST.getValue(), nickname, avatar);
         try {
             output.writeObject(msg);
@@ -63,17 +66,28 @@ public class MessageHandler {
                 while (true) {
                     Message msg = (Message) input.readObject();
                     if (msg != null) {
-                        if (msg.getType().getValue().equals(MessageType.HANDSHAKE.getValue())) {
-                            System.out.println("Handshake recebido");
-                            System.out.println("Nick do outro jogador: " + msg.getNickname() +
-                                    "\nAvatar do outro jogador: " + msg.getAvatar());
-                            otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + msg.getAvatar()));
-                            otherClientNickname = msg.getNickname();
-                            chatController.setOtherPlayerAvatar(otherClientAvatar);
-                            chatController.setOtherPlayerNickname(otherClientNickname);
-                        } else {
-                            System.out.println("Mensagem recebida do servidor: " + msg.getText());
-                            chatController.displayIncomingMessage(otherClientAvatar, msg.getText());
+                        switch (msg.getType()){
+                            case HANDSHAKE:
+                                System.out.println("Handshake recebido");
+                                System.out.println("Nick do outro jogador: " + msg.getNickname() +
+                                        "\nAvatar do outro jogador: " + msg.getAvatar());
+                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + msg.getAvatar()));
+                                otherClientNickname = msg.getNickname();
+                                chatController.setOtherPlayerAvatar(otherClientAvatar);
+                                chatController.setOtherPlayerNickname(otherClientNickname);
+                                break;
+                            case CONFIG:
+                                System.out.println("Mensagem de configuracao de partida recebida");
+                                GameConfig playerConfig = msg.getGameConfig(); //continuar config
+                                mainController.getGameController().setPlayerColor(playerConfig.getPlayerPieceColor());
+                                mainController.getGameController().setTurnToPlay(playerConfig.isFirstTurn());
+                                break;
+                            case TEXT:
+                                System.out.println("Mensagem recebida do servidor: " + msg.getText());
+                                chatController.displayIncomingMessage(otherClientAvatar, msg.getText());
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
@@ -104,6 +118,16 @@ public class MessageHandler {
 
     public Image getOtherClientAvatar() {
         return otherClientAvatar;
+    }
+
+    public void closeSocket(){
+        try {
+            output.close();
+            input.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

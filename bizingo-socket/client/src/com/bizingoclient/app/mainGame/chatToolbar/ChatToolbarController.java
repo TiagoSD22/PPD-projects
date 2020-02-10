@@ -8,7 +8,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -16,7 +15,6 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -68,19 +66,6 @@ public class ChatToolbarController {
         messageArea.setBackground(background);
 
         removeNewLineEvent();
-    }
-
-    private void addShortcutSendMessageBt() {
-        Scene scene = sendMessageBt.getScene();
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.ENTER),
-                new Runnable() {
-                    @FXML
-                    public void run() {
-                        sendMessageBt.fire();
-                    }
-                }
-        );
     }
 
     public void sendMessage() {
@@ -163,7 +148,7 @@ public class ChatToolbarController {
 
                 messageBody.getChildren().addAll(ta, playerAvatar);
                 messageBody.setSpacing(5);
-                messageBody.setPadding(new Insets(5, 0, 5, 0));
+                messageBody.setPadding(new Insets(5, 10, 5, 0));
                 messageBody.setAlignment(Pos.TOP_RIGHT);
                 messageBody.setTranslateX(65);
                 messageBody.setMaxWidth(300);

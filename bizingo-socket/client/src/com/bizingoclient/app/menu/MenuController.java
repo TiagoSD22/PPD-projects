@@ -1,7 +1,6 @@
 package com.bizingoclient.app.menu;
 
 
-import bizingo.commons.Message;
 import com.bizingoclient.Main;
 import com.bizingoclient.app.Avatars;
 import com.bizingoclient.app.ConnectionConfig;
@@ -138,21 +137,7 @@ public class MenuController {
                 String host = ConnectionConfig.HOST.getValue();
                 int port = Integer.parseInt(ConnectionConfig.PORT.getValue());
                 Socket socket = new Socket(host, port);
-                /*OutputStream out = socket.getOutputStream();
-                ObjectOutputStream output = new ObjectOutputStream(out);
-                InputStream in = socket.getInputStream();
-                ObjectInputStream input = new ObjectInputStream(in);
-                boolean ready = false;
-                System.out.println("Aguardando servidor");
-                while (!ready) {
-                    Message msg = (Message) input.readObject();
-                    if (msg != null) {
-                        if (msg.getText().equalsIgnoreCase("starting")) {
-                            ready = true;
-                        }
-                    }
-                }
-                System.out.println("Estou pronto");*/
+                menuRoot.setDisable(true);
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("socket", socket);

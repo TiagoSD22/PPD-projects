@@ -4,7 +4,6 @@
     <root id="archive" name="client.jar">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" />
-        <element id="library" level="project" name="commons" />
       </element>
       <element id="module-output" name="client" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libraries/controlsfx-8.40.11.jar" path-in-jar="/" />

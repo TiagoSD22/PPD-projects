@@ -19,13 +19,14 @@ public class ServerClientHandler extends Thread {
             this.server = server;
             output = new ObjectOutputStream(this.destination.getOutputStream());
             input = new ObjectInputStream(this.source.getInputStream());
+            //own = new ObjectOutputStream(this.source.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
         this.start();
     }
 
-    private void forwardMessage(Message msg) {
+    public void forwardMessage(Message msg) {
         try {
             output.writeObject(msg);
         } catch (IOException e) {
@@ -36,6 +37,11 @@ public class ServerClientHandler extends Thread {
     private void sendStartMessage() {
         Message msg = new Message(MessageType.TEXT.getValue(), "starting",
                 server.getInetAddress().getHostAddress(), source.getInetAddress().getHostAddress());
+
+        sendSelfMessage(msg);
+    }
+
+    public void sendSelfMessage(Message msg){
         try {
             own.writeObject(msg);
         } catch (IOException e) {

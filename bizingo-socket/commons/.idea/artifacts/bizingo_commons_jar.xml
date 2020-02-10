@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$</output-path>
     <root id="archive" name="commons.jar">
       <element id="module-output" name="commons" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/commons-collections4-4.4.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -13,6 +13,8 @@ public class Message implements Serializable {
     private String nickname;
     private String avatar;
 
+    private GameConfig gameConfig;
+
     public Message(String type, String text, String source, String destination){
         this.type = MessageType.valueOf(type);
         this.text = text;
@@ -27,6 +29,11 @@ public class Message implements Serializable {
         this.destination = destination;
         this.nickname = nickname;
         this.avatar = avatar;
+    }
+
+    public Message(String type, GameConfig gameConfig){
+        this.type = MessageType.valueOf(type);
+        this.gameConfig = gameConfig;
     }
 
     public MessageType getType() {
@@ -75,6 +82,14 @@ public class Message implements Serializable {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public GameConfig getGameConfig() {
+        return gameConfig;
+    }
+
+    public void setGameConfig(GameConfig gameConfig) {
+        this.gameConfig = gameConfig;
     }
 
 }

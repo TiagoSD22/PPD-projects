@@ -2,7 +2,9 @@ package bizingo.commons;
 
 public enum MessageType {
     HANDSHAKE("HANDSHAKE"),
-    TEXT("TEXT");
+    TEXT("TEXT"),
+    MOVEMENT("MOVEMENT"),
+    CONFIG("CONFIG");
 
     private String value;
 
