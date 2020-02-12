@@ -10,7 +10,6 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.effect.Bloom;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
@@ -21,8 +20,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
-
-import java.util.Objects;
 
 
 public class GameController {
@@ -312,6 +309,9 @@ public class GameController {
         } else {
             if (selectedCell != null) { //movendo peca
                 if (selectedCell.getNeighboursSameColor().contains(c)) {
+                    String source = bizingoBoard.getPositionCellMap().getKey(selectedCell);
+                    String dest = bizingoBoard.getPositionCellMap().getKey(c);
+
                     movePieceOnBoard(selectedCell, c);
                     Polygon tOld = bizingoBoard.getCellMap().getKey(selectedCell);
                     unhighlightCell(tOld, true);
@@ -325,9 +325,19 @@ public class GameController {
                         setPlayerColor(CellColor.DARK);
                     }*/
                     setTurnToPlay(false);
+
+                    main.getMessageHandler().sendPlayerMovement(source, dest);
                 }
             }
         }
+    }
+
+    public void showOponentMove(String source, String dest){
+        BizingoCell cellSource = bizingoBoard.getPositionCellMap().get(source);
+        BizingoCell cellDest = bizingoBoard.getPositionCellMap().get(dest);
+
+        movePieceOnBoard(cellSource, cellDest);
+        setTurnToPlay(true);
     }
 
     private void movePieceOnBoard(BizingoCell cellSource, BizingoCell cellDest) {
@@ -336,14 +346,15 @@ public class GameController {
         Polygon tSource = bizingoBoard.getCellMap().getKey(cellDest);
         Double newX = tSource.getPoints().get(0);
         Double newY = tSource.getPoints().get(1);
+        int yOffset = 30;
         piece.setLayoutX(newX);
-        if (cellDest.getColor() == CellColor.DARK) {
-            piece.setLayoutY(newY + 30);
-            piece.toFront();
-        } else {
-            piece.setLayoutY(newY + - 30);
-            piece.toFront();
+        if (cellDest.getColor() == CellColor.LIGHT) {
+            yOffset *= -1;
         }
+
+        piece.setLayoutY(newY + yOffset);
+        Platform.runLater(piece::toFront);
+
         bizingoBoard.moveCellPiece(cellSource, cellDest);
     }
 

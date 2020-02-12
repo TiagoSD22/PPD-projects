@@ -71,7 +71,8 @@ public class MessageHandler {
                                 System.out.println("Handshake recebido");
                                 System.out.println("Nick do outro jogador: " + handshake.getNickname() +
                                         "\nAvatar do outro jogador: " + handshake.getAvatar());
-                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + handshake.getAvatar()));
+                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" +
+                                        handshake.getAvatar()));
                                 otherClientNickname = handshake.getNickname();
                                 chatController.setOtherPlayerAvatar(otherClientAvatar);
                                 chatController.setOtherPlayerNickname(otherClientNickname);
@@ -86,6 +87,14 @@ public class MessageHandler {
                                 TextMessage txtMsg = (TextMessage) msg.getContent();
                                 System.out.println("Mensagem recebida do servidor: " + txtMsg.getText());
                                 chatController.displayIncomingMessage(otherClientAvatar, txtMsg.getText());
+                                break;
+                            case MOVEMENT:
+                                PlayerMovement mov = (PlayerMovement) msg.getContent();
+                                String source = mov.getCoordSource();
+                                String dest = mov.getCoordDest();
+                                System.out.println("Mensagem de movimento recebida, movendo celula em " + source +
+                                        " para " + dest);
+                                mainController.getGameController().showOponentMove(source, dest);
                                 break;
                             default:
                                 break;
@@ -109,6 +118,18 @@ public class MessageHandler {
         try {
             output.writeObject(msg);
             chatController.displayOwnMessage(avatar, text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendPlayerMovement(String source, String dest){
+        PlayerMovement mov = new PlayerMovement(source, dest, socket.getInetAddress().getHostAddress(),
+                ConnectionConfig.HOST.getValue());
+
+        Message msg = new Message(MessageType.MOVEMENT, mov);
+        try {
+            output.writeObject(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }

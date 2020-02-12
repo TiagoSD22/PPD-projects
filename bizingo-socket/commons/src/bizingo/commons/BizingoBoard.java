@@ -12,6 +12,7 @@ public class BizingoBoard {
     private ArrayList<BizingoCell> cells;
     private BidiMap<Polygon, BizingoCell> cellMap;
     private BidiMap<Polygon, Circle> pieceMap;
+
     private BidiMap<String, BizingoCell> positionCellMap;
 
     public BizingoBoard(){
@@ -27,26 +28,6 @@ public class BizingoBoard {
         String col = String.valueOf(cell.getColumn());
         String key = row + "," + col;
         positionCellMap.put(key, cell);
-    }
-
-    public ArrayList<BizingoCell> getCells() {
-        return cells;
-    }
-
-    public void putCellOnMap(Polygon t, BizingoCell cell){
-        this.cellMap.put(t, cell);
-    }
-
-    public BidiMap<Polygon, BizingoCell> getCellMap(){
-        return this.cellMap;
-    }
-
-    public void putPieceOnMap(Polygon t, Circle c){
-        this.pieceMap.put(t, c);
-    }
-
-    public BidiMap<Polygon, Circle> getPieceMap(){
-        return this.pieceMap;
     }
 
     public void moveCellPiece(BizingoCell source, BizingoCell dest){
@@ -129,5 +110,29 @@ public class BizingoBoard {
             addSameColorNeighbourhood(cell);
             addOppositeColorNeighbourhood(cell);
         });
+    }
+
+    public BidiMap<String, BizingoCell> getPositionCellMap() {
+        return positionCellMap;
+    }
+
+    public ArrayList<BizingoCell> getCells() {
+        return cells;
+    }
+
+    public void putCellOnMap(Polygon t, BizingoCell cell){
+        this.cellMap.put(t, cell);
+    }
+
+    public BidiMap<Polygon, BizingoCell> getCellMap(){
+        return this.cellMap;
+    }
+
+    public void putPieceOnMap(Polygon t, Circle c){
+        this.pieceMap.put(t, c);
+    }
+
+    public BidiMap<Polygon, Circle> getPieceMap(){
+        return this.pieceMap;
     }
 }
