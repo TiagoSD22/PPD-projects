@@ -12,7 +12,7 @@ import java.util.Random;
 public class Application {
 
     private static final int SERVER_PORT = 5005;
-    private static final int MAX_CLIENTS_CONNECTED = 200;
+    private static final int MAX_CLIENTS_CONNECTED = 2;
 
     private static ServerSocket initServer() {
         try {
@@ -23,6 +23,39 @@ public class Application {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static void definePlayersColorsAndFirstToPlay(ServerClientHandler sch1, ServerClientHandler sch2){
+        Random random = new Random();
+        int playerToStart = random.nextBoolean() ? 0 : 1;
+        int playerToBeDark = random.nextBoolean() ? 0 : 1;
+
+        GameConfig client1GameConfig = new GameConfig();
+        GameConfig client2GameConfig = new GameConfig();
+
+        if(playerToStart == 0){
+            client1GameConfig.setFirstTurn(true);
+            client2GameConfig.setFirstTurn(false);
+        }
+        else{
+            client1GameConfig.setFirstTurn(false);
+            client2GameConfig.setFirstTurn(true);
+        }
+
+        if(playerToBeDark == 0){
+            client1GameConfig.setPlayerPieceColor(CellColor.DARK);
+            client2GameConfig.setPlayerPieceColor(CellColor.LIGHT);
+        }
+        else{
+            client1GameConfig.setPlayerPieceColor(CellColor.LIGHT);
+            client2GameConfig.setPlayerPieceColor(CellColor.DARK);
+        }
+
+        Message client1Message = new Message(MessageType.CONFIG, client1GameConfig);
+        Message client2Message = new Message(MessageType.CONFIG, client2GameConfig);
+
+        sch1.forwardMessage(client2Message);
+        sch2.forwardMessage(client1Message);
     }
 
     public static void main(String args[]) {
@@ -45,36 +78,7 @@ public class Application {
             ServerClientHandler sch1 = new ServerClientHandler(clients.get(0), clients.get(1), server);
             ServerClientHandler sch2 = new ServerClientHandler(clients.get(1), clients.get(0), server);
 
-            Random random = new Random();
-            int playerToStart = random.nextBoolean() ? 0 : 1;
-            int playerToBeDark = random.nextBoolean() ? 0 : 1;
-
-            GameConfig client1GameConfig = new GameConfig();
-            GameConfig client2GameConfig = new GameConfig();
-
-            if(playerToStart == 0){
-                client1GameConfig.setFirstTurn(true);
-                client2GameConfig.setFirstTurn(false);
-            }
-            else{
-                client1GameConfig.setFirstTurn(false);
-                client2GameConfig.setFirstTurn(true);
-            }
-
-            if(playerToBeDark == 0){
-                client1GameConfig.setPlayerPieceColor(CellColor.DARK);
-                client2GameConfig.setPlayerPieceColor(CellColor.LIGHT);
-            }
-            else{
-                client1GameConfig.setPlayerPieceColor(CellColor.LIGHT);
-                client2GameConfig.setPlayerPieceColor(CellColor.DARK);
-            }
-
-            Message client1Message = new Message(MessageType.CONFIG.getValue(), client1GameConfig);
-            Message client2Message = new Message(MessageType.CONFIG.getValue(), client2GameConfig);
-
-            sch1.forwardMessage(client2Message);
-            sch2.forwardMessage(client1Message);
+            definePlayersColorsAndFirstToPlay(sch1, sch2);
         }
     }
 }

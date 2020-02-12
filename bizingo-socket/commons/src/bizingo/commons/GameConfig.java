@@ -1,8 +1,7 @@
 package bizingo.commons;
 
-import java.io.Serializable;
 
-public class GameConfig implements Serializable {
+public class GameConfig extends MessageContent{
     private CellColor playerPieceColor;
     private boolean firstTurn;
 
@@ -22,9 +21,11 @@ public class GameConfig implements Serializable {
         this.firstTurn = firstTurn;
     }
 
-    public GameConfig(CellColor playerPieceColor, boolean firstTurn){
+    public GameConfig(CellColor playerPieceColor, boolean firstTurn, String source, String destination){
         this.playerPieceColor = playerPieceColor;
         this.firstTurn = firstTurn;
+        this.setSource(source);
+        this.setDestination(destination);
     }
 
     public GameConfig(){}

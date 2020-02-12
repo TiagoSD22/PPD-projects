@@ -70,8 +70,10 @@ public class ChatToolbarController {
 
     public void sendMessage() {
         String text = textInput.getText();
-        main.getMessageHandler().sendMessage(text);
-        textInput.clear();
+        if(!text.isEmpty()) {
+            main.getMessageHandler().sendMessage(text);
+            textInput.clear();
+        }
     }
 
     public synchronized void displayIncomingMessage(Image avatar, String text) {

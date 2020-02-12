@@ -1,5 +1,6 @@
 import bizingo.commons.Message;
 import bizingo.commons.MessageType;
+import bizingo.commons.TextMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -19,7 +20,6 @@ public class ServerClientHandler extends Thread {
             this.server = server;
             output = new ObjectOutputStream(this.destination.getOutputStream());
             input = new ObjectInputStream(this.source.getInputStream());
-            //own = new ObjectOutputStream(this.source.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,13 +34,6 @@ public class ServerClientHandler extends Thread {
         }
     }
 
-    private void sendStartMessage() {
-        Message msg = new Message(MessageType.TEXT.getValue(), "starting",
-                server.getInetAddress().getHostAddress(), source.getInetAddress().getHostAddress());
-
-        sendSelfMessage(msg);
-    }
-
     public void sendSelfMessage(Message msg){
         try {
             own.writeObject(msg);
@@ -51,16 +44,19 @@ public class ServerClientHandler extends Thread {
 
     public void run() {
         System.out.println("Cliente iniciado com socket: " + source);
-        //sendStartMessage();
 
         try {
             Message msg;
             while (true) {
                 msg = (Message) input.readObject();
                 if (msg != null) {
-                    System.out.println("Mensagem recebida por " +
-                            this.source.getInetAddress().getHostAddress() +
-                            ": " + msg.getText());
+                    String source = msg.getContent().getSource();
+                    MessageType type = msg.getType();
+                    System.out.println("Mensagem do tipo " + type.getValue() + " recebida por " + source);
+                    if(type == MessageType.TEXT){
+                        TextMessage txtMsg = (TextMessage) msg.getContent();
+                        System.out.println("Texto: " + txtMsg.getText());
+                    }
                     forwardMessage(msg);
                 }
             }

@@ -1,8 +1,6 @@
 package com.bizingoclient.app.services;
 
-import bizingo.commons.GameConfig;
-import bizingo.commons.Message;
-import bizingo.commons.MessageType;
+import bizingo.commons.*;
 import com.bizingoclient.app.enums.ConnectionConfig;
 import com.bizingoclient.app.mainGame.MainGameController;
 import com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController;
@@ -51,8 +49,9 @@ public class MessageHandler {
     }
 
     private void sendHandshake(String nickname, String avatar) {
-        Message msg = new Message(HANDSHAKE.getValue(), "handshake", socket.getInetAddress().getHostAddress(),
-                ConnectionConfig.HOST.getValue(), nickname, avatar);
+        Handshake handshake = new Handshake(nickname, avatar, socket.getInetAddress().getHostAddress(),
+                ConnectionConfig.HOST.getValue());
+        Message msg = new Message(HANDSHAKE, handshake);
         try {
             output.writeObject(msg);
         } catch (IOException e) {
@@ -68,23 +67,25 @@ public class MessageHandler {
                     if (msg != null) {
                         switch (msg.getType()){
                             case HANDSHAKE:
+                                Handshake handshake = (Handshake) msg.getContent();
                                 System.out.println("Handshake recebido");
-                                System.out.println("Nick do outro jogador: " + msg.getNickname() +
-                                        "\nAvatar do outro jogador: " + msg.getAvatar());
-                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + msg.getAvatar()));
-                                otherClientNickname = msg.getNickname();
+                                System.out.println("Nick do outro jogador: " + handshake.getNickname() +
+                                        "\nAvatar do outro jogador: " + handshake.getAvatar());
+                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + handshake.getAvatar()));
+                                otherClientNickname = handshake.getNickname();
                                 chatController.setOtherPlayerAvatar(otherClientAvatar);
                                 chatController.setOtherPlayerNickname(otherClientNickname);
                                 break;
                             case CONFIG:
+                                GameConfig playerConfig = (GameConfig) msg.getContent();
                                 System.out.println("Mensagem de configuracao de partida recebida");
-                                GameConfig playerConfig = msg.getGameConfig(); //continuar config
                                 mainController.getGameController().setPlayerColor(playerConfig.getPlayerPieceColor());
                                 mainController.getGameController().setTurnToPlay(playerConfig.isFirstTurn());
                                 break;
                             case TEXT:
-                                System.out.println("Mensagem recebida do servidor: " + msg.getText());
-                                chatController.displayIncomingMessage(otherClientAvatar, msg.getText());
+                                TextMessage txtMsg = (TextMessage) msg.getContent();
+                                System.out.println("Mensagem recebida do servidor: " + txtMsg.getText());
+                                chatController.displayIncomingMessage(otherClientAvatar, txtMsg.getText());
                                 break;
                             default:
                                 break;
@@ -102,8 +103,9 @@ public class MessageHandler {
 
     public void sendMessage(String text) {
         System.out.println("Mensagem digitada: " + text);
-        Message msg = new Message(MessageType.TEXT.getValue(), text, socket.getInetAddress().getHostAddress(),
+        TextMessage txtMsg = new TextMessage(text, socket.getInetAddress().getHostAddress(),
                 ConnectionConfig.HOST.getValue());
+        Message msg = new Message(MessageType.TEXT, txtMsg);
         try {
             output.writeObject(msg);
             chatController.displayOwnMessage(avatar, text);

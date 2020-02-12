@@ -67,8 +67,8 @@ public class GameController {
         drawBoard();
 
         //remover para versao final
-        setTurnToPlay(true);
-        setPlayerColor(CellColor.LIGHT);
+        //setTurnToPlay(true);
+        //setPlayerColor(CellColor.LIGHT);
     }
 
     private void drawBoard() {
@@ -214,7 +214,7 @@ public class GameController {
             this.playerTurnIndicator.setFill(Color.valueOf("#13C196"));
         } else {
             this.playerTurnIndicator.setText("VEZ DO OPONENTE JOGAR");
-            this.playerTurnIndicator.setFill(Color.valueOf("#000000"));
+            this.playerTurnIndicator.setFill(Color.valueOf("#FFFFFF"));
         }
     }
 
@@ -318,13 +318,13 @@ public class GameController {
                     selectedCell = null;
 
                     //remover para a versao final
-                    if(playerColor == CellColor.DARK){
+                    /*if(playerColor == CellColor.DARK){
                         setPlayerColor(CellColor.LIGHT);
                     }
                     else{
                         setPlayerColor(CellColor.DARK);
-                    }
-                    //setTurnToPlay(false);
+                    }*/
+                    setTurnToPlay(false);
                 }
             }
         }
