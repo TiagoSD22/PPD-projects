@@ -48,7 +48,7 @@
                         <Font name="Roboto" size="14.0" />
                      </font>
                      <GridPane.margin>
-                        <Insets />
+                        <Insets bottom="10.0" />
                      </GridPane.margin>
                   </Text>
                   <ImageView fx:id="playerColorIndicator" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">

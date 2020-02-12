@@ -3,7 +3,7 @@ package com.bizingoclient.app.services;
 import bizingo.commons.GameConfig;
 import bizingo.commons.Message;
 import bizingo.commons.MessageType;
-import com.bizingoclient.app.ConnectionConfig;
+import com.bizingoclient.app.enums.ConnectionConfig;
 import com.bizingoclient.app.mainGame.MainGameController;
 import com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController;
 import com.bizingoclient.app.mainGame.game.GameController;

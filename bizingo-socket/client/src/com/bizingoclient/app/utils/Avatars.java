@@ -1,4 +1,4 @@
-package com.bizingoclient.app;
+package com.bizingoclient.app.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -37,9 +37,10 @@ public class GameController {
     private CellColor playerColor;
     private boolean turnToPlay;
 
-
     private BizingoCell selectedCell;
 
+    private final String DARK_COLOR = "#13C196";
+    private final String LIGHT_COLOR = "#FFFFFF";
 
     public void init(MainGameController mainGameController) {
         main = mainGameController;
@@ -98,7 +99,7 @@ public class GameController {
                 cell.setColumn(column);
 
                 if (column % 2 == initialDarkIndex) { //peca escura
-                    t.setFill(Color.rgb(19, 193, 150));
+                    t.setFill(Color.valueOf(DARK_COLOR));
 
                     t.getPoints().addAll(
                             currentX0, currentY0,
@@ -127,7 +128,7 @@ public class GameController {
                         cell.setContent(content);
                     }
                 } else { //peca clara
-                    t.setFill(Color.WHITE);
+                    t.setFill(Color.valueOf(LIGHT_COLOR));
 
                     t.getPoints().addAll(
                             currentX0, currentY0 + 50,
@@ -167,18 +168,7 @@ public class GameController {
                 if (piece != null) {
                     board.getChildren().add(piece);
                     this.bizingoBoard.putPieceOnMap(t, piece);
-
-                    Circle finalPiece = piece;
-                    piece.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            Polygon t = bizingoBoard.getPieceMap().getKey(finalPiece);
-                            BizingoCell c = bizingoBoard.getCellMap().get(t);
-                            if (c.getColor() == playerColor && selectedCell == null) {
-                                t.setStroke(Color.rgb(81, 113, 165));
-                            }
-                        }
-                    });
+                    addMouseHandlerToPiece(piece);
                 }
 
                 currentX0 += 25.0;
@@ -189,7 +179,6 @@ public class GameController {
         bizingoBoard.addNeighbourhood();
 
         boardBase.getChildren().add(board);
-        board.setTranslateX(0);
         board.setTranslateY(-40);
     }
 
@@ -214,8 +203,10 @@ public class GameController {
         this.turnToPlay = turnToPlay;
         if (this.turnToPlay) {
             this.playerTurnIndicator.setText("SUA VEZ DE JOGAR");
+            this.playerTurnIndicator.setFill(Color.valueOf("#13C196"));
         } else {
             this.playerTurnIndicator.setText("VEZ DO OPONENTE JOGAR");
+            this.playerTurnIndicator.setFill(Color.valueOf("#000000"));
         }
     }
 
@@ -223,10 +214,12 @@ public class GameController {
         t.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                BizingoCell c = bizingoBoard.getCellMap().get(t);
-                if (c.getContent() != CellContent.EMPTY) {
-                    if (c.getColor() == playerColor && selectedCell == null) {
-                        t.setStroke(Color.rgb(81, 113, 165));
+                if(turnToPlay) {
+                    BizingoCell c = bizingoBoard.getCellMap().get(t);
+                    if (c.getContent() != CellContent.EMPTY) {
+                        if (c.getColor() == playerColor && selectedCell == null) {
+                            t.setStroke(Color.rgb(81, 113, 165));
+                        }
                     }
                 }
             }
@@ -242,33 +235,77 @@ public class GameController {
         t.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                BizingoCell c = bizingoBoard.getCellMap().get(t);
-                if (c.getContent() != CellContent.EMPTY) {
-                    if (c.getColor() == playerColor) {
-                        selectedCell = c;
-                    }
-                }
-                else{
-                    if(selectedCell != null){ //movendo peca
-                        if(selectedCell.getNeighboursSameColor().contains(c)){
-                            Polygon old = bizingoBoard.getCellMap().getKey(selectedCell);
-                            Circle piece = bizingoBoard.getPieceMap().get(old);
-                            Double newX = t.getPoints().get(0);
-                            Double newY = t.getPoints().get(1);
-                            piece.setLayoutX(newX);
-                            if(c.getColor() == CellColor.DARK){
-                                piece.setLayoutY(newY + 30);
+                if(turnToPlay) {
+                    BizingoCell c = bizingoBoard.getCellMap().get(t);
+                    if (c.getContent() != CellContent.EMPTY) {
+                        if (c.getColor() == playerColor) {
+                            selectedCell = c;
+                        }
+                    } else {
+                        if (selectedCell != null) { //movendo peca
+                            if (selectedCell.getNeighboursSameColor().contains(c)) {
+                                movePieceOnBoard(selectedCell, c);
+                                selectedCell = null;
+                                setTurnToPlay(false);
                             }
-                            else {
-                                piece.setLayoutY(newY + 20);
-                            }
-                            bizingoBoard.moveCellPiece(selectedCell, c);
-                            selectedCell = null;
                         }
                     }
                 }
             }
         });
+    }
+
+    private void addMouseHandlerToPiece(Circle piece) {
+        piece.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(turnToPlay) {
+                    Polygon t = bizingoBoard.getPieceMap().getKey(piece);
+                    BizingoCell c = bizingoBoard.getCellMap().get(t);
+                    if (c.getColor() == playerColor && selectedCell == null) {
+                        t.setStroke(Color.rgb(81, 113, 165));
+                    }
+                }
+            }
+        });
+
+        piece.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(turnToPlay) {
+                    Polygon t = bizingoBoard.getPieceMap().getKey(piece);
+                    BizingoCell c = bizingoBoard.getCellMap().get(t);
+                    if (c.getContent() != CellContent.EMPTY) {
+                        if (c.getColor() == playerColor) {
+                            selectedCell = c;
+                        }
+                    } else {
+                        if (selectedCell != null) { //movendo peca
+                            if (selectedCell.getNeighboursSameColor().contains(c)) {
+                                movePieceOnBoard(selectedCell, c);
+                                selectedCell = null;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void movePieceOnBoard(BizingoCell cellSource, BizingoCell cellDest) {
+        Polygon old = bizingoBoard.getCellMap().getKey(cellSource);
+        Circle piece = bizingoBoard.getPieceMap().get(old);
+        Polygon tSource = bizingoBoard.getCellMap().getKey(cellDest);
+        Double newX = tSource.getPoints().get(0);
+        Double newY = tSource.getPoints().get(1);
+        piece.setLayoutX(newX);
+        if (cellDest.getColor() == CellColor.DARK) {
+            piece.setLayoutY(newY + 30);
+            piece.toFront();
+        } else {
+            piece.setLayoutY(newY + 20);
+        }
+        bizingoBoard.moveCellPiece(cellSource, cellDest);
     }
 
 }

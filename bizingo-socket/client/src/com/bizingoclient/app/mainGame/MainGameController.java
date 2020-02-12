@@ -57,7 +57,7 @@ public class MainGameController {
     public void initControllers(Socket socket, String nickname, String avatar) {
         chatToolbarController.init(this);
         gameController.init(this);
-        msgHandler = new MessageHandler(socket, this, chatToolbarController, gameController, nickname, avatar);
+        //msgHandler = new MessageHandler(socket, this, chatToolbarController, gameController, nickname, avatar);
     }
 
     public GameController getGameController() {

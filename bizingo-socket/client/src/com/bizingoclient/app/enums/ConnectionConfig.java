@@ -1,4 +1,4 @@
-package com.bizingoclient.app;
+package com.bizingoclient.app.enums;
 
 public enum ConnectionConfig {
     HOST("127.0.0.1"),

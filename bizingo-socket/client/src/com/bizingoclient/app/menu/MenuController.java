@@ -2,8 +2,8 @@ package com.bizingoclient.app.menu;
 
 
 import com.bizingoclient.Main;
-import com.bizingoclient.app.Avatars;
-import com.bizingoclient.app.ConnectionConfig;
+import com.bizingoclient.app.utils.Avatars;
+import com.bizingoclient.app.enums.ConnectionConfig;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
