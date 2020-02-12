@@ -12,7 +12,7 @@ import java.util.Random;
 public class Application {
 
     private static final int SERVER_PORT = 5005;
-    private static final int MAX_CLIENTS_CONNECTED = 2;
+    private static final int MAX_CLIENTS_CONNECTED = 200;
 
     private static ServerSocket initServer() {
         try {

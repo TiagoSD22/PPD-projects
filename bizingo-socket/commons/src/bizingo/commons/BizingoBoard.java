@@ -68,13 +68,25 @@ public class BizingoBoard {
     }
 
     private void addSameColorNeighbourhood(BizingoCell cell){
+        int previousRowLeftDiff = -2;
+        int previousRowRightDiff = 0;
+        int nextRowLeftDiff = 0;
+        int nextRowRightDiff = 2;
+        if(cell.getRow() >= 8){
+            nextRowLeftDiff = -2 + (9 - cell.getRow());
+            nextRowRightDiff = 9 - cell.getRow();
+            if(cell.getRow() > 8) {
+                previousRowLeftDiff = cell.getRow() - 10;
+                previousRowRightDiff = 2 + (cell.getRow() - 10);
+            }
+        }
         ArrayList<String> neighboursCoords = new ArrayList<>(Arrays.asList(
-                (cell.getRow() - 1) + "," + (cell.getColumn() - 2),
-                (cell.getRow() - 1) + "," + (cell.getColumn()),
+                (cell.getRow() - 1) + "," + (cell.getColumn() + previousRowLeftDiff),
+                (cell.getRow() - 1) + "," + (cell.getColumn() + previousRowRightDiff),
                 (cell.getRow()) + "," + (cell.getColumn() - 2),
                 (cell.getRow()) + "," + (cell.getColumn() + 2),
-                (cell.getRow() + 1) + "," + (cell.getColumn()),
-                (cell.getRow() + 1) + "," + (cell.getColumn() + 2)
+                (cell.getRow() + 1) + "," + (cell.getColumn() + nextRowLeftDiff),
+                (cell.getRow() + 1) + "," + (cell.getColumn() + nextRowRightDiff)
         ));
 
         ArrayList<BizingoCell> neighbourhood = new ArrayList<>();
@@ -90,10 +102,14 @@ public class BizingoBoard {
     }
 
     private void addOppositeColorNeighbourhood(BizingoCell cell){
+        int nextRowDiff = 1;
+        if(cell.getRow() >= 8){
+            nextRowDiff = 8 - cell.getRow();
+        }
         ArrayList<String> neighboursCoords = new ArrayList<>(Arrays.asList(
                 (cell.getRow()) + "," + (cell.getColumn() - 1),
                 (cell.getRow()) + "," + (cell.getColumn() + 1),
-                (cell.getRow() + 1) + "," + (cell.getColumn() + 1)
+                (cell.getRow() + 1) + "," + (cell.getColumn() + nextRowDiff)
         ));
 
         ArrayList<BizingoCell> neighbourhood = new ArrayList<>();
