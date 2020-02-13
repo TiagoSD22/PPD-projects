@@ -112,6 +112,46 @@ public class BizingoBoard {
         });
     }
 
+    public boolean isSurrounded(BizingoCell cell){
+        if(cell.getNeighboursOppositeColor().size() == 2){ //casa de borda
+            int numberOfCaptains = 0;
+            int numberOfEnemies = 0;
+            for(BizingoCell neighbour : cell.getNeighboursOppositeColor()){
+                if(neighbour.getContent() != CellContent.EMPTY){
+                    numberOfEnemies++;
+                    if(neighbour.getContent() == CellContent.CAPTAIN_PIECE){
+                        numberOfCaptains++;
+                    }
+                }
+            }
+            return numberOfEnemies == 2 && numberOfCaptains >= 1;
+        }
+        else{
+            int numberOfEnemies = 0;
+            int numberOfCaptains = 0;
+            for(BizingoCell neighbour : cell.getNeighboursOppositeColor()){
+                if(neighbour.getContent() != CellContent.EMPTY){
+                    numberOfEnemies++;
+                    if(neighbour.getContent() == CellContent.CAPTAIN_PIECE){
+                        numberOfCaptains++;
+                    }
+                }
+            }
+            return numberOfEnemies == 3 && (cell.getContent() != CellContent.CAPTAIN_PIECE || numberOfCaptains >= 1);
+        }
+    }
+
+    public boolean cellHasSurrounded(BizingoCell cell){
+        for(BizingoCell neighbour : cell.getNeighboursOppositeColor()){
+            if(neighbour.getContent() != CellContent.EMPTY){
+                if(isSurrounded(neighbour)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public BidiMap<String, BizingoCell> getPositionCellMap() {
         return positionCellMap;
     }
