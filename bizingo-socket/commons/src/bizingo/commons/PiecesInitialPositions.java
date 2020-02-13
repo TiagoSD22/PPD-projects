@@ -1,23 +1,13 @@
-package com.bizingoclient.app.mainGame.game;
-
-import bizingo.commons.CellContent;
+package bizingo.commons;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PiecesInitialPositions {
-    Map<String, CellContent> positionMap = new HashMap<>();
-
     private static PiecesInitialPositions instance = null;
+    private Map<String, CellContent> positionMap = new HashMap<>();
 
-    public static PiecesInitialPositions getInstance(){
-        if(instance == null){
-            instance = new PiecesInitialPositions();
-        }
-        return instance;
-    }
-
-    private PiecesInitialPositions(){
+    private PiecesInitialPositions() {
         positionMap.put("2,2", CellContent.REGULAR_PIECE);
         positionMap.put("2,4", CellContent.REGULAR_PIECE);
         positionMap.put("2,6", CellContent.REGULAR_PIECE);
@@ -55,5 +45,16 @@ public class PiecesInitialPositions {
         positionMap.put("9,10", CellContent.REGULAR_PIECE);
         positionMap.put("9,12", CellContent.REGULAR_PIECE);
         positionMap.put("9,14", CellContent.REGULAR_PIECE);
+    }
+
+    public static PiecesInitialPositions getInstance() {
+        if (instance == null) {
+            instance = new PiecesInitialPositions();
+        }
+        return instance;
+    }
+
+    public Map<String, CellContent> getPositionMap() {
+        return positionMap;
     }
 }
