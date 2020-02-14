@@ -1,25 +1,27 @@
 package com.bizingoclient.app.mainGame.game;
 
 
-import bizingo.commons.BizingoBoard;
-import bizingo.commons.BizingoCell;
-import bizingo.commons.CellColor;
-import bizingo.commons.CellContent;
+import bizingo.commons.*;
 import com.bizingoclient.app.mainGame.MainGameController;
+import io.vavr.Tuple2;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 
 public class GameController {
@@ -39,12 +41,16 @@ public class GameController {
 
     private CellColor playerColor;
     private boolean turnToPlay;
+    private int numberOfPlayersPieces;
 
     private BizingoCell selectedCell;
 
     private final String DARK_COLOR = "#13C196";
     private final String LIGHT_COLOR = "#FFFFFF";
+    private ImagePattern greenMarble;
+    private ImagePattern whiteMarble;
     private final Glow glowEffect = new Glow(1.0);
+    private DropShadow pieceShadow;
 
     public void init(MainGameController mainGameController) {
         main = mainGameController;
@@ -60,12 +66,16 @@ public class GameController {
         boardBase.setBackground(background);
 
         this.bizingoBoard = new BizingoBoard();
+        numberOfPlayersPieces = 18;
+
+        pieceShadow = new DropShadow();
+        pieceShadow.setOffsetX(6.0);
+        pieceShadow.setOffsetY(4.0);
+
+        greenMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/green_marble.jpg")));
+        whiteMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/white_marble.jpg")));
 
         drawBoard();
-
-        //remover para versao final
-        //setTurnToPlay(true);
-        //setPlayerColor(CellColor.LIGHT);
     }
 
     private void drawBoard() {
@@ -104,7 +114,7 @@ public class GameController {
                 cell.setColumn(column);
 
                 if (column % 2 == initialDarkIndex) { //peca escura
-                    t.setFill(Color.valueOf(DARK_COLOR));
+                    t.setFill(greenMarble);
 
                     t.getPoints().addAll(
                             currentX0, currentY0,
@@ -114,15 +124,16 @@ public class GameController {
 
                     cell.setColor(CellColor.DARK);
 
-                    if (PiecesInitialPositions.getInstance().positionMap.containsKey(cellCoordinate)) {
-                        CellContent content = PiecesInitialPositions.getInstance().positionMap.get(cellCoordinate);
+                    if (PiecesInitialPositions.getInstance().getPositionMap().containsKey(cellCoordinate)) {
+                        CellContent content = PiecesInitialPositions.getInstance().getPositionMap().get(cellCoordinate);
 
                         cell.setContent(content);
 
                         piece = new Circle();
-                        piece.setLayoutX(currentX0);
+                        piece.setLayoutX(currentX0 - 2);
                         piece.setLayoutY(currentY0 + 30);
                         piece.setRadius(10);
+                        piece.setEffect(pieceShadow);
                         if (content.equals(CellContent.REGULAR_PIECE)) {
                             piece.setFill(Color.BLACK);
                         } else {
@@ -133,7 +144,7 @@ public class GameController {
                         cell.setContent(content);
                     }
                 } else { //peca clara
-                    t.setFill(Color.valueOf(LIGHT_COLOR));
+                    t.setFill(whiteMarble);
 
                     t.getPoints().addAll(
                             currentX0, currentY0 + 50,
@@ -143,14 +154,16 @@ public class GameController {
 
                     cell.setColor(CellColor.LIGHT);
 
-                    if (PiecesInitialPositions.getInstance().positionMap.containsKey(cellCoordinate)) {
-                        CellContent content = PiecesInitialPositions.getInstance().positionMap.get(cellCoordinate);
+                    if (PiecesInitialPositions.getInstance().getPositionMap().containsKey(cellCoordinate)) {
+                        CellContent content = PiecesInitialPositions.getInstance().getPositionMap().get(cellCoordinate);
                         cell.setContent(content);
 
                         piece = new Circle();
-                        piece.setLayoutX(currentX0);
+                        piece.setLayoutX(currentX0 - 2);
                         piece.setLayoutY(currentY0 + 20);
                         piece.setRadius(10);
+
+                        piece.setEffect(pieceShadow);
                         if (content.equals(CellContent.REGULAR_PIECE)) {
                             piece.setFill(Color.RED);
                         } else {
@@ -317,13 +330,6 @@ public class GameController {
                     unhighlightCell(tOld, true);
                     selectedCell = null;
 
-                    //remover para a versao final
-                    /*if(playerColor == CellColor.DARK){
-                        setPlayerColor(CellColor.LIGHT);
-                    }
-                    else{
-                        setPlayerColor(CellColor.DARK);
-                    }*/
                     setTurnToPlay(false);
 
                     main.getMessageHandler().sendPlayerMovement(source, dest);
@@ -347,7 +353,7 @@ public class GameController {
         Double newX = tSource.getPoints().get(0);
         Double newY = tSource.getPoints().get(1);
         int yOffset = 30;
-        piece.setLayoutX(newX);
+        piece.setLayoutX(newX - 2);
         if (cellDest.getColor() == CellColor.LIGHT) {
             yOffset *= -1;
         }
@@ -356,6 +362,45 @@ public class GameController {
         Platform.runLater(piece::toFront);
 
         bizingoBoard.moveCellPiece(cellSource, cellDest);
+
+        Tuple2<Boolean, BizingoCell> surrounded = bizingoBoard.cellHasSurrounded(cellDest);
+        if(surrounded._1){ //peca capturou alguma outra
+            BizingoCell captured = surrounded._2;
+            Polygon t = bizingoBoard.getCellMap().getKey(captured);
+            Circle c = bizingoBoard.getPieceMap().get(t);
+            playPieceCapturedAnimation(c);
+            notifyCapture(captured);
+        }
+        else{
+            if(bizingoBoard.isSurrounded(cellDest)){ //peca se moveu para um cerco
+                Polygon t = bizingoBoard.getCellMap().getKey(cellDest);
+                Circle c = bizingoBoard.getPieceMap().get(t);
+                playPieceCapturedAnimation(c);
+                notifyCapture(cellDest);
+            }
+        }
+    }
+
+    private void playPieceCapturedAnimation(Circle piece){
+        ScaleTransition st = new ScaleTransition(Duration.seconds(2), piece);
+        st.setFromX(1);
+        st.setFromY(1);
+        st.setToX(0);
+        st.setToY(0);
+        st.play();
+    }
+
+    private void notifyCapture(BizingoCell captured){
+        if(captured.getColor() != playerColor){
+            System.out.println("Voce capturou uma peca do oponente");
+            numberOfPlayersPieces--;
+            if(numberOfPlayersPieces == 2){
+                System.out.println("Jogador perdeu");
+            }
+        }
+        else{
+            System.out.println("Uma peca sua foi capturada");
+        }
     }
 
     private void highlightCell(Polygon t){
