@@ -3,6 +3,7 @@ package com.bizingoclient.app.mainGame.game;
 
 import bizingo.commons.*;
 import com.bizingoclient.app.mainGame.MainGameController;
+import com.jfoenix.controls.JFXSnackbar;
 import io.vavr.Tuple2;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
@@ -22,10 +23,12 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 
 
 public class GameController {
 
+    private final Glow glowEffect = new Glow(1.0);
     @FXML
     public AnchorPane root;
     @FXML
@@ -34,23 +37,22 @@ public class GameController {
     private ImageView playerColorIndicator;
     @FXML
     private Text playerTurnIndicator;
+    @FXML
+    private Text piecesCounter;
     private Group board;
-
     private MainGameController main;
     private BizingoBoard bizingoBoard;
-
     private CellColor playerColor;
     private boolean turnToPlay;
     private int numberOfPlayersPieces;
-
     private BizingoCell selectedCell;
-
-    private final String DARK_COLOR = "#13C196";
-    private final String LIGHT_COLOR = "#FFFFFF";
     private ImagePattern greenMarble;
     private ImagePattern whiteMarble;
-    private final Glow glowEffect = new Glow(1.0);
     private DropShadow pieceShadow;
+    private ScaleTransition capturedPieceAnimation;
+    private JFXSnackbar notificationSnack;
+    private SnackbarEvent ownPieceCapturedEvent;
+    private SnackbarEvent otherPlayerPieceCapturedEvent;
 
     public void init(MainGameController mainGameController) {
         main = mainGameController;
@@ -72,10 +74,37 @@ public class GameController {
         pieceShadow.setOffsetX(6.0);
         pieceShadow.setOffsetY(4.0);
 
+        capturedPieceAnimation = new ScaleTransition(Duration.seconds(1.5));
+        capturedPieceAnimation.setFromX(1.0);
+        capturedPieceAnimation.setFromY(1.0);
+        capturedPieceAnimation.setToX(0.0);
+        capturedPieceAnimation.setToY(0.0);
+
         greenMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/green_marble.jpg")));
         whiteMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/white_marble.jpg")));
 
+        notificationSnack = new JFXSnackbar(root);
+        notificationSnack.setPrefWidth(300);
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0, 0, 0));
+        notificationSnack.setEffect(dropShadow);
+
+        Text txt = new Text("Você capturou uma peça do oponente");
+        txt.setFill(Color.WHITE);
+        otherPlayerPieceCapturedEvent = new SnackbarEvent(txt);
+
+        Text txt2 = new Text("Uma peça sua foi capturada");
+        txt2.setFill(Color.WHITE);
+        ownPieceCapturedEvent = new SnackbarEvent(txt2);
+
+        updatePiecesCounter();
         drawBoard();
+
+        //setTurnToPlay(true);
+        //setPlayerColor(CellColor.DARK);
     }
 
     private void drawBoard() {
@@ -228,20 +257,23 @@ public class GameController {
         }
     }
 
+    public void updatePiecesCounter(){
+        piecesCounter.setText("x" + numberOfPlayersPieces);
+    }
+
     public void addEventHandlersForCell(Polygon t) {
         t.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(turnToPlay) {
+                if (turnToPlay) {
                     BizingoCell c = bizingoBoard.getCellMap().get(t);
                     if (c.getContent() != CellContent.EMPTY) {
                         if (c.getColor() == playerColor && selectedCell == null) {
                             highlightCell(t);
                         }
-                    }
-                    else{
-                        if(selectedCell != null){
-                            if(selectedCell.getNeighboursSameColor().contains(c)){
+                    } else {
+                        if (selectedCell != null) {
+                            if (selectedCell.getNeighboursSameColor().contains(c)) {
                                 highlightPossibleDestCell(t); // indicando que a peca pode ser movida para aquela casa
                             }
                         }
@@ -254,7 +286,7 @@ public class GameController {
             @Override
             public void handle(MouseEvent event) {
                 boolean force = false;
-                if(!t.equals(bizingoBoard.getCellMap().getKey(selectedCell))){
+                if (!t.equals(bizingoBoard.getCellMap().getKey(selectedCell))) {
                     force = true;
                 }
                 unhighlightCell(t, force);
@@ -264,7 +296,7 @@ public class GameController {
         t.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(turnToPlay) {
+                if (turnToPlay) {
                     BizingoCell c = bizingoBoard.getCellMap().get(t);
                     handlePieceClicked(c);
                 }
@@ -276,7 +308,7 @@ public class GameController {
         piece.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(turnToPlay) {
+                if (turnToPlay) {
                     Polygon t = bizingoBoard.getPieceMap().getKey(piece);
                     BizingoCell c = bizingoBoard.getCellMap().get(t);
                     if (c.getColor() == playerColor && selectedCell == null) {
@@ -289,7 +321,7 @@ public class GameController {
         piece.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(turnToPlay) {
+                if (turnToPlay) {
                     Polygon t = bizingoBoard.getPieceMap().getKey(piece);
                     BizingoCell c = bizingoBoard.getCellMap().get(t);
                     handlePieceClicked(c);
@@ -298,24 +330,22 @@ public class GameController {
         });
     }
 
-    private void handlePieceClicked(BizingoCell c){
+    private void handlePieceClicked(BizingoCell c) {
         if (c.getContent() != CellContent.EMPTY) {
             if (c.getColor() == playerColor) {
-                if(selectedCell != null){
-                    if(!selectedCell.equals(c)){
+                if (selectedCell != null) {
+                    if (!selectedCell.equals(c)) {
                         Polygon tOld = bizingoBoard.getCellMap().getKey(selectedCell);
                         selectedCell = null;
                         unhighlightCell(tOld, false);
                         selectedCell = c;
                         highlightCell(bizingoBoard.getCellMap().getKey(c));
-                    }
-                    else{
+                    } else {
                         Polygon tOld = bizingoBoard.getCellMap().getKey(selectedCell);
                         selectedCell = null;
                         unhighlightCell(tOld, false);
                     }
-                }
-                else {
+                } else {
                     selectedCell = c;
                 }
             }
@@ -338,7 +368,7 @@ public class GameController {
         }
     }
 
-    public void showOponentMove(String source, String dest){
+    public void showOponentMove(String source, String dest) {
         BizingoCell cellSource = bizingoBoard.getPositionCellMap().get(source);
         BizingoCell cellDest = bizingoBoard.getPositionCellMap().get(dest);
 
@@ -364,15 +394,14 @@ public class GameController {
         bizingoBoard.moveCellPiece(cellSource, cellDest);
 
         Tuple2<Boolean, BizingoCell> surrounded = bizingoBoard.cellHasSurrounded(cellDest);
-        if(surrounded._1){ //peca capturou alguma outra
+        if (surrounded._1) { //peca capturou alguma outra
             BizingoCell captured = surrounded._2;
             Polygon t = bizingoBoard.getCellMap().getKey(captured);
             Circle c = bizingoBoard.getPieceMap().get(t);
             playPieceCapturedAnimation(c);
             notifyCapture(captured);
-        }
-        else{
-            if(bizingoBoard.isSurrounded(cellDest)){ //peca se moveu para um cerco
+        } else {
+            if (bizingoBoard.isSurrounded(cellDest)) { //peca se moveu para um cerco
                 Polygon t = bizingoBoard.getCellMap().getKey(cellDest);
                 Circle c = bizingoBoard.getPieceMap().get(t);
                 playPieceCapturedAnimation(c);
@@ -381,39 +410,37 @@ public class GameController {
         }
     }
 
-    private void playPieceCapturedAnimation(Circle piece){
-        ScaleTransition st = new ScaleTransition(Duration.seconds(2), piece);
-        st.setFromX(1);
-        st.setFromY(1);
-        st.setToX(0);
-        st.setToY(0);
-        st.play();
+    private void playPieceCapturedAnimation(Circle piece) {
+        capturedPieceAnimation.setNode(piece);
+        capturedPieceAnimation.play();
     }
 
-    private void notifyCapture(BizingoCell captured){
-        if(captured.getColor() != playerColor){
+    private void notifyCapture(BizingoCell captured) {
+        if (captured.getColor() != playerColor) {
             System.out.println("Voce capturou uma peca do oponente");
+            notificationSnack.enqueue(otherPlayerPieceCapturedEvent);
+        } else {
+            System.out.println("Uma peca sua foi capturada");
+            notificationSnack.enqueue(ownPieceCapturedEvent);
             numberOfPlayersPieces--;
-            if(numberOfPlayersPieces == 2){
+            updatePiecesCounter();
+            if (numberOfPlayersPieces == 2) {
                 System.out.println("Jogador perdeu");
             }
         }
-        else{
-            System.out.println("Uma peca sua foi capturada");
-        }
     }
 
-    private void highlightCell(Polygon t){
+    private void highlightCell(Polygon t) {
         t.setEffect(glowEffect);
     }
 
-    private void unhighlightCell(Polygon t, boolean force){
-        if(selectedCell == null || force){
+    private void unhighlightCell(Polygon t, boolean force) {
+        if (selectedCell == null || force) {
             t.setEffect(null);
         }
     }
 
-    private void highlightPossibleDestCell(Polygon t){
+    private void highlightPossibleDestCell(Polygon t) {
         ColorAdjust ca = new ColorAdjust();
         ca.setBrightness(-0.5);
         t.setEffect(ca);
