@@ -19,6 +19,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -66,6 +67,12 @@ public class MenuController {
         clip.setFill(Color.rgb(0, 0, 0, 0.7));
         avatarRegion.getChildren().add(clip);
         clip.toBack();
+
+        DropShadow ds = new DropShadow();
+        ds.setOffsetX(1.3);
+        ds.setOffsetY(1.3);
+        ds.setColor(Color.BLACK);
+        connectButton.setEffect(ds);
 
         loadAvatarIcons();
         setAvatarIconOnSelectBox();

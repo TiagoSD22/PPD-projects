@@ -9,6 +9,7 @@ import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
@@ -39,6 +40,10 @@ public class GameController {
     private Text playerTurnIndicator;
     @FXML
     private Text piecesCounter;
+    @FXML
+    private GridPane hud1;
+    @FXML
+    private GridPane hud2;
     private Group board;
     private MainGameController main;
     private BizingoBoard bizingoBoard;
@@ -99,6 +104,15 @@ public class GameController {
         Text txt2 = new Text("Uma peça sua foi capturada");
         txt2.setFill(Color.WHITE);
         ownPieceCapturedEvent = new SnackbarEvent(txt2);
+
+        Image hudImage = new Image(getClass().getResourceAsStream("/assets/hud.png"));
+        BackgroundSize hudBackgroundSize = new BackgroundSize(250, 100, false,
+                false, false, false);
+        BackgroundImage hudBackgroundImage = new BackgroundImage(hudImage, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, hudBackgroundSize);
+        Background hudBackground = new Background(hudBackgroundImage);
+        hud1.setBackground(hudBackground);
+        hud2.setBackground(hudBackground);
 
         updatePiecesCounter();
         drawBoard();
@@ -308,6 +322,9 @@ public class GameController {
         piece.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                if(bizingoBoard.getCellMap().get(bizingoBoard.getPieceMap().getKey(piece)).getColor() == playerColor){
+                    piece.setCursor(Cursor.HAND);
+                }
                 if (turnToPlay) {
                     Polygon t = bizingoBoard.getPieceMap().getKey(piece);
                     BizingoCell c = bizingoBoard.getCellMap().get(t);
@@ -432,11 +449,13 @@ public class GameController {
 
     private void highlightCell(Polygon t) {
         t.setEffect(glowEffect);
+        t.setCursor(Cursor.HAND);
     }
 
     private void unhighlightCell(Polygon t, boolean force) {
         if (selectedCell == null || force) {
             t.setEffect(null);
+            t.setCursor(Cursor.DEFAULT);
         }
     }
 
