@@ -195,4 +195,8 @@ public class ChatToolbarController {
         otherPlayerNickname.setText(nickname);
     }
 
+    public void clearMessages(){
+        messageArea.getItems().clear();
+    }
+
 }

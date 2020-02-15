@@ -57,6 +57,7 @@ public class GameController {
     private CellColor playerColor;
     private boolean turnToPlay;
     private int numberOfPlayersPieces;
+    private int oponentsPieces;
     private BizingoCell selectedCell;
     private ImagePattern greenMarble;
     private ImagePattern whiteMarble;
@@ -82,6 +83,7 @@ public class GameController {
 
         this.bizingoBoard = new BizingoBoard();
         numberOfPlayersPieces = 18;
+        oponentsPieces = 18;
 
         pieceShadow = new DropShadow();
         pieceShadow.setOffsetX(6.0);
@@ -446,13 +448,17 @@ public class GameController {
         if (captured.getColor() != playerColor) {
             System.out.println("Voce capturou uma peca do oponente");
             notificationSnack.enqueue(otherPlayerPieceCapturedEvent);
+            oponentsPieces--;
+            if(oponentsPieces == 2){
+                System.out.println("Jogador venceu!");
+            }
         } else {
             System.out.println("Uma peca sua foi capturada");
             notificationSnack.enqueue(ownPieceCapturedEvent);
             numberOfPlayersPieces--;
             updatePiecesCounter();
             if (numberOfPlayersPieces == 2) {
-                System.out.println("Jogador perdeu");
+                System.out.println("Jogador perdeu!");
             }
         }
     }
