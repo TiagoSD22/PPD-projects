@@ -5,6 +5,7 @@ import com.bizingoclient.app.enums.ConnectionConfig;
 import com.bizingoclient.app.mainGame.MainGameController;
 import com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController;
 import com.bizingoclient.app.mainGame.game.GameController;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 
 import java.io.IOException;
@@ -27,6 +28,9 @@ public class MessageHandler {
 
     private String otherClientNickname;
     private Image otherClientAvatar;
+
+    private boolean run = true;
+    private boolean startedLoop;
 
     public MessageHandler(Socket socket, MainGameController mainController, ChatToolbarController chatController,
                           GameController gameController, String nickname, String avatar) {
@@ -62,7 +66,8 @@ public class MessageHandler {
     private void startListen() {
         new Thread(() -> {
             try {
-                while (true) {
+                while (run) {
+                    startedLoop = true;
                     Message msg = (Message) input.readObject();
                     if (msg != null) {
                         switch (msg.getType()){
@@ -96,10 +101,16 @@ public class MessageHandler {
                                         " para " + dest);
                                 mainController.getGameController().showOponentMove(source, dest);
                                 break;
+                            case QUIT:
+                                System.out.println("Mensagem de desistencia do outro jogador recebida. " +
+                                        "Encerrando partida");
+                                Platform.runLater(() -> mainController.getGameController().showGiveUpDialog());
+                                break;
                             default:
                                 break;
                         }
                     }
+                    startedLoop = false;
                 }
             } catch (IOException e) {
                 System.out.println("impossivel ler a mensagem do servidor");
@@ -135,6 +146,18 @@ public class MessageHandler {
         }
     }
 
+    public void sendQuitMessage(){
+        String source = socket.getInetAddress().getHostAddress();
+        MessageContent content = new TextMessage("quit", source, ConnectionConfig.HOST.getValue());
+        Message quitMsg = new Message(MessageType.QUIT, content);
+        try {
+            output.writeObject(quitMsg);
+            run = false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getOtherClientNickname() {
         return otherClientNickname;
     }
@@ -143,8 +166,13 @@ public class MessageHandler {
         return otherClientAvatar;
     }
 
+    public Socket getSocket(){
+        return socket;
+    }
+
     public void closeSocket(){
         try {
+            run = false;
             output.close();
             input.close();
             socket.close();

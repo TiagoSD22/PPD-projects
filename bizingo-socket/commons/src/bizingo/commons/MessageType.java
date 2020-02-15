@@ -4,7 +4,8 @@ public enum MessageType {
     HANDSHAKE("HANDSHAKE"),
     TEXT("TEXT"),
     MOVEMENT("MOVEMENT"),
-    CONFIG("CONFIG");
+    CONFIG("CONFIG"),
+    QUIT("QUIT");
 
     private String value;
 

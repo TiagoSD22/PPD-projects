@@ -144,7 +144,7 @@ public class MenuController {
                 String host = ConnectionConfig.HOST.getValue();
                 int port = Integer.parseInt(ConnectionConfig.PORT.getValue());
                 Socket socket = new Socket(host, port);
-                menuRoot.setDisable(true);
+                //menuRoot.setDisable(true);
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("socket", socket);

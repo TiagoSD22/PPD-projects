@@ -2,13 +2,19 @@ package com.bizingoclient.app.mainGame.game;
 
 
 import bizingo.commons.*;
+import com.bizingoclient.Main;
 import com.bizingoclient.app.mainGame.MainGameController;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXSnackbar;
 import io.vavr.Tuple2;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.effect.ColorAdjust;
@@ -23,6 +29,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 
@@ -58,6 +65,7 @@ public class GameController {
     private JFXSnackbar notificationSnack;
     private SnackbarEvent ownPieceCapturedEvent;
     private SnackbarEvent otherPlayerPieceCapturedEvent;
+    private JFXDialog giveupDialog;
 
     public void init(MainGameController mainGameController) {
         main = mainGameController;
@@ -116,6 +124,8 @@ public class GameController {
 
         updatePiecesCounter();
         drawBoard();
+
+        loadOtherPlayerGiveUpDialog();
 
         //setTurnToPlay(true);
         //setPlayerColor(CellColor.DARK);
@@ -463,6 +473,41 @@ public class GameController {
         ColorAdjust ca = new ColorAdjust();
         ca.setBrightness(-0.5);
         t.setEffect(ca);
+    }
+
+    private void loadOtherPlayerGiveUpDialog() {
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text("OPONENTE DESISTIU"));
+        Text info = new Text("Seu oponente desistiu da partida e ela será encerrada, " +
+                "clique no botão abaixo para voltar ao menu.");
+
+        info.setWrappingWidth(500);
+        info.setTextAlignment(TextAlignment.LEFT);
+        content.setBody(info);
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(230);
+        stackPane.setLayoutX(230);
+        info.setWrappingWidth(500);
+        giveupDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton("VOLTAR");
+        button.setButtonType(JFXButton.ButtonType.RAISED);
+        button.setCursor(Cursor.HAND);
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#002D73"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setTextFill(Color.WHITE);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                main.getMessageHandler().sendQuitMessage();
+                giveupDialog.close();
+                Main.changeScreen("menu", null);
+            }
+        });
+        content.setActions(button);
+        root.getChildren().add(stackPane);
+    }
+
+    public void showGiveUpDialog(){
+        giveupDialog.show();
     }
 
 }

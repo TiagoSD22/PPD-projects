@@ -12,6 +12,7 @@ public class ServerClientHandler extends Thread {
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private ServerSocket server;
+    public boolean running = true;
 
     public ServerClientHandler(Socket source, Socket destination, ServerSocket server) {
         try {
@@ -30,11 +31,12 @@ public class ServerClientHandler extends Thread {
         try {
             output.writeObject(msg);
         } catch (IOException e) {
+            System.out.println("Cliente desconectado");
             e.printStackTrace();
         }
     }
 
-    public void sendSelfMessage(Message msg){
+    public void sendSelfMessage(Message msg) {
         try {
             own.writeObject(msg);
         } catch (IOException e) {
@@ -45,23 +47,33 @@ public class ServerClientHandler extends Thread {
     public void run() {
         System.out.println("Cliente iniciado com socket: " + source);
 
-        try {
-            Message msg;
-            while (true) {
+        Message msg;
+        while (running) {
+            try {
                 msg = (Message) input.readObject();
                 if (msg != null) {
                     String source = msg.getContent().getSource();
                     MessageType type = msg.getType();
                     System.out.println("Mensagem do tipo " + type.getValue() + " recebida por " + source);
-                    if(type == MessageType.TEXT){
+                    if(type == MessageType.QUIT){
+                        System.out.println("Mensagem de desistencia recebida do cliente " +
+                                this.source.getInetAddress().getHostAddress());
+                        running = false;
+                    }
+                    else if (type == MessageType.TEXT) {
                         TextMessage txtMsg = (TextMessage) msg.getContent();
                         System.out.println("Texto: " + txtMsg.getText());
                     }
                     forwardMessage(msg);
                 }
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Cliente " + source.getInetAddress().getHostAddress() + " desconectado. " +
+                        "Notificando desistencia ao outro cliente");
+                Message giveup = new Message(MessageType.QUIT, null);
+                forwardMessage(giveup);
+                running = false;
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
