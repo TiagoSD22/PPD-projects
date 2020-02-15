@@ -335,7 +335,12 @@ public class GameController {
             @Override
             public void handle(MouseEvent event) {
                 if(bizingoBoard.getCellMap().get(bizingoBoard.getPieceMap().getKey(piece)).getColor() == playerColor){
-                    piece.setCursor(Cursor.HAND);
+                    if(turnToPlay) {
+                        piece.setCursor(Cursor.HAND);
+                    }
+                    else{
+                        piece.setCursor(Cursor.DEFAULT);
+                    }
                 }
                 if (turnToPlay) {
                     Polygon t = bizingoBoard.getPieceMap().getKey(piece);
@@ -504,6 +509,7 @@ public class GameController {
             @Override
             public void handle(ActionEvent event) {
                 main.getMessageHandler().sendQuitMessage();
+                main.getChatToolbarController().clearMessages();
                 giveupDialog.close();
                 Main.changeScreen("menu", null);
             }

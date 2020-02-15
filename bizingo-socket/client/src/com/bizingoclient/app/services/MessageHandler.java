@@ -30,7 +30,6 @@ public class MessageHandler {
     private Image otherClientAvatar;
 
     private boolean run = true;
-    private boolean startedLoop;
 
     public MessageHandler(Socket socket, MainGameController mainController, ChatToolbarController chatController,
                           GameController gameController, String nickname, String avatar) {
@@ -67,7 +66,6 @@ public class MessageHandler {
         new Thread(() -> {
             try {
                 while (run) {
-                    startedLoop = true;
                     Message msg = (Message) input.readObject();
                     if (msg != null) {
                         switch (msg.getType()){
@@ -110,7 +108,6 @@ public class MessageHandler {
                                 break;
                         }
                     }
-                    startedLoop = false;
                 }
             } catch (IOException e) {
                 System.out.println("impossivel ler a mensagem do servidor");

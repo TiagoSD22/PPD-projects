@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Application {
+public class Server {
 
     private static final int SERVER_PORT = 5005;
     private static final int MAX_CLIENTS_CONNECTED = 2;
