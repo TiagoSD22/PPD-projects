@@ -67,6 +67,13 @@ public class GameController {
     private SnackbarEvent ownPieceCapturedEvent;
     private SnackbarEvent otherPlayerPieceCapturedEvent;
     private JFXDialog giveupDialog;
+    private JFXDialog endGameDialog;
+    private JFXDialog otherPlayerDidntRestartedDialog;
+    private boolean gameFinished;
+    private boolean playerRestarted;
+    private boolean otherPlayerRestarted;
+    private boolean otherPlayerDidntRestartedDialogOpened;
+    private static final int MINIMUM_PIECES = 2;
 
     public void init(MainGameController mainGameController) {
         main = mainGameController;
@@ -128,9 +135,14 @@ public class GameController {
         drawBoard();
 
         loadOtherPlayerGiveUpDialog();
+        if(otherPlayerDidntRestartedDialogOpened) {
+            otherPlayerDidntRestartedDialog.close();
+            otherPlayerDidntRestartedDialogOpened = false;
+        }
 
-        //setTurnToPlay(true);
-        //setPlayerColor(CellColor.DARK);
+        gameFinished = false;
+        playerRestarted = false;
+        otherPlayerRestarted = false;
     }
 
     private void drawBoard() {
@@ -454,16 +466,26 @@ public class GameController {
             System.out.println("Voce capturou uma peca do oponente");
             notificationSnack.enqueue(otherPlayerPieceCapturedEvent);
             oponentsPieces--;
-            if(oponentsPieces == 2){
+            if(oponentsPieces == MINIMUM_PIECES){
                 System.out.println("Jogador venceu!");
+                gameFinished = true;
+                Platform.runLater(() -> {
+                    loadEndGameDialog(true);
+                    onGameFinished();
+                });
             }
         } else {
             System.out.println("Uma peca sua foi capturada");
             notificationSnack.enqueue(ownPieceCapturedEvent);
             numberOfPlayersPieces--;
             updatePiecesCounter();
-            if (numberOfPlayersPieces == 2) {
+            if (numberOfPlayersPieces == MINIMUM_PIECES) {
                 System.out.println("Jogador perdeu!");
+                gameFinished = true;
+                Platform.runLater(() -> {
+                    loadEndGameDialog(false);
+                    onGameFinished();
+                });
             }
         }
     }
@@ -503,7 +525,7 @@ public class GameController {
         JFXButton button = new JFXButton("VOLTAR");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#002D73"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -518,8 +540,133 @@ public class GameController {
         root.getChildren().add(stackPane);
     }
 
+    private void loadEndGameDialog(boolean won) {
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text("FIM DE PARTIDA"));
+        Text info = new Text();
+
+        if(won){
+            info.setText("Parabéns, você venceu a partida! Deseja iniciar outra partida ou voltar ao menu?");
+        }
+        else{
+            info.setText("Seu oponente levou a melhor e você perdeu. Deseja iniciar outra partida ou voltar ao menu?");
+        }
+        
+
+        info.setWrappingWidth(500);
+        info.setTextAlignment(TextAlignment.LEFT);
+        content.setBody(info);
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(230);
+        stackPane.setLayoutX(230);
+        info.setWrappingWidth(500);
+        endGameDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton menuBt = new JFXButton("VOLTAR");
+        menuBt.setButtonType(JFXButton.ButtonType.RAISED);
+        menuBt.setCursor(Cursor.HAND);
+        menuBt.setBackground(new Background(new BackgroundFill(Color.valueOf("#30343F"), CornerRadii.EMPTY, Insets.EMPTY)));
+        menuBt.setTextFill(Color.WHITE);
+        menuBt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                main.getMessageHandler().sendQuitMessage();
+                main.getChatToolbarController().clearMessages();
+                endGameDialog.close();
+                Main.changeScreen("menu", null);
+            }
+        });
+
+        JFXButton restartBt = new JFXButton("REINICIAR");
+        restartBt.setButtonType(JFXButton.ButtonType.RAISED);
+        restartBt.setCursor(Cursor.HAND);
+        restartBt.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
+        restartBt.setTextFill(Color.WHITE);
+        restartBt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                restartBt.setVisible(false);
+                menuBt.setVisible(false);
+                main.getMessageHandler().sendRestartMessage();
+                info.setText("Aguardando confirmação do outro jogador...");
+                playerRestarted = true;
+                handleRestart();
+            }
+        });
+        content.setActions(menuBt, restartBt);
+        root.getChildren().add(stackPane);
+    }
+
+    private void loadOtherPlayerDidntRestartedDialog(){
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text("FIM DE PARTIDA"));
+        Text info = new Text("O outro jogador decidiu voltar ao menu, clique em voltar para voltar ao menu também.");
+
+
+        info.setWrappingWidth(500);
+        info.setTextAlignment(TextAlignment.LEFT);
+        content.setBody(info);
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(230);
+        stackPane.setLayoutX(230);
+        info.setWrappingWidth(500);
+        otherPlayerDidntRestartedDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton menuBt = new JFXButton("VOLTAR");
+        menuBt.setButtonType(JFXButton.ButtonType.RAISED);
+        menuBt.setCursor(Cursor.HAND);
+        menuBt.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
+        menuBt.setTextFill(Color.WHITE);
+        menuBt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                main.getMessageHandler().sendQuitMessage();
+                main.getChatToolbarController().clearMessages();
+                endGameDialog.close();
+                Main.changeScreen("menu", null);
+            }
+        });
+
+        content.setActions(menuBt);
+        root.getChildren().add(stackPane);
+    }
+
     public void showGiveUpDialog(){
-        giveupDialog.show();
+        if(!gameFinished) {
+            giveupDialog.show();
+        }
+        else{
+            loadOtherPlayerDidntRestartedDialog();
+            otherPlayerDidntRestartedDialogOpened = true;
+            otherPlayerDidntRestartedDialog.show();
+        }
+    }
+
+    private void onGameFinished(){
+        board.setDisable(true);
+        endGameDialog.show();
+    }
+
+    private void handleRestart(){
+        if(playerRestarted && otherPlayerRestarted){
+            bizingoBoard = new BizingoBoard();
+            numberOfPlayersPieces = 18;
+            oponentsPieces = 18;
+            gameFinished = false;
+            board.getChildren().clear();
+            drawBoard();
+            updatePiecesCounter();
+            endGameDialog.close();
+            if(otherPlayerDidntRestartedDialogOpened) {
+                otherPlayerDidntRestartedDialog.close();
+            }
+            playerRestarted = false;
+            otherPlayerRestarted = false;
+            notificationSnack.enqueue(new SnackbarEvent(new Text("Iniciando nova partida")));
+        }
+    }
+
+    public void otherPlayerWannaRestart(){
+        otherPlayerRestarted = true;
+        handleRestart();
     }
 
 }

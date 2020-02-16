@@ -5,6 +5,7 @@ public enum MessageType {
     TEXT("TEXT"),
     MOVEMENT("MOVEMENT"),
     CONFIG("CONFIG"),
+    RESTART("RESTART"),
     QUIT("QUIT");
 
     private String value;

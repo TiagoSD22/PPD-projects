@@ -13,19 +13,30 @@ public class Server {
 
     private static final int SERVER_PORT = 5005;
     private static final int MAX_CLIENTS_CONNECTED = 2;
+    private ArrayList<ServerClientHandler> clients;
+    private ServerSocket server;
+    private int restartSolicitation;
 
-    private static ServerSocket initServer() {
+    public Server(){};
+
+    private void initServer() {
         try {
-            ServerSocket server = new ServerSocket(SERVER_PORT);
-            return server;
+            server = new ServerSocket(SERVER_PORT);
         } catch (IOException e) {
             System.out.println("Falha ao iniciar socket");
             e.printStackTrace();
-            return null;
         }
     }
 
-    private static void definePlayersColorsAndFirstToPlay(ServerClientHandler sch1, ServerClientHandler sch2) {
+    public void restartGame(){
+        restartSolicitation++;
+        if(restartSolicitation == 2){
+            definePlayersColorsAndFirstToPlay();
+            restartSolicitation = 0;
+        }
+    }
+
+    private void definePlayersColorsAndFirstToPlay() {
         Random random = new Random();
         int playerToStart = random.nextBoolean() ? 0 : 1;
         int playerToBeDark = random.nextBoolean() ? 0 : 1;
@@ -52,16 +63,19 @@ public class Server {
         Message client1Message = new Message(MessageType.CONFIG, client1GameConfig);
         Message client2Message = new Message(MessageType.CONFIG, client2GameConfig);
 
-        sch1.forwardMessage(client2Message);
-        sch2.forwardMessage(client1Message);
+        this.clients.get(0).forwardMessage(client2Message);
+        this.clients.get(1).forwardMessage(client1Message);
     }
 
-    public static void main(String args[]) {
+    public void run() {
         int numberOfConnections = 0;
-        ServerSocket server = initServer();
-        ArrayList<Socket> clients = new ArrayList<>();
+        restartSolicitation = 0;
+        initServer();
+        clients = new ArrayList<>();
+        ArrayList<Socket> clientsSocket = new ArrayList<>();
 
         if (server != null) {
+            System.out.println("Server socket iniciado com sucesso.");
             while (true) {
                 while (numberOfConnections != MAX_CLIENTS_CONNECTED) {
                     System.out.println("Aguardando conexao!");
@@ -69,22 +83,27 @@ public class Server {
                         Socket clientSocket = server.accept();
                         System.out.println("Conexao recebida em: " + clientSocket.getInetAddress().getHostAddress());
                         numberOfConnections++;
-                        clients.add(clientSocket);
+                        clientsSocket.add(clientSocket);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
                 System.out.println("Par de clientes conectados, iniciando jogo.");
-                ServerClientHandler sch1 = new ServerClientHandler(clients.get(0), clients.get(1), server);
-                ServerClientHandler sch2 = new ServerClientHandler(clients.get(1), clients.get(0), server);
+                ServerClientHandler sch1 = new ServerClientHandler(clientsSocket.get(0), clientsSocket.get(1), this);
+                ServerClientHandler sch2 = new ServerClientHandler(clientsSocket.get(1), clientsSocket.get(0), this);
 
-                definePlayersColorsAndFirstToPlay(sch1, sch2);
+                clients.add(sch1);
+                clients.add(sch2);
+
+                definePlayersColorsAndFirstToPlay();
 
                 while (sch1.running && sch2.running){}
 
                 numberOfConnections = 0;
+                restartSolicitation = 0;
                 clients.clear();
+                clientsSocket.clear();
             }
         }
     }

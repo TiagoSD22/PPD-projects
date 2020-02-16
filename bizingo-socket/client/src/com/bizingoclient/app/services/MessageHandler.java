@@ -99,6 +99,10 @@ public class MessageHandler {
                                         " para " + dest);
                                 mainController.getGameController().showOponentMove(source, dest);
                                 break;
+                            case RESTART:
+                                System.out.println("Mensagem de solicitacao de recomeco de partida recebida");
+                                Platform.runLater(() -> mainController.getGameController().otherPlayerWannaRestart());
+                                break;
                             case QUIT:
                                 System.out.println("Mensagem de desistencia do outro jogador recebida. " +
                                         "Encerrando partida");
@@ -150,6 +154,17 @@ public class MessageHandler {
         try {
             output.writeObject(quitMsg);
             run = false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendRestartMessage(){
+        TextMessage txt = new TextMessage("restart", socket.getInetAddress().getHostAddress(),
+                ConnectionConfig.HOST.getValue());
+        Message rtMsg = new Message(MessageType.RESTART, txt);
+        try{
+            output.writeObject(rtMsg);
         } catch (IOException e) {
             e.printStackTrace();
         }

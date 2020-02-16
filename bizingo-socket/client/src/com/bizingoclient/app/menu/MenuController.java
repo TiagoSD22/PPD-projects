@@ -30,6 +30,7 @@ import javafx.scene.text.TextAlignment;
 import org.controlsfx.control.textfield.CustomTextField;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -143,7 +144,9 @@ public class MenuController {
             try {
                 String host = ConnectionConfig.HOST.getValue();
                 int port = Integer.parseInt(ConnectionConfig.PORT.getValue());
-                Socket socket = new Socket(host, port);
+                InetAddress addr = InetAddress.getByName(host);
+                System.out.println("Endereco do server: " + addr);
+                Socket socket = new Socket(addr, port);
                 //menuRoot.setDisable(true);
 
                 Map<String, Object> data = new HashMap<>();
@@ -176,7 +179,7 @@ public class MenuController {
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#002D73"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override

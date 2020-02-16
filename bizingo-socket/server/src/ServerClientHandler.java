@@ -2,6 +2,7 @@ import bizingo.commons.Message;
 import bizingo.commons.MessageType;
 import bizingo.commons.TextMessage;
 
+import java.awt.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,10 +12,10 @@ public class ServerClientHandler extends Thread {
     private ObjectOutputStream own;
     private ObjectOutputStream output;
     private ObjectInputStream input;
-    private ServerSocket server;
+    private Server server;
     public boolean running = true;
 
-    public ServerClientHandler(Socket source, Socket destination, ServerSocket server) {
+    public ServerClientHandler(Socket source, Socket destination, Server server) {
         try {
             this.source = source;
             this.destination = destination;
@@ -60,9 +61,16 @@ public class ServerClientHandler extends Thread {
                                 this.source.getInetAddress().getHostAddress());
                         running = false;
                     }
-                    else if (type == MessageType.TEXT) {
-                        TextMessage txtMsg = (TextMessage) msg.getContent();
-                        System.out.println("Texto: " + txtMsg.getText());
+                    else {
+                        if (type == MessageType.TEXT) {
+                            TextMessage txtMsg = (TextMessage) msg.getContent();
+                            System.out.println("Texto: " + txtMsg.getText());
+                        }
+                        else if(type == MessageType.RESTART){
+                            System.out.println("Mensagem de solicitacao de reinicio de partida recebida pelo cliente "
+                                    + source);
+                            server.restartGame();
+                        }
                     }
                     forwardMessage(msg);
                 }
