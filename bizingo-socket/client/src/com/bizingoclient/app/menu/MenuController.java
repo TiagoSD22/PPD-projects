@@ -146,7 +146,7 @@ public class MenuController {
                 int port = Integer.parseInt(ConnectionConfig.PORT.getValue());
                 InetAddress addr = InetAddress.getByName(host);
                 System.out.println("Endereco do server: " + addr);
-                Socket socket = new Socket(addr, port);
+                Socket socket = new Socket(host, port);
                 //menuRoot.setDisable(true);
 
                 Map<String, Object> data = new HashMap<>();

@@ -74,11 +74,12 @@ public class Main extends Application {
     @Override
     public void stop() {
         if (stage.getScene().equals(mainGameScene)) {
-            System.out.println("Parando aplicação");
             notifyAllListeners("stop", null, null);
-            Platform.exit();
-            System.exit(0);
         }
+
+        System.out.println("Parando aplicação");
+        Platform.exit();
+        System.exit(0);
     }
 
     public static interface OnChangeSceen {
