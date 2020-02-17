@@ -530,7 +530,7 @@ public class GameController {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                main.getMessageHandler().sendQuitMessage();
+                main.getMessageHandler().sendCloseMessage();
                 main.getChatToolbarController().clearMessages();
                 giveupDialog.close();
                 Main.changeScreen("menu", null);
@@ -618,7 +618,7 @@ public class GameController {
         menuBt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                main.getMessageHandler().sendQuitMessage();
+                main.getMessageHandler().sendCloseMessage();
                 main.getChatToolbarController().clearMessages();
                 endGameDialog.close();
                 Main.changeScreen("menu", null);

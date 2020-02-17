@@ -30,7 +30,7 @@ public class MainGameController {
         Main.addOnChangeScreenListener(new Main.OnChangeSceen() {
             @Override
             public void onScreenChanged(String newScreen, Object data, Stage stage) {
-                if (newScreen == "game") {
+                if (newScreen.equals("game")) {
                     mainStage = stage;
                     HashMap dataMap = ((HashMap<String, Object>) data);
                     Socket socket = (Socket) dataMap.get("socket");

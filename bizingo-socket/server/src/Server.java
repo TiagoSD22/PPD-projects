@@ -14,10 +14,16 @@ public class Server {
     private static final int SERVER_PORT = 5005;
     private static final int MAX_CLIENTS_CONNECTED = 2;
     private ArrayList<ServerClientHandler> clients;
+    private ArrayList<Socket> clientsSocket;
     private ServerSocket server;
     private int restartSolicitation;
+    private int numberOfConnections;
+    private boolean running;
 
-    public Server(){};
+    public Server() {
+    }
+
+    ;
 
     private void initServer() {
         try {
@@ -28,9 +34,9 @@ public class Server {
         }
     }
 
-    public void restartGame(){
+    public void restartGame() {
         restartSolicitation++;
-        if(restartSolicitation == 2){
+        if (restartSolicitation == 2) {
             definePlayersColorsAndFirstToPlay();
             restartSolicitation = 0;
         }
@@ -67,45 +73,60 @@ public class Server {
         this.clients.get(1).forwardMessage(client1Message);
     }
 
+    public void waitConnections() {
+        while (numberOfConnections != MAX_CLIENTS_CONNECTED) {
+            System.out.println("Aguardando conexao!");
+            try {
+                Socket clientSocket = server.accept();
+                System.out.println("Conexao recebida em: " + clientSocket.getInetAddress().getHostAddress());
+                numberOfConnections++;
+                clientsSocket.add(clientSocket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            running = false;
+        }
+    }
+
+    public void clientDisconnected(){
+        System.out.println("Partida encerrada, voltando a receber novas conexoes");
+        running = false;
+        numberOfConnections = 0;
+        restartSolicitation = 0;
+        clients.clear();
+        clientsSocket.clear();
+    }
+
     public void run() {
-        int numberOfConnections = 0;
+        numberOfConnections = 0;
         restartSolicitation = 0;
         initServer();
         clients = new ArrayList<>();
-        ArrayList<Socket> clientsSocket = new ArrayList<>();
+        clientsSocket = new ArrayList<>();
+        running = false;
 
         if (server != null) {
+
             System.out.println("Server socket iniciado com sucesso.");
             while (true) {
-                while (numberOfConnections != MAX_CLIENTS_CONNECTED) {
-                    System.out.println("Aguardando conexao!");
-                    try {
-                        Socket clientSocket = server.accept();
-                        System.out.println("Conexao recebida em: " + clientSocket.getInetAddress().getHostAddress());
-                        numberOfConnections++;
-                        clientsSocket.add(clientSocket);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                System.out.println("Em laco principal");
+                waitConnections();
+
+                if (!running) {
+                    running = true;
+
+                    System.out.println("Par de clientes conectados, iniciando jogo.");
+                    ServerClientHandler sch1 = new ServerClientHandler(clientsSocket.get(0), clientsSocket.get(1), this);
+                    ServerClientHandler sch2 = new ServerClientHandler(clientsSocket.get(1), clientsSocket.get(0), this);
+
+                    clients.add(sch1);
+                    clients.add(sch2);
+
+                    definePlayersColorsAndFirstToPlay();
                 }
-
-                System.out.println("Par de clientes conectados, iniciando jogo.");
-                ServerClientHandler sch1 = new ServerClientHandler(clientsSocket.get(0), clientsSocket.get(1), this);
-                ServerClientHandler sch2 = new ServerClientHandler(clientsSocket.get(1), clientsSocket.get(0), this);
-
-                clients.add(sch1);
-                clients.add(sch2);
-
-                definePlayersColorsAndFirstToPlay();
-
-                while (sch1.running && sch2.running){}
-
-                numberOfConnections = 0;
-                restartSolicitation = 0;
-                clients.clear();
-                clientsSocket.clear();
             }
         }
+
     }
 }
 

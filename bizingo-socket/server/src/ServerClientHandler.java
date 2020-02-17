@@ -2,18 +2,17 @@ import bizingo.commons.Message;
 import bizingo.commons.MessageType;
 import bizingo.commons.TextMessage;
 
-import java.awt.*;
-import java.io.*;
-import java.net.ServerSocket;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ServerClientHandler extends Thread {
+    public boolean running;
     private Socket source, destination;
-    private ObjectOutputStream own;
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private Server server;
-    public boolean running = true;
 
     public ServerClientHandler(Socket source, Socket destination, Server server) {
         try {
@@ -37,17 +36,9 @@ public class ServerClientHandler extends Thread {
         }
     }
 
-    public void sendSelfMessage(Message msg) {
-        try {
-            own.writeObject(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void run() {
+    public synchronized void run() {
         System.out.println("Cliente iniciado com socket: " + source);
-
+        running = true;
         Message msg;
         while (running) {
             try {
@@ -56,23 +47,35 @@ public class ServerClientHandler extends Thread {
                     String source = msg.getContent().getSource();
                     MessageType type = msg.getType();
                     System.out.println("Mensagem do tipo " + type.getValue() + " recebida por " + source);
-                    if(type == MessageType.QUIT){
-                        System.out.println("Mensagem de desistencia recebida do cliente " +
-                                this.source.getInetAddress().getHostAddress());
-                        running = false;
-                    }
-                    else {
-                        if (type == MessageType.TEXT) {
+                    switch (type) {
+                        case QUIT:
+                            System.out.println("Mensagem de desistencia recebida do cliente " +
+                                    this.source.getInetAddress().getHostAddress());
+                            running = false;
+                            forwardMessage(msg);
+                            break;
+                        case TEXT:
                             TextMessage txtMsg = (TextMessage) msg.getContent();
                             System.out.println("Texto: " + txtMsg.getText());
-                        }
-                        else if(type == MessageType.RESTART){
+                            forwardMessage(msg);
+                            break;
+                        case RESTART:
                             System.out.println("Mensagem de solicitacao de reinicio de partida recebida pelo cliente "
                                     + source);
+                            forwardMessage(msg);
                             server.restartGame();
-                        }
+                            break;
+                        case HANDSHAKE:
+                        case MOVEMENT:
+                            forwardMessage(msg);
+                            break;
+                        case CLOSE:
+                            System.out.println("Mensagem de close recebida, fechando conexao do cliente " + source);
+                            running = false;
+                            break;
+                        default:
+                            break;
                     }
-                    forwardMessage(msg);
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Cliente " + source.getInetAddress().getHostAddress() + " desconectado. " +
@@ -80,6 +83,7 @@ public class ServerClientHandler extends Thread {
                 Message giveup = new Message(MessageType.QUIT, null);
                 forwardMessage(giveup);
                 running = false;
+                server.clientDisconnected();
                 e.printStackTrace();
             }
         }

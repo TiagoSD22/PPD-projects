@@ -6,6 +6,7 @@ public enum MessageType {
     MOVEMENT("MOVEMENT"),
     CONFIG("CONFIG"),
     RESTART("RESTART"),
+    CLOSE("CLOSE"),
     QUIT("QUIT");
 
     private String value;

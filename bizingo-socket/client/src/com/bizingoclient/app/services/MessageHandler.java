@@ -147,6 +147,18 @@ public class MessageHandler {
         }
     }
 
+    public void sendCloseMessage(){
+        TextMessage txtMSg = new TextMessage("close", socket.getInetAddress().getHostAddress(),
+                ConnectionConfig.HOST.getValue());
+
+        Message msg = new Message(MessageType.CLOSE, txtMSg);
+        try {
+            output.writeObject(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendQuitMessage(){
         String source = socket.getInetAddress().getHostAddress();
         MessageContent content = new TextMessage("quit", source, ConnectionConfig.HOST.getValue());
@@ -183,14 +195,10 @@ public class MessageHandler {
     }
 
     public void closeSocket(){
-        try {
-            run = false;
-            output.close();
-            input.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        run = false;
+        //output.close();
+        //input.close();
+        //socket.close();
     }
 
 }
