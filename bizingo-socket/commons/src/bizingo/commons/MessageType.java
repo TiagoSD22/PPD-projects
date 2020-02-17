@@ -1,6 +1,7 @@
 package bizingo.commons;
 
 public enum MessageType {
+    START("START"),
     HANDSHAKE("HANDSHAKE"),
     TEXT("TEXT"),
     MOVEMENT("MOVEMENT"),

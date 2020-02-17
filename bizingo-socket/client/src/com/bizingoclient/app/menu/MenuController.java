@@ -2,11 +2,14 @@ package com.bizingoclient.app.menu;
 
 
 import com.bizingoclient.Main;
+import com.bizingoclient.app.services.MessageHandler;
 import com.bizingoclient.app.utils.Avatars;
 import com.bizingoclient.app.enums.ConnectionConfig;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.events.JFXDialogEvent;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -27,6 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 
 import java.io.*;
@@ -53,6 +57,8 @@ public class MenuController {
     @FXML
     private CustomTextField nicknameField;
     private JFXDialog warningDialog;
+    private JFXDialog loadingDialog;
+    private MessageHandler msgHandler;
 
 
     @FXML
@@ -80,6 +86,17 @@ public class MenuController {
         avatarSelect.setPlaceholder(new Label("Avatar"));
 
         loadWarningDialog();
+        loadLoadingDialog();
+
+        Main.addOnChangeScreenListener(new Main.OnChangeSceen() {
+            @Override
+            public void onScreenChanged(String newScreen, Object data, Stage stage) {
+                if (newScreen.equals("menu")) {
+                    nicknameField.setDisable(false);
+                    avatarSelect.setDisable(false);
+                }
+            }
+        });
     }
 
     private void loadAvatarIcons() {
@@ -147,20 +164,34 @@ public class MenuController {
                 InetAddress addr = InetAddress.getByName(host);
                 System.out.println("Endereco do server: " + addr);
                 Socket socket = new Socket(host, port);
-                //menuRoot.setDisable(true);
+                nicknameField.setDisable(true);
+                avatarSelect.setDisable(true);
+                loadingDialog.show();
+                loadingDialog.onDialogOpenedProperty().set(new EventHandler<JFXDialogEvent>() {
+                    @Override
+                    public void handle(JFXDialogEvent event) {
+                        loadMessageHandler(socket);
+                    }
+                });
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("socket", socket);
-                data.put("nickname", nicknameField.getText());
-                data.put("avatar", avatarSelect.getSelectionModel().getSelectedItem());
 
-                Main.changeScreen("game", data);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             warningDialog.show();
         }
+    }
+
+    public void loadMessageHandler(Socket socket){
+        msgHandler = new MessageHandler(this, socket, nicknameField.getText(),(String)avatarSelect.getSelectionModel().getSelectedItem());
+    }
+
+    public void gameReadyToStart(){
+        Map<String, Object> data = new HashMap<>();
+        data.put("msgHandler", this.msgHandler);
+        loadingDialog.close();
+        Main.changeScreen("game", data);
     }
 
     private void loadWarningDialog() {
@@ -188,6 +219,21 @@ public class MenuController {
             }
         });
         content.setActions(button);
+        menuRoot.getChildren().add(stackPane);
+    }
+
+    private void loadLoadingDialog() {
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text("Aguarde"));
+        Text info = new Text("Aguardando outro jogador conectar ao servidor para iniciar a partida...");
+        info.setWrappingWidth(500);
+        info.setTextAlignment(TextAlignment.LEFT);
+        content.setBody(info);
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(230);
+        stackPane.setLayoutX(230);
+        info.setWrappingWidth(500);
+        loadingDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
         menuRoot.getChildren().add(stackPane);
     }
 

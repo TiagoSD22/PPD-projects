@@ -33,9 +33,8 @@ public class MainGameController {
                 if (newScreen.equals("game")) {
                     mainStage = stage;
                     HashMap dataMap = ((HashMap<String, Object>) data);
-                    Socket socket = (Socket) dataMap.get("socket");
-                    String nickname = (String) dataMap.get("nickname");
-                    String avatar = (String) dataMap.get("avatar");
+                    MessageHandler msgHandler = (MessageHandler) dataMap.get("msgHandler");
+
 
                     Image image = new Image(getClass().getResourceAsStream("/assets/game_bg.jpg"));
                     BackgroundSize backgroundSize = new BackgroundSize(1366, 768, false,
@@ -45,7 +44,7 @@ public class MainGameController {
                     Background background = new Background(backgroundImage);
                     mainPane.setBackground(background);
 
-                    initControllers(socket, nickname, avatar);
+                    initControllers(msgHandler);
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
                     msgHandler.closeSocket();
@@ -54,10 +53,11 @@ public class MainGameController {
         });
     }
 
-    public void initControllers(Socket socket, String nickname, String avatar) {
+    public void initControllers(MessageHandler msgHandler) {
         chatToolbarController.init(this);
         gameController.init(this);
-        msgHandler = new MessageHandler(socket, this, chatToolbarController, gameController, nickname, avatar);
+        this.msgHandler = msgHandler;
+        this.msgHandler.setMainController(this);
     }
 
     public GameController getGameController() {

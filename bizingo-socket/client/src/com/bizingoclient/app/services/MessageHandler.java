@@ -3,8 +3,7 @@ package com.bizingoclient.app.services;
 import bizingo.commons.*;
 import com.bizingoclient.app.enums.ConnectionConfig;
 import com.bizingoclient.app.mainGame.MainGameController;
-import com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController;
-import com.bizingoclient.app.mainGame.game.GameController;
+import com.bizingoclient.app.menu.MenuController;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 
@@ -19,25 +18,21 @@ public class MessageHandler {
     private Socket socket;
     private ObjectOutputStream output;
     private ObjectInputStream input;
-    private ChatToolbarController chatController;
-    private GameController gameController;
     private MainGameController mainController;
+    private MenuController menuController;
 
     private String nickname;
     private Image avatar;
+    private String avatarName;
 
     private String otherClientNickname;
     private Image otherClientAvatar;
 
     private boolean run = true;
 
-    public MessageHandler(Socket socket, MainGameController mainController, ChatToolbarController chatController,
-                          GameController gameController, String nickname, String avatar) {
+    public MessageHandler(MenuController menuController, Socket socket, String nickname, String avatar){
         this.socket = socket;
-        this.mainController = mainController;
-        this.chatController = chatController;
-        this.gameController = gameController;
-
+        this.menuController = menuController;
         try {
             output = new ObjectOutputStream(this.socket.getOutputStream());
             input = new ObjectInputStream(this.socket.getInputStream());
@@ -47,8 +42,9 @@ public class MessageHandler {
 
         startListen();
         this.nickname = nickname;
+        this.avatarName = avatar;
         this.avatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + avatar));
-        sendHandshake(nickname, avatar);
+        //sendHandshake(nickname, avatar);
     }
 
     private void sendHandshake(String nickname, String avatar) {
@@ -69,6 +65,10 @@ public class MessageHandler {
                     Message msg = (Message) input.readObject();
                     if (msg != null) {
                         switch (msg.getType()){
+                            case START:
+                                System.out.println("Mensagem de jogo pronto para iniciar recebida, iniciando partida");
+                                Platform.runLater(() -> this.menuController.gameReadyToStart());
+                                break;
                             case HANDSHAKE:
                                 Handshake handshake = (Handshake) msg.getContent();
                                 System.out.println("Handshake recebido");
@@ -77,19 +77,20 @@ public class MessageHandler {
                                 otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" +
                                         handshake.getAvatar()));
                                 otherClientNickname = handshake.getNickname();
-                                chatController.setOtherPlayerAvatar(otherClientAvatar);
-                                chatController.setOtherPlayerNickname(otherClientNickname);
+                                mainController.getChatToolbarController().setOtherPlayerAvatar(otherClientAvatar);
+                                mainController.getChatToolbarController().setOtherPlayerNickname(otherClientNickname);
                                 break;
                             case CONFIG:
                                 GameConfig playerConfig = (GameConfig) msg.getContent();
                                 System.out.println("Mensagem de configuracao de partida recebida");
                                 mainController.getGameController().setPlayerColor(playerConfig.getPlayerPieceColor());
                                 mainController.getGameController().setTurnToPlay(playerConfig.isFirstTurn());
+                                Platform.runLater(() -> sendHandshake(nickname, avatarName));
                                 break;
                             case TEXT:
                                 TextMessage txtMsg = (TextMessage) msg.getContent();
                                 System.out.println("Mensagem recebida do servidor: " + txtMsg.getText());
-                                chatController.displayIncomingMessage(otherClientAvatar, txtMsg.getText());
+                                mainController.getChatToolbarController().displayIncomingMessage(otherClientAvatar, txtMsg.getText());
                                 break;
                             case MOVEMENT:
                                 PlayerMovement mov = (PlayerMovement) msg.getContent();
@@ -129,7 +130,7 @@ public class MessageHandler {
         Message msg = new Message(MessageType.TEXT, txtMsg);
         try {
             output.writeObject(msg);
-            chatController.displayOwnMessage(avatar, text);
+            mainController.getChatToolbarController().displayOwnMessage(avatar, text);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -182,6 +183,17 @@ public class MessageHandler {
         }
     }
 
+    public void sendStartMessage(){
+        TextMessage txt = new TextMessage("start", socket.getInetAddress().getHostAddress(),
+                ConnectionConfig.HOST.getValue());
+        Message rtMsg = new Message(MessageType.START, txt);
+        try{
+            output.writeObject(rtMsg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getOtherClientNickname() {
         return otherClientNickname;
     }
@@ -196,9 +208,18 @@ public class MessageHandler {
 
     public void closeSocket(){
         run = false;
-        //output.close();
-        //input.close();
-        //socket.close();
+        try {
+            output.close();
+            input.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setMainController(MainGameController mainController){
+        this.mainController = mainController;
+        sendStartMessage();
     }
 
 }

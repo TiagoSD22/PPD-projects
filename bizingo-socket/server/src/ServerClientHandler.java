@@ -13,14 +13,16 @@ public class ServerClientHandler extends Thread {
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private Server server;
+    private int id;
 
-    public ServerClientHandler(Socket source, Socket destination, Server server) {
+    public ServerClientHandler(Socket source, Socket destination, Server server, int id) {
         try {
             this.source = source;
             this.destination = destination;
             this.server = server;
             output = new ObjectOutputStream(this.destination.getOutputStream());
             input = new ObjectInputStream(this.source.getInputStream());
+            this.id = id;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,8 +38,15 @@ public class ServerClientHandler extends Thread {
         }
     }
 
+    public void sendStartMessage(){
+        TextMessage txtMsg = new TextMessage("start", "server", destination.getInetAddress().getHostAddress());
+        Message startMsg = new Message(MessageType.START, txtMsg);
+        forwardMessage(startMsg);
+    }
+
     public synchronized void run() {
         System.out.println("Cliente iniciado com socket: " + source);
+        sendStartMessage();
         running = true;
         Message msg;
         while (running) {
@@ -53,6 +62,10 @@ public class ServerClientHandler extends Thread {
                                     this.source.getInetAddress().getHostAddress());
                             running = false;
                             forwardMessage(msg);
+                            break;
+                        case START:
+                            System.out.println("Enviando mensagem de configuracao de jogo para o cliente " + id);
+                            server.sendMessageConfig();
                             break;
                         case TEXT:
                             TextMessage txtMsg = (TextMessage) msg.getContent();

@@ -19,6 +19,9 @@ public class Server {
     private int restartSolicitation;
     private int numberOfConnections;
     private boolean running;
+    private Message client1MessageConfig;
+    private Message client2MessageConfig;
+    private int startSolicitation;
 
     public Server() {
     }
@@ -37,12 +40,12 @@ public class Server {
     public void restartGame() {
         restartSolicitation++;
         if (restartSolicitation == 2) {
-            definePlayersColorsAndFirstToPlay();
+            definePlayersColorsAndFirstToPlay(true);
             restartSolicitation = 0;
         }
     }
 
-    private void definePlayersColorsAndFirstToPlay() {
+    private void definePlayersColorsAndFirstToPlay(boolean send) {
         Random random = new Random();
         int playerToStart = random.nextBoolean() ? 0 : 1;
         int playerToBeDark = random.nextBoolean() ? 0 : 1;
@@ -66,11 +69,22 @@ public class Server {
             client2GameConfig.setPlayerPieceColor(CellColor.DARK);
         }
 
-        Message client1Message = new Message(MessageType.CONFIG, client1GameConfig);
-        Message client2Message = new Message(MessageType.CONFIG, client2GameConfig);
+        client1MessageConfig = new Message(MessageType.CONFIG, client1GameConfig);
+        client2MessageConfig = new Message(MessageType.CONFIG, client2GameConfig);
 
-        this.clients.get(0).forwardMessage(client2Message);
-        this.clients.get(1).forwardMessage(client1Message);
+        if (send) {
+            this.clients.get(0).forwardMessage(client1MessageConfig);
+            this.clients.get(1).forwardMessage(client2MessageConfig);
+        }
+    }
+
+    public void sendMessageConfig() {
+        startSolicitation++;
+        if (startSolicitation == 2) {
+            this.clients.get(1).forwardMessage(client1MessageConfig);
+            this.clients.get(0).forwardMessage(client2MessageConfig);
+            startSolicitation = 0;
+        }
     }
 
     public void waitConnections() {
@@ -88,7 +102,7 @@ public class Server {
         }
     }
 
-    public void clientDisconnected(){
+    public void clientDisconnected() {
         System.out.println("Partida encerrada, voltando a receber novas conexoes");
         running = false;
         numberOfConnections = 0;
@@ -100,6 +114,7 @@ public class Server {
     public void run() {
         numberOfConnections = 0;
         restartSolicitation = 0;
+        startSolicitation = 0;
         initServer();
         clients = new ArrayList<>();
         clientsSocket = new ArrayList<>();
@@ -112,17 +127,18 @@ public class Server {
                 System.out.println("Em laco principal");
                 waitConnections();
 
+
                 if (!running) {
                     running = true;
 
                     System.out.println("Par de clientes conectados, iniciando jogo.");
-                    ServerClientHandler sch1 = new ServerClientHandler(clientsSocket.get(0), clientsSocket.get(1), this);
-                    ServerClientHandler sch2 = new ServerClientHandler(clientsSocket.get(1), clientsSocket.get(0), this);
+                    ServerClientHandler sch1 = new ServerClientHandler(clientsSocket.get(0), clientsSocket.get(1), this, 0);
+                    ServerClientHandler sch2 = new ServerClientHandler(clientsSocket.get(1), clientsSocket.get(0), this, 1);
 
                     clients.add(sch1);
                     clients.add(sch2);
 
-                    definePlayersColorsAndFirstToPlay();
+                    definePlayersColorsAndFirstToPlay(false);
                 }
             }
         }
