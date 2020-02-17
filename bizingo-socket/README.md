@@ -1,5 +1,6 @@
 # Bizingo Socket
 
+
 Este projeto foi criado para a disciplina de Programacao Paralela e Distribuida(PPD) do Instituto Federal do Ceara(IFCE)
 .
 ---
