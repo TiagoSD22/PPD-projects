@@ -44,7 +44,6 @@ public class MessageHandler {
         this.nickname = nickname;
         this.avatarName = avatar;
         this.avatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + avatar));
-        //sendHandshake(nickname, avatar);
     }
 
     private void sendHandshake(String nickname, String avatar) {
@@ -192,18 +191,6 @@ public class MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getOtherClientNickname() {
-        return otherClientNickname;
-    }
-
-    public Image getOtherClientAvatar() {
-        return otherClientAvatar;
-    }
-
-    public Socket getSocket(){
-        return socket;
     }
 
     public void closeSocket(){
