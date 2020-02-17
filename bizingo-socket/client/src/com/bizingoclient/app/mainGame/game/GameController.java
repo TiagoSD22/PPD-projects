@@ -80,7 +80,7 @@ public class GameController {
         root.setBackground(Background.EMPTY);
 
         Image image = new Image(getClass().getResourceAsStream("/assets/board_base.jpg"));
-        BackgroundSize backgroundSize = new BackgroundSize(900, 670, false,
+        BackgroundSize backgroundSize = new BackgroundSize(844, 628, false,
                 false, false, false);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, backgroundSize);

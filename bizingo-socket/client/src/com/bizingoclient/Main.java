@@ -63,7 +63,7 @@ public class Main extends Application {
         menuScene = new Scene(fxmlMenu, 960, 720);
         Parent fxmlMainGame = FXMLLoader.load(getClass().getResource("app/mainGame/mainGameController.fxml"));
 
-        mainGameScene = new Scene(fxmlMainGame, 1366, 768);
+        mainGameScene = new Scene(fxmlMainGame, 1280, 720);
 
         stage.setTitle("Bizingo");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));

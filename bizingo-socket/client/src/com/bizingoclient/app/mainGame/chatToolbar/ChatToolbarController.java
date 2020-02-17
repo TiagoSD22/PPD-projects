@@ -107,7 +107,7 @@ public class ChatToolbarController {
                 messageBody.setPadding(new Insets(5, 0, 5, 0));
                 messageBody.setAlignment(Pos.TOP_LEFT);
                 messageBody.setTranslateX(5);
-                messageBody.setMaxWidth(300);
+                messageBody.setMaxWidth(290);
                 return messageBody;
             }
         };
@@ -150,10 +150,10 @@ public class ChatToolbarController {
 
                 messageBody.getChildren().addAll(ta, playerAvatar);
                 messageBody.setSpacing(5);
-                messageBody.setPadding(new Insets(5, 10, 5, 0));
+                messageBody.setPadding(new Insets(5, 15, 5, 0));
                 messageBody.setAlignment(Pos.TOP_RIGHT);
-                messageBody.setTranslateX(65);
-                messageBody.setMaxWidth(300);
+                messageBody.setTranslateX(50);
+                messageBody.setMaxWidth(290);
                 return messageBody;
             }
         };
