@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXSnackbar;
 import io.vavr.Tuple2;
 import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -143,6 +144,7 @@ public class GameController {
         gameFinished = false;
         playerRestarted = false;
         otherPlayerRestarted = false;
+        board.setDisable(false);
     }
 
     private void drawBoard() {
@@ -255,6 +257,8 @@ public class GameController {
                     this.bizingoBoard.putPieceOnMap(t, piece);
                     addMouseHandlerToPiece(piece);
                 }
+
+                t.toBack();
 
                 currentX0 += 25.0;
 
@@ -429,16 +433,28 @@ public class GameController {
         Double newX = tSource.getPoints().get(0);
         Double newY = tSource.getPoints().get(1);
         int yOffset = 30;
-        piece.setLayoutX(newX - 2);
+
         if (cellDest.getColor() == CellColor.LIGHT) {
             yOffset *= -1;
         }
 
-        piece.setLayoutY(newY + yOffset);
         Platform.runLater(piece::toFront);
 
-        bizingoBoard.moveCellPiece(cellSource, cellDest);
+        TranslateTransition mov = new TranslateTransition(Duration.millis(800));
+        mov.setToX(newX - 2 - piece.getLayoutX());
+        mov.setToY(newY + yOffset - piece.getLayoutY());
+        mov.setNode(piece);
+        mov.play();
+        mov.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                bizingoBoard.moveCellPiece(cellSource, cellDest);
+                analyseMovement(cellDest);
+            }
+        });
+    }
 
+    private void analyseMovement(BizingoCell cellDest){
         Tuple2<Boolean, BizingoCell> surrounded = bizingoBoard.cellHasSurrounded(cellDest);
         if (surrounded._1) { //peca capturou alguma outra
             BizingoCell captured = surrounded._2;
@@ -561,6 +577,7 @@ public class GameController {
         stackPane.setLayoutX(230);
         info.setWrappingWidth(500);
         endGameDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        endGameDialog.setOverlayClose(false);
         JFXButton menuBt = new JFXButton("VOLTAR");
         menuBt.setButtonType(JFXButton.ButtonType.RAISED);
         menuBt.setCursor(Cursor.HAND);
@@ -610,6 +627,7 @@ public class GameController {
         stackPane.setLayoutX(230);
         info.setWrappingWidth(500);
         otherPlayerDidntRestartedDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        otherPlayerDidntRestartedDialog.setOverlayClose(false);
         JFXButton menuBt = new JFXButton("VOLTAR");
         menuBt.setButtonType(JFXButton.ButtonType.RAISED);
         menuBt.setCursor(Cursor.HAND);
@@ -632,11 +650,13 @@ public class GameController {
     public void showGiveUpDialog(){
         if(!gameFinished) {
             giveupDialog.show();
+            board.setDisable(true);
         }
         else{
             loadOtherPlayerDidntRestartedDialog();
             otherPlayerDidntRestartedDialogOpened = true;
             otherPlayerDidntRestartedDialog.show();
+            board.setDisable(true);
         }
     }
 
