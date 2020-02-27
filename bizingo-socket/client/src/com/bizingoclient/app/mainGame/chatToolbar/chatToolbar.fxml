@@ -28,14 +28,22 @@
                <StackPane.margin>
                   <Insets left="5.0" />
                </StackPane.margin></ImageView>
-            <Text fx:id="otherPlayerNickname" strokeType="OUTSIDE" strokeWidth="0.0">
+            <Text fx:id="otherPlayerNickname" strokeType="OUTSIDE" strokeWidth="0.0" text="Tiago">
                <StackPane.margin>
-                  <Insets left="80.0" top="20.0" />
+                  <Insets left="80.0" top="10.0" />
                </StackPane.margin>
             </Text>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Seu oponente">
                <StackPane.margin>
-                  <Insets bottom="20.0" left="80.0" />
+                  <Insets bottom="30.0" left="80.0" />
+               </StackPane.margin>
+               <font>
+                  <Font name="System Italic" size="13.0" />
+               </font>
+            </Text>
+            <Text fx:id="typingStatus" fill="#13c196" strokeType="OUTSIDE" strokeWidth="0.0">
+               <StackPane.margin>
+                  <Insets left="80.0" top="50.0" />
                </StackPane.margin>
                <font>
                   <Font name="System Italic" size="13.0" />

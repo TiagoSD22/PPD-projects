@@ -4,6 +4,7 @@ package com.bizingoclient.app.mainGame.game;
 import bizingo.commons.*;
 import com.bizingoclient.Main;
 import com.bizingoclient.app.mainGame.MainGameController;
+import com.bizingoclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
@@ -390,13 +391,16 @@ public class GameController {
                         unhighlightCell(tOld, false);
                         selectedCell = c;
                         highlightCell(bizingoBoard.getCellMap().getKey(c));
+                        AudioService.getInstance().playPieceSelectedSound();
                     } else {
                         Polygon tOld = bizingoBoard.getCellMap().getKey(selectedCell);
                         selectedCell = null;
                         unhighlightCell(tOld, false);
+                        AudioService.getInstance().playPieceDeselectedSound();
                     }
                 } else {
                     selectedCell = c;
+                    AudioService.getInstance().playPieceSelectedSound();
                 }
             }
         } else {
@@ -448,6 +452,7 @@ public class GameController {
         mov.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                AudioService.getInstance().playPieceMovedSound();
                 bizingoBoard.moveCellPiece(cellSource, cellDest);
                 analyseMovement(cellDest);
             }

@@ -1,7 +1,9 @@
 package com.bizingoclient.app.mainGame.chatToolbar;
 
 
+import bizingo.commons.TypingStatus;
 import com.bizingoclient.app.mainGame.MainGameController;
+import com.bizingoclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -37,6 +39,8 @@ public class ChatToolbarController {
     private ImageView otherPlayerAvatar;
     @FXML
     private StackPane otherPlayerInfoRegion;
+    @FXML
+    private Text typingStatus;
 
     public void init(MainGameController mainGameController) {
         sendMessageBt.setGraphic(new ImageView(new Image(getClass()
@@ -66,6 +70,15 @@ public class ChatToolbarController {
         messageArea.setBackground(background);
 
         removeNewLineEvent();
+
+        textInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
+                mainGameController.getMessageHandler().sendTypingStatusMessage(TypingStatus.STOPED);
+            }
+            else if(oldValue.length() == 0 && newValue.length() > 0){ //comecou a digitar
+                mainGameController.getMessageHandler().sendTypingStatusMessage(TypingStatus.TYPING);
+            }
+        });
     }
 
     public void sendMessage() {
@@ -73,6 +86,15 @@ public class ChatToolbarController {
         if(!text.isEmpty()) {
             main.getMessageHandler().sendMessage(text);
             textInput.clear();
+        }
+    }
+
+    public void showTypingStatus(TypingStatus status){
+        if(status == TypingStatus.TYPING){
+            typingStatus.setText("Digitando...");
+        }
+        else{
+            typingStatus.setText("");
         }
     }
 
@@ -115,6 +137,7 @@ public class ChatToolbarController {
         messageBox.setOnSucceeded(event -> {
             messageArea.getItems().add(messageBox.getValue());
             messageArea.scrollTo(messageArea.getItems().size());
+            AudioService.getInstance().playIncomingMessageSound();
         });
 
         Thread t = new Thread(messageBox);

@@ -1,7 +1,7 @@
 package bizingo.commons;
 
 public class TextMessage extends MessageContent {
-    String text;
+    private String text;
 
     public TextMessage(String text, String source, String destination){
         this.text = text;

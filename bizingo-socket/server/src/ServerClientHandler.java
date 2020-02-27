@@ -80,6 +80,7 @@ public class ServerClientHandler extends Thread {
                             break;
                         case HANDSHAKE:
                         case MOVEMENT:
+                        case TYPING_STATUS:
                             forwardMessage(msg);
                             break;
                         case CLOSE:

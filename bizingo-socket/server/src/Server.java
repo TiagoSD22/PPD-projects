@@ -124,7 +124,7 @@ public class Server {
 
             System.out.println("Server socket iniciado com sucesso.");
             while (true) {
-                System.out.println("Em laco principal");
+                System.out.print(" \b");
                 waitConnections();
 
 

@@ -91,6 +91,12 @@ public class MessageHandler {
                                 System.out.println("Mensagem recebida do servidor: " + txtMsg.getText());
                                 mainController.getChatToolbarController().displayIncomingMessage(otherClientAvatar, txtMsg.getText());
                                 break;
+                            case TYPING_STATUS:
+                                TypingStatusMessage statusMsg = (TypingStatusMessage) msg.getContent();
+                                System.out.println("Mensagem de status de digitacao recebida, status: " +
+                                        statusMsg.getStatus().getValue());
+                                mainController.getChatToolbarController().showTypingStatus(statusMsg.getStatus());
+                                break;
                             case MOVEMENT:
                                 PlayerMovement mov = (PlayerMovement) msg.getContent();
                                 String source = mov.getCoordSource();
@@ -188,6 +194,17 @@ public class MessageHandler {
         Message rtMsg = new Message(MessageType.START, txt);
         try{
             output.writeObject(rtMsg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendTypingStatusMessage(TypingStatus status){
+        TypingStatusMessage statusMessage = new TypingStatusMessage(status, socket.getInetAddress().getHostAddress(),
+                ConnectionConfig.HOST.getValue());
+        Message msg = new Message(MessageType.TYPING_STATUS, statusMessage);
+        try{
+            output.writeObject(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }

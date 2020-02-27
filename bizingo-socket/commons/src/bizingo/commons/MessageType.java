@@ -4,6 +4,7 @@ public enum MessageType {
     START("START"),
     HANDSHAKE("HANDSHAKE"),
     TEXT("TEXT"),
+    TYPING_STATUS("TYPING_STATUS"),
     MOVEMENT("MOVEMENT"),
     CONFIG("CONFIG"),
     RESTART("RESTART"),
