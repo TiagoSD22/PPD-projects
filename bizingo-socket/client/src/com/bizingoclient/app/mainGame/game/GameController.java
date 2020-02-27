@@ -81,7 +81,7 @@ public class GameController {
         main = mainGameController;
         root.setBackground(Background.EMPTY);
 
-        Image image = new Image(getClass().getResourceAsStream("/assets/board_base.jpg"));
+        Image image = new Image(getClass().getResourceAsStream("/assets/Images/board_base.jpg"));
         BackgroundSize backgroundSize = new BackgroundSize(844, 628, false,
                 false, false, false);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,
@@ -104,8 +104,8 @@ public class GameController {
         capturedPieceAnimation.setToX(0.0);
         capturedPieceAnimation.setToY(0.0);
 
-        greenMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/green_marble.jpg")));
-        whiteMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/white_marble.jpg")));
+        greenMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/Images/green_marble.jpg")));
+        whiteMarble = new ImagePattern(new Image(getClass().getResourceAsStream("/assets/Images/white_marble.jpg")));
 
         notificationSnack = new JFXSnackbar(root);
         notificationSnack.setPrefWidth(300);
@@ -124,7 +124,7 @@ public class GameController {
         txt2.setFill(Color.WHITE);
         ownPieceCapturedEvent = new SnackbarEvent(txt2);
 
-        Image hudImage = new Image(getClass().getResourceAsStream("/assets/hud.png"));
+        Image hudImage = new Image(getClass().getResourceAsStream("/assets/Images/hud.png"));
         BackgroundSize hudBackgroundSize = new BackgroundSize(250, 100, false,
                 false, false, false);
         BackgroundImage hudBackgroundImage = new BackgroundImage(hudImage, BackgroundRepeat.NO_REPEAT,
@@ -279,9 +279,9 @@ public class GameController {
     public void setPlayerColor(CellColor playerColor) {
         this.playerColor = playerColor;
         if (this.playerColor == CellColor.DARK) {
-            this.playerColorIndicator.setImage(new Image(getClass().getResourceAsStream("/assets/black_piece.png")));
+            this.playerColorIndicator.setImage(new Image(getClass().getResourceAsStream("/assets/Images/black_piece.png")));
         } else {
-            this.playerColorIndicator.setImage(new Image(getClass().getResourceAsStream("/assets/light_piece.png")));
+            this.playerColorIndicator.setImage(new Image(getClass().getResourceAsStream("/assets/Images/light_piece.png")));
         }
     }
 

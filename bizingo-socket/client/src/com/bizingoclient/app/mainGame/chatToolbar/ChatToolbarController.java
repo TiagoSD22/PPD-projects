@@ -44,7 +44,7 @@ public class ChatToolbarController {
 
     public void init(MainGameController mainGameController) {
         sendMessageBt.setGraphic(new ImageView(new Image(getClass()
-                .getResourceAsStream("/assets/send_message.png"))));
+                .getResourceAsStream("/assets/Images/send_message.png"))));
         DropShadow ds = new DropShadow();
         ds.setOffsetX(1.3);
         ds.setOffsetY(1.3);
@@ -59,7 +59,7 @@ public class ChatToolbarController {
         otherPlayerInfoRegion.getChildren().add(clip);
         clip.toBack();
 
-        Image image = new Image(getClass().getResourceAsStream("/assets/chat_bg.jpg"));
+        Image image = new Image(getClass().getResourceAsStream("/assets/Images/chat_bg.jpg"));
         BackgroundSize backgroundSize = new BackgroundSize(380, 627, false,
                 false, false, false);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,

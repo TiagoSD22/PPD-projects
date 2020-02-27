@@ -31,16 +31,16 @@ public class AudioService {
 
     private void loadMedias() {
         try {
-            newMessageSound = new Media(getClass().getResource("/assets/incoming_message.mp3")
+            newMessageSound = new Media(getClass().getResource("/assets/Sounds/incoming_message.mp3")
                     .toURI().toString()
             );
-            pieceSelectedSound = new Media(getClass().getResource("/assets/piece_selected.mp3")
+            pieceSelectedSound = new Media(getClass().getResource("/assets/Sounds/piece_selected.mp3")
                     .toURI().toString()
             );
-            pieceDeselectedSound = new Media(getClass().getResource("/assets/piece_deselected.mp3")
+            pieceDeselectedSound = new Media(getClass().getResource("/assets/Sounds/piece_deselected.mp3")
                     .toURI().toString()
             );
-            pieceMovedSound = new Media(getClass().getResource("/assets/piece_placed.mp3")
+            pieceMovedSound = new Media(getClass().getResource("/assets/Sounds/piece_placed.mp3")
                     .toURI().toString()
             );
         } catch (URISyntaxException e) {

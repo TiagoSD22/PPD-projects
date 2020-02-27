@@ -62,7 +62,7 @@ public class MenuController {
 
     @FXML
     public void initialize() {
-        Image imProfile = new Image(getClass().getResourceAsStream("/assets/no_avatar.png"));
+        Image imProfile = new Image(getClass().getResourceAsStream("/assets/Images/no_avatar.png"));
         avatarPreview.setImage(imProfile);
 
         clip = new Circle(24);
@@ -100,7 +100,7 @@ public class MenuController {
 
     private void loadAvatarIcons() {
         for (String avatarName : Avatars.avatarNames) {
-            Image icon = new Image(getClass().getResourceAsStream("/assets/avatars/" + avatarName));
+            Image icon = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" + avatarName));
             avatarMap.put(avatarName, icon);
         }
     }

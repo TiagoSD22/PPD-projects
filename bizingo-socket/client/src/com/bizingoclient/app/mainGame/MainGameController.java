@@ -35,7 +35,7 @@ public class MainGameController {
                     MessageHandler msgHandler = (MessageHandler) dataMap.get("msgHandler");
 
 
-                    Image image = new Image(getClass().getResourceAsStream("/assets/game_bg.jpg"));
+                    Image image = new Image(getClass().getResourceAsStream("/assets/Images/game_bg.jpg"));
                     BackgroundSize backgroundSize = new BackgroundSize(1366, 768, false,
                             false, false, false);
                     BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,

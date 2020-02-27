@@ -43,7 +43,7 @@ public class MessageHandler {
         startListen();
         this.nickname = nickname;
         this.avatarName = avatar;
-        this.avatar = new Image(getClass().getResourceAsStream("/assets/avatars/" + avatar));
+        this.avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" + avatar));
     }
 
     private void sendHandshake(String nickname, String avatar) {
@@ -73,7 +73,7 @@ public class MessageHandler {
                                 System.out.println("Handshake recebido");
                                 System.out.println("Nick do outro jogador: " + handshake.getNickname() +
                                         "\nAvatar do outro jogador: " + handshake.getAvatar());
-                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/avatars/" +
+                                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
                                         handshake.getAvatar()));
                                 otherClientNickname = handshake.getNickname();
                                 mainController.getChatToolbarController().setOtherPlayerAvatar(otherClientAvatar);

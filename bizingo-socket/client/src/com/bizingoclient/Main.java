@@ -56,7 +56,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
 
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/Images/icone.png")));
         stage.setTitle("Bizingo");
 
         Parent fxmlMenu = FXMLLoader.load(getClass().getResource("app/menu/menuController.fxml"));
@@ -66,7 +66,7 @@ public class Main extends Application {
         mainGameScene = new Scene(fxmlMainGame, 1280, 720);
 
         stage.setTitle("Bizingo");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/Images/icone.png")));
         stage.setScene(menuScene);
         stage.show();
     }

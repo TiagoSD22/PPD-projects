@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<AnchorPane fx:id="menuRoot" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="960.0" style="-fx-background-image: url('/assets/menu_bg.jpg');" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.menu.MenuController">
+<AnchorPane fx:id="menuRoot" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="960.0" style="-fx-background-image: url('/assets/Images/menu_bg.jpg');" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bizingoclient.app.menu.MenuController">
    <children>
       <GridPane layoutX="112.0" layoutY="-1.0" prefHeight="721.0" prefWidth="249.0" style="-fx-background-color: rgba(34, 46, 80,  0.55);">
         <columnConstraints>
@@ -34,7 +34,7 @@
          <children>
             <ImageView fitHeight="214.0" fitWidth="317.0" pickOnBounds="true" preserveRatio="true" translateY="-30.0" GridPane.rowIndex="1">
                <image>
-                  <Image url="@../../../../assets/menu.jpg" />
+                  <Image url="@../../../../assets/Images/menu.jpg" />
                </image>
                <viewport>
                   <Rectangle2D />
