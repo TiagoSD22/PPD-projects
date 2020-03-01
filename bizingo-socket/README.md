@@ -13,7 +13,7 @@ O projeto está dividido em uma arquitetura cliente-servidor. Ambas as partes fo
 
 ## Dependências utilizadas
 
-Para a aplicação em Python foram usadas, principalmente, as dependências:
+Para a aplicação foram usadas, principalmente, as dependências:
 
 + Apache Commons Collections
 + Apache Commons IO
