@@ -65,9 +65,17 @@ public class ServerStub implements ServerStubInterface {
         MessageType type = msg.getType();
         System.out.println("Mensagem do tipo " + type.getValue() + " enviada por " + client.getNickname());
         switch (type) {
+            case START:
+                onClientReady();
+                break;
             case QUIT:
                 System.out.println("Mensagem de desistencia recebida do cliente " + client.getNickname());
                 forwardMessage(client, msg);
+                clients.remove(client);
+                break;
+            case CLOSE:
+                System.out.println("Removendo conexao do cliente " + client.getNickname());
+                clients.remove(client);
                 break;
             case TEXT:
                 TextMessage txtMsg = (TextMessage) msg.getContent();
@@ -81,9 +89,6 @@ public class ServerStub implements ServerStubInterface {
                 restartGame();
                 break;
             case HANDSHAKE:
-                onClientReady();
-                forwardMessage(client, msg);
-                break;
             case MOVEMENT:
             case TYPING_STATUS:
                 forwardMessage(client, msg);

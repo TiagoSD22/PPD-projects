@@ -45,7 +45,7 @@ public class MainGameController {
                     initControllers();
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
-                    //TODO enviar mensagem de close
+                    client.sendQuitMessage();
                 }
             }
         });

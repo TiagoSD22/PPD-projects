@@ -48,7 +48,7 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
 
     public void setGameController(MainGameController controller){
         mainController = controller;
-        Platform.runLater(() -> sendHandshake(nickname, avatarName));
+        sendStartMessage();
     }
 
     public void setMenuController(MenuController controller){
@@ -78,6 +78,7 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
                 System.out.println("Mensagem de configuracao de partida recebida");
                 mainController.getGameController().setPlayerColor(playerConfig.getPlayerPieceColor());
                 mainController.getGameController().setTurnToPlay(playerConfig.isFirstTurn());
+                Platform.runLater(() -> sendHandshake(nickname, avatarName));
                 break;
             case TEXT:
                 TextMessage txtMsg = (TextMessage) msg.getContent();

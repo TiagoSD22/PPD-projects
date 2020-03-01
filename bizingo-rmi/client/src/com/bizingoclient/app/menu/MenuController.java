@@ -58,7 +58,7 @@ public class MenuController {
     private JFXDialog warningDialog;
     private JFXDialog loadingDialog;
     private ClientStub client;
-
+    private boolean gameStarted;
 
     @FXML
     public void initialize() {
@@ -93,6 +93,12 @@ public class MenuController {
                 if (newScreen.equals("menu")) {
                     nicknameField.setDisable(false);
                     avatarSelect.setDisable(false);
+                    gameStarted = false;
+                }
+                else if(newScreen.equalsIgnoreCase("stop")){
+                    if(client != null && !gameStarted){
+                        //client.sendQuitMessage();
+                    }
                 }
             }
         });
@@ -180,6 +186,7 @@ public class MenuController {
         Map<String, Object> data = new HashMap<>();
         data.put("clientStub", client);
         loadingDialog.close();
+        gameStarted = true;
         Main.changeScreen("game", data);
     }
 
