@@ -1,4 +1,4 @@
-# Bizingo Socket
+# Bizingo RMI
 
 
 Este projeto foi criado para a disciplina de Programacao Paralela e Distribuida(PPD) do Instituto Federal do Ceara(IFCE).
@@ -13,7 +13,7 @@ O projeto está dividido em uma arquitetura cliente-servidor. Ambas as partes fo
 
 ## Dependências utilizadas
 
-Para a aplicação em Python foram usadas, principalmente, as dependências:
+Para a aplicação foram usadas, principalmente, as dependências:
 
 + Apache Commons Collections
 + Apache Commons IO
@@ -24,16 +24,15 @@ Para a aplicação em Python foram usadas, principalmente, as dependências:
 
 ## Execução da aplicação
 
-Caso queira subir a aplicacao do servidor na sua maquina, execute o .jar do projeto servidor, ele ira subir a aplicacao na porta 5005, suba 2 clientes a partir do arquivo cliente_local.jar para que o jogo seja iniciado. Caso queira rodar clientes em maquinas diferentes ou ate mesmo fora da rede local, suba o cliente a partir do arquivo cliente_remoto.jar, esse executavel esta configurado para se conectar com o servidor em nuvem rodando em uma instancia ec2 da aws com um proxy de acesso configurado via Ngrok, o ip e porta cofigurados no cliente remoto foram setados de acordo com as configuracoes do proxy.
+Execute o .jar do servidor para subir o servidor RMI localmente, depois execute 2 .jar do cliente para poder iniciar uma partida.
 
 
 ---
 
 ## Conhecimentos adquiridos e dificuldades encontradas
 
-* Configurar um servidor com ServerSocket java
-* Configurar um cliente usando Socket em java
-* Sincronizar mensagens entre threads
+* Configuracao do servidor usando RMI
+* Realizar "troca de mensagens entre cliente e servidor a partir de invocacoes remotas"
 
 ---
 
