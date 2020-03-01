@@ -73,9 +73,7 @@ public class Main extends Application {
 
     @Override
     public void stop() {
-        if (stage.getScene().equals(mainGameScene)) {
-            notifyAllListeners("stop", null, stage);
-        }
+        notifyAllListeners("stop", null, stage);
 
         System.out.println("Parando aplicação");
         Platform.exit();

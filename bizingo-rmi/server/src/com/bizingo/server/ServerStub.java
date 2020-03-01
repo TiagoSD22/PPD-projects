@@ -19,17 +19,14 @@ public class ServerStub implements ServerStubInterface {
 
     @Override
     public void registerClient(ClientStubInterface client) throws RemoteException {
-        System.out.println("Registrando novo cliente: " + client.getNickname());
-        clients.add(client);
-        if (clients.size() == 2) {
-            System.out.println("2 jogadores conectados");
-            startGame();
+        if(clients.size() < 2) {
+            System.out.println("Registrando novo cliente: " + client.getNickname());
+            clients.add(client);
+            if (clients.size() == 2) {
+                System.out.println("2 jogadores conectados");
+                startGame();
+            }
         }
-    }
-
-    @Override
-    public void removeClient(ClientStubInterface client) throws RemoteException {
-        clients.remove(client);
     }
 
     private void forwardMessage(ClientStubInterface from, Message msg) {
@@ -43,6 +40,7 @@ public class ServerStub implements ServerStubInterface {
 
     private void startGame(){
         System.out.println("Iniciando partida");
+        restartSolicitation = 0;
         Message msg = new Message(MessageType.START, null);
         try {
             clients.get(0).receiveMessage(msg);
