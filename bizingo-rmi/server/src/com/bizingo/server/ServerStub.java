@@ -30,11 +30,13 @@ public class ServerStub implements ServerStubInterface {
     }
 
     private void forwardMessage(ClientStubInterface from, Message msg) {
-        int index = clients.indexOf(from);
-        try {
-            clients.get(1 - index).receiveMessage(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if(clients.size() == 2) {
+            int index = clients.indexOf(from);
+            try {
+                clients.get(1 - index).receiveMessage(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -69,6 +71,7 @@ public class ServerStub implements ServerStubInterface {
             case QUIT:
                 System.out.println("Mensagem de desistencia recebida do cliente " + client.getNickname());
                 forwardMessage(client, msg);
+                System.out.println("Removendo cliente " + client.getNickname());
                 clients.remove(client);
                 break;
             case CLOSE:

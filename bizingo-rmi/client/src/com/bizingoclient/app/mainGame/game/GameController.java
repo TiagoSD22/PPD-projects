@@ -75,6 +75,7 @@ public class GameController {
     private boolean playerRestarted;
     private boolean otherPlayerRestarted;
     private boolean otherPlayerDidntRestartedDialogOpened;
+    private TranslateTransition movementAnimation;
     private static final int MINIMUM_PIECES = 2;
 
     public void init(MainGameController mainGameController) {
@@ -132,6 +133,8 @@ public class GameController {
         Background hudBackground = new Background(hudBackgroundImage);
         hud1.setBackground(hudBackground);
         hud2.setBackground(hudBackground);
+
+        this.movementAnimation = new TranslateTransition(Duration.millis(650));
 
         updatePiecesCounter();
         drawBoard();
@@ -444,12 +447,11 @@ public class GameController {
 
         Platform.runLater(piece::toFront);
 
-        TranslateTransition mov = new TranslateTransition(Duration.millis(800));
-        mov.setToX(newX - 2 - piece.getLayoutX());
-        mov.setToY(newY + yOffset - piece.getLayoutY());
-        mov.setNode(piece);
-        mov.play();
-        mov.setOnFinished(new EventHandler<ActionEvent>() {
+        this.movementAnimation.setToX(newX - 2 - piece.getLayoutX());
+        this.movementAnimation.setToY(newY + yOffset - piece.getLayoutY());
+        this.movementAnimation.setNode(piece);
+        this.movementAnimation.play();
+        this.movementAnimation.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 AudioService.getInstance().playPieceMovedSound();

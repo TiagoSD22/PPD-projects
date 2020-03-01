@@ -31,10 +31,10 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -165,7 +165,8 @@ public class MenuController {
     public void connect(ActionEvent event) {
         if (!"".equalsIgnoreCase(nicknameField.getText()) && avatarSelect.getSelectionModel().getSelectedIndex() != -1) {
             try {
-                ServerStubInterface server = (ServerStubInterface) Naming.lookup("//127.0.0.1/Bizingo-RMI-Server");
+                Registry reg = LocateRegistry.getRegistry();
+                ServerStubInterface server = (ServerStubInterface) reg.lookup("Bizingo-RMI-Server");
                 client = new ClientStub(server, nicknameField.getText(),
                         (String) avatarSelect.getSelectionModel().getSelectedItem()
                 );
@@ -175,8 +176,6 @@ public class MenuController {
                 avatarSelect.setDisable(true);
                 loadingDialog.show();
             } catch (NotBoundException | RemoteException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         } else {
