@@ -175,6 +175,7 @@ public class MenuController {
                 nicknameField.setDisable(true);
                 avatarSelect.setDisable(true);
                 loadingDialog.show();
+
             } catch (NotBoundException | RemoteException e) {
                 e.printStackTrace();
             }

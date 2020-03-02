@@ -28,6 +28,8 @@ public class AudioService {
     private MediaPlayer opponentPieceCapturedMediaPlayer;
     private MediaPlayer ownPieceCapturedMediaPlayer;
 
+    public static boolean sound;
+
     private AudioService() {
         loadMedias();
     }
@@ -35,6 +37,7 @@ public class AudioService {
     public static AudioService getInstance() {
         if (instance == null) {
             instance = new AudioService();
+            sound = true;
         }
         return instance;
     }
@@ -83,7 +86,12 @@ public class AudioService {
         opponentPieceCapturedMediaPlayer = new MediaPlayer(opponentPieceCapturedSound);
     }
 
+    public void onMute(){
+        sound = !sound;
+    }
+
     private void playSound(MediaPlayer player){
+        player.setVolume(sound? 1.0 : 0.0);
         player.seek(Duration.seconds(0));
         player.play();
     }

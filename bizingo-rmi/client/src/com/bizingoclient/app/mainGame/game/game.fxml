@@ -55,7 +55,12 @@
                   </Text>
                </children>
             </GridPane>
-            <JFXButton fx:id="restartBT" contentDisplay="GRAPHIC_ONLY" onAction="#onRestartSolicitation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 50 50 50 50; -fx-background-color: #30343F;" text="REINICIAR" translateX="-400.0" translateY="-50.0">
+            <JFXButton fx:id="restartBT" contentDisplay="GRAPHIC_ONLY" onAction="#onRestartSolicitation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 50 50 50 50;" text="REINICIAR" translateX="-400.0" translateY="-50.0">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+            <JFXButton fx:id="soundBT" contentDisplay="GRAPHIC_ONLY" onAction="#onSoundBtClicked" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 50 50 50 50;" text="REINICIAR" translateX="-400.0" translateY="25.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>

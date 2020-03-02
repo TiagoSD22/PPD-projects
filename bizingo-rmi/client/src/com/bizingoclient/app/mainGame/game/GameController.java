@@ -56,6 +56,8 @@ public class GameController {
     private GridPane hud2;
     @FXML
     private JFXButton restartBT;
+    @FXML
+    private JFXButton soundBT;
     private Group board;
     private MainGameController main;
     private BizingoBoard bizingoBoard;
@@ -83,6 +85,7 @@ public class GameController {
     private boolean otherPlayerDidntRestartedDialogOpened;
     private TranslateTransition movementAnimation;
     private JFXButton restartDialogBT;
+    private Tooltip soundTt;
     private static final int MINIMUM_PIECES = 2;
 
     public void init(MainGameController mainGameController) {
@@ -156,6 +159,17 @@ public class GameController {
                 + "-fx-text-fill: orange;");
 
         restartBT.setTooltip(tt);
+
+        soundBT.setGraphic(new ImageView(new Image(getClass()
+                .getResourceAsStream("/assets/Images/sound.png"))));
+        soundBT.setEffect(ds);
+
+        soundTt = new Tooltip();
+        soundTt.setText("Desativar efeitos sonoros");
+        soundTt.setStyle("-fx-font: normal bold 12 Langdon; "
+                + "-fx-base: #AE3522; "
+                + "-fx-text-fill: orange;");
+        soundBT.setTooltip(soundTt);
 
         this.movementAnimation = new TranslateTransition(Duration.millis(650));
 
@@ -822,7 +836,7 @@ public class GameController {
             if(playerRestarted){ //outro jogador confirmou
                 restartDialogBT.setVisible(true);
                 playerRestarted = false;
-                restartDialogText.setText("Outro jogador concordou em reiniciar. Clique no botão a baixo para continuar");
+                restartDialogText.setText("Outro jogador concordou em reiniciar. Clique no botão abaixo para continuar");
                 restart();
             }
             else{ //outro jogador pediu para reiniciar durante a partida
@@ -835,7 +849,7 @@ public class GameController {
     }
 
     public void onRestartSolicitationDenied(){
-        restartDialogText.setText("Outro jogador recusou reiniciar partida. Clique no botão a baixo para continuar");
+        restartDialogText.setText("Outro jogador recusou reiniciar partida. Clique no botão abaixo para continuar");
         playerRestarted = false;
         board.setDisable(false);
         AudioService.getInstance().playNotificationSound();
@@ -850,6 +864,20 @@ public class GameController {
         restartDialogText.setText("Aguardando resposta do outro jogador");
         restartSolicitationDialog.show();
         board.setDisable(true);
+    }
+
+    public void onSoundBtClicked(){
+        if(AudioService.getInstance().sound){
+            soundBT.setGraphic(new ImageView(new Image(getClass()
+                    .getResourceAsStream("/assets/Images/no_sound.png"))));
+            soundTt.setText("Reativar efeitos sonoros");
+        }
+        else{
+            soundBT.setGraphic(new ImageView(new Image(getClass()
+                    .getResourceAsStream("/assets/Images/sound.png"))));
+            soundTt.setText("Desativar efeitos sonoros");
+        }
+        AudioService.getInstance().onMute();
     }
 
 }
