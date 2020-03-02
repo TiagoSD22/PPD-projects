@@ -796,6 +796,7 @@ public class GameController {
         }
         playerRestarted = false;
         otherPlayerRestarted = false;
+        board.setDisable(false);
         notificationSnack.enqueue(new SnackbarEvent(new Text("Iniciando nova partida")));
     }
 
