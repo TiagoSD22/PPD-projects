@@ -512,6 +512,7 @@ public class GameController {
     private void notifyCapture(BizingoCell captured) {
         if (captured.getColor() != playerColor) {
             System.out.println("Voce capturou uma peca do oponente");
+            AudioService.getInstance().playOpponentPieceCapturedSound();
             notificationSnack.enqueue(otherPlayerPieceCapturedEvent);
             oponentsPieces--;
             if(oponentsPieces == MINIMUM_PIECES){
@@ -520,10 +521,12 @@ public class GameController {
                 Platform.runLater(() -> {
                     loadEndGameDialog(true);
                     onGameFinished();
+                    AudioService.getInstance().playWinSound();
                 });
             }
         } else {
             System.out.println("Uma peca sua foi capturada");
+            AudioService.getInstance().playOwnPieceCapturedSound();
             notificationSnack.enqueue(ownPieceCapturedEvent);
             numberOfPlayersPieces--;
             updatePiecesCounter();
@@ -533,6 +536,7 @@ public class GameController {
                 Platform.runLater(() -> {
                     loadEndGameDialog(false);
                     onGameFinished();
+                    AudioService.getInstance().playLoseSound();
                 });
             }
         }
@@ -765,12 +769,14 @@ public class GameController {
     public void showGiveUpDialog(){
         if(!gameFinished) {
             giveupDialog.show();
+            AudioService.getInstance().playNotificationSound();
             board.setDisable(true);
         }
         else{
             loadOtherPlayerDidntRestartedDialog();
             otherPlayerDidntRestartedDialogOpened = true;
             otherPlayerDidntRestartedDialog.show();
+            AudioService.getInstance().playNotificationSound();
             board.setDisable(true);
         }
     }
@@ -798,6 +804,7 @@ public class GameController {
         otherPlayerRestarted = false;
         board.setDisable(false);
         notificationSnack.enqueue(new SnackbarEvent(new Text("Iniciando nova partida")));
+        AudioService.getInstance().playNotificationSound();
     }
 
     private void handleRestart(){
@@ -820,6 +827,7 @@ public class GameController {
             }
             else{ //outro jogador pediu para reiniciar durante a partida
                 otherPlayerRestartSolicitationDialog.show();
+                AudioService.getInstance().playNotificationSound();
                 board.setDisable(true);
                 restartBT.setDisable(true);
             }
@@ -830,6 +838,7 @@ public class GameController {
         restartDialogText.setText("Outro jogador recusou reiniciar partida. Clique no botão a baixo para continuar");
         playerRestarted = false;
         board.setDisable(false);
+        AudioService.getInstance().playNotificationSound();
         restartDialogBT.setVisible(true);
     }
 

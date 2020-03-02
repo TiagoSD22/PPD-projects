@@ -145,7 +145,7 @@ public class ServerStub implements ServerStubInterface {
         try {
             System.out.println("Configuracao do jogador 1(" + clients.get(0).getNickname() + "):" +
                             "\nCor de Peca: " + client1GameConfig.getPlayerPieceColor().getValue() +
-                            "Configuracao do jogador 2(" + clients.get(1).getNickname() + "):" +
+                            "\nConfiguracao do jogador 2(" + clients.get(1).getNickname() + "):" +
                             "\nCor de Peca: " + client2GameConfig.getPlayerPieceColor().getValue() +
                             "\nPrimeiro a jogar: " + (
                             playerToStart == 0 ? clients.get(0).getNickname() : clients.get(1).getNickname()
