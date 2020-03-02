@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -53,6 +55,11 @@
                   </Text>
                </children>
             </GridPane>
+            <JFXButton fx:id="restartBT" contentDisplay="GRAPHIC_ONLY" onAction="#onRestartSolicitation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 50 50 50 50; -fx-background-color: #30343F;" text="REINICIAR" translateX="-400.0" translateY="-50.0">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
          </children></StackPane>
       <GridPane fx:id="hud2" maxHeight="100.0" maxWidth="250.0" minHeight="100.0" minWidth="250.0" prefHeight="100.0" prefWidth="250.0" translateX="135.0" translateY="180.0">
         <columnConstraints>

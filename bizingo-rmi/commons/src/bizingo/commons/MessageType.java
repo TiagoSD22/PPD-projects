@@ -8,6 +8,7 @@ public enum MessageType {
     MOVEMENT("MOVEMENT"),
     CONFIG("CONFIG"),
     RESTART("RESTART"),
+    DENY_RESTART("DENY_RESTART"),
     CLOSE("CLOSE"),
     QUIT("QUIT");
 

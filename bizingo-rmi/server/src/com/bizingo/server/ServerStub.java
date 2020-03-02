@@ -84,10 +84,16 @@ public class ServerStub implements ServerStubInterface {
                 forwardMessage(client, msg);
                 break;
             case RESTART:
-                System.out.println("Mensagem de solicitacao de reinicio de partida recebida pelo cliente "
+                System.out.println("Mensagem de solicitacao de reinicio de partida recebida do cliente "
                         + client.getNickname());
                 forwardMessage(client, msg);
                 restartGame();
+                break;
+            case DENY_RESTART:
+                System.out.println("Mensagem de recuso de reinicio de partida recebida do cliente  " +
+                        client.getNickname());
+                forwardMessage(client, msg);
+                restartSolicitation--;
                 break;
             case HANDSHAKE:
             case MOVEMENT:

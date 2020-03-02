@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
@@ -53,6 +54,8 @@ public class GameController {
     private GridPane hud1;
     @FXML
     private GridPane hud2;
+    @FXML
+    private JFXButton restartBT;
     private Group board;
     private MainGameController main;
     private BizingoBoard bizingoBoard;
@@ -71,11 +74,15 @@ public class GameController {
     private JFXDialog giveupDialog;
     private JFXDialog endGameDialog;
     private JFXDialog otherPlayerDidntRestartedDialog;
+    private JFXDialog restartSolicitationDialog;
+    private JFXDialog otherPlayerRestartSolicitationDialog;
+    private Text restartDialogText;
     private boolean gameFinished;
     private boolean playerRestarted;
     private boolean otherPlayerRestarted;
     private boolean otherPlayerDidntRestartedDialogOpened;
     private TranslateTransition movementAnimation;
+    private JFXButton restartDialogBT;
     private static final int MINIMUM_PIECES = 2;
 
     public void init(MainGameController mainGameController) {
@@ -134,12 +141,30 @@ public class GameController {
         hud1.setBackground(hudBackground);
         hud2.setBackground(hudBackground);
 
+        restartBT.setGraphic(new ImageView(new Image(getClass()
+                .getResourceAsStream("/assets/Images/restart.png"))));
+        DropShadow ds = new DropShadow();
+        ds.setOffsetX(1.3);
+        ds.setOffsetY(1.3);
+        ds.setColor(Color.BLACK);
+        restartBT.setEffect(ds);
+
+        Tooltip tt = new Tooltip();
+        tt.setText("Reiniciar partida");
+        tt.setStyle("-fx-font: normal bold 12 Langdon; "
+                + "-fx-base: #AE3522; "
+                + "-fx-text-fill: orange;");
+
+        restartBT.setTooltip(tt);
+
         this.movementAnimation = new TranslateTransition(Duration.millis(650));
 
         updatePiecesCounter();
         drawBoard();
 
         loadOtherPlayerGiveUpDialog();
+        loadRestartSolicitationDialog();
+        loadOtherPlayerRestartSolicitationDialog();
         if(otherPlayerDidntRestartedDialogOpened) {
             otherPlayerDidntRestartedDialog.close();
             otherPlayerDidntRestartedDialogOpened = false;
@@ -654,6 +679,89 @@ public class GameController {
         root.getChildren().add(stackPane);
     }
 
+    private void loadRestartSolicitationDialog(){
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text("SOLICITAÇÃO DE REINICIO"));
+        restartDialogText = new Text("Aguardando resposta do outro jogador");
+
+
+        restartDialogText.setWrappingWidth(500);
+        restartDialogText.setTextAlignment(TextAlignment.LEFT);
+        content.setBody(restartDialogText);
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(230);
+        stackPane.setLayoutX(230);
+        restartDialogText.setWrappingWidth(500);
+        restartSolicitationDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        restartSolicitationDialog.setOverlayClose(false);
+
+        restartDialogBT = new JFXButton("OK");
+        restartDialogBT.setButtonType(JFXButton.ButtonType.RAISED);
+        restartDialogBT.setCursor(Cursor.HAND);
+        restartDialogBT.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
+        restartDialogBT.setTextFill(Color.WHITE);
+        restartDialogBT.setVisible(false);
+        restartDialogBT.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                restartSolicitationDialog.close();
+                restartBT.setDisable(false);
+                board.setDisable(false);
+            }
+        });
+
+        content.setActions(restartDialogBT);
+        root.getChildren().add(stackPane);
+    }
+
+    private void loadOtherPlayerRestartSolicitationDialog(){
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text("SOLICITAÇÃO DE REINICIO"));
+        Text info = new Text("O outro jogador solicitou reiniciar a partida. Confirmar reinicio?");
+
+        info.setWrappingWidth(500);
+        info.setTextAlignment(TextAlignment.LEFT);
+        content.setBody(info);
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(230);
+        stackPane.setLayoutX(230);
+        info.setWrappingWidth(500);
+        otherPlayerRestartSolicitationDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        otherPlayerRestartSolicitationDialog.setOverlayClose(false);
+        JFXButton noBT = new JFXButton("NÃO");
+        noBT.setButtonType(JFXButton.ButtonType.RAISED);
+        noBT.setCursor(Cursor.HAND);
+        noBT.setBackground(new Background(new BackgroundFill(Color.valueOf("#30343F"), CornerRadii.EMPTY, Insets.EMPTY)));
+        noBT.setTextFill(Color.WHITE);
+        noBT.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                main.getClientStub().sendDenyRestartMessage();
+                board.setDisable(false);
+                restartBT.setDisable(false);
+                otherPlayerRestartSolicitationDialog.close();
+            }
+        });
+
+        JFXButton restartBt = new JFXButton("SIM");
+        restartBt.setButtonType(JFXButton.ButtonType.RAISED);
+        restartBt.setCursor(Cursor.HAND);
+        restartBt.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
+        restartBt.setTextFill(Color.WHITE);
+        restartBt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                main.getClientStub().sendRestartMessage();
+                otherPlayerRestartSolicitationDialog.close();
+                board.setDisable(false);
+                restartBT.setDisable(false);
+                restart();
+            }
+        });
+        content.setActions(noBT, restartBt);
+        root.getChildren().add(stackPane);
+    }
+
     public void showGiveUpDialog(){
         if(!gameFinished) {
             giveupDialog.show();
@@ -672,28 +780,66 @@ public class GameController {
         endGameDialog.show();
     }
 
+    private void restart(){
+        bizingoBoard = new BizingoBoard();
+        numberOfPlayersPieces = 18;
+        oponentsPieces = 18;
+        gameFinished = false;
+        board.getChildren().clear();
+        drawBoard();
+        updatePiecesCounter();
+        if(gameFinished) {
+            endGameDialog.close();
+        }
+        if(otherPlayerDidntRestartedDialogOpened) {
+            otherPlayerDidntRestartedDialog.close();
+        }
+        playerRestarted = false;
+        otherPlayerRestarted = false;
+        notificationSnack.enqueue(new SnackbarEvent(new Text("Iniciando nova partida")));
+    }
+
     private void handleRestart(){
         if(playerRestarted && otherPlayerRestarted){
-            bizingoBoard = new BizingoBoard();
-            numberOfPlayersPieces = 18;
-            oponentsPieces = 18;
-            gameFinished = false;
-            board.getChildren().clear();
-            drawBoard();
-            updatePiecesCounter();
-            endGameDialog.close();
-            if(otherPlayerDidntRestartedDialogOpened) {
-                otherPlayerDidntRestartedDialog.close();
-            }
-            playerRestarted = false;
-            otherPlayerRestarted = false;
-            notificationSnack.enqueue(new SnackbarEvent(new Text("Iniciando nova partida")));
+            restart();
         }
     }
 
     public void otherPlayerWannaRestart(){
-        otherPlayerRestarted = true;
-        handleRestart();
+        if(gameFinished) {
+            otherPlayerRestarted = true;
+            handleRestart();
+        }
+        else{
+            if(playerRestarted){ //outro jogador confirmou
+                restartDialogBT.setVisible(true);
+                playerRestarted = false;
+                restartDialogText.setText("Outro jogador concordou em reiniciar. Clique no botão a baixo para continuar");
+                restart();
+            }
+            else{ //outro jogador pediu para reiniciar durante a partida
+                otherPlayerRestartSolicitationDialog.show();
+                board.setDisable(true);
+                restartBT.setDisable(true);
+            }
+        }
+    }
+
+    public void onRestartSolicitationDenied(){
+        restartDialogText.setText("Outro jogador recusou reiniciar partida. Clique no botão a baixo para continuar");
+        playerRestarted = false;
+        board.setDisable(false);
+        restartDialogBT.setVisible(true);
+    }
+
+    public void onRestartSolicitation(){
+        main.getClientStub().sendRestartMessage();
+        playerRestarted = true;
+        restartDialogBT.setVisible(false);
+        restartBT.setDisable(true);
+        restartDialogText.setText("Aguardando resposta do outro jogador");
+        restartSolicitationDialog.show();
+        board.setDisable(true);
     }
 
 }

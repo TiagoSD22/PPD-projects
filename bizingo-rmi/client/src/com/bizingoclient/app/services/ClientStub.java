@@ -103,6 +103,10 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
                 System.out.println("Mensagem de solicitacao de recomeco de partida recebida");
                 Platform.runLater(() -> mainController.getGameController().otherPlayerWannaRestart());
                 break;
+            case DENY_RESTART:
+                System.out.println("Mensagem de recuso de reinicio de partida ecebida");
+                Platform.runLater(() -> mainController.getGameController().onRestartSolicitationDenied());
+                break;
             case QUIT:
                 System.out.println("Mensagem de desistencia do outro jogador recebida. " +
                         "Encerrando partida");
@@ -157,6 +161,11 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
         TextMessage txt = new TextMessage("restart");
         Message rtMsg = new Message(MessageType.RESTART, txt);
         sendMessage(rtMsg);
+    }
+
+    public void sendDenyRestartMessage(){
+        Message msg = new Message(MessageType.DENY_RESTART, null);
+        sendMessage(msg);
     }
 
     public void sendStartMessage(){
