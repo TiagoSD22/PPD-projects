@@ -7,7 +7,7 @@ Este projeto foi criado para a disciplina de Programacao Paralela e Distribuida(
 
 # Estrutura do projeto
 
-O projeto está dividido em uma arquitetura cliente-servidor. Ambas as partes foram escritas em java 8, utilizando a biblioteca de sockets da java.net para envio e recebimento de mensagens. A GUI do cliente foi desenvolvida com o framework JavaFX e algumas bibliotecas de componentes estilo Material Design.
+O projeto está dividido em uma arquitetura cliente-servidor. Ambas as partes foram escritas em java 8, utilizando a biblioteca de RMI para troca de mensagens via invocacoes remotas. A GUI do cliente foi desenvolvida com o framework JavaFX e algumas bibliotecas de componentes estilo Material Design.
 
 ---
 
