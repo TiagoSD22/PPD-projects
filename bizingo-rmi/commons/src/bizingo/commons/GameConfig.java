@@ -1,7 +1,9 @@
 package bizingo.commons;
 
 
-public class GameConfig extends MessageContent{
+import java.io.Serializable;
+
+public class GameConfig implements Serializable {
     private CellColor playerPieceColor;
     private boolean firstTurn;
 
