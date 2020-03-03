@@ -1,6 +1,8 @@
 package bizingo.commons;
 
-public class Handshake extends MessageContent {
+import java.io.Serializable;
+
+public class Handshake implements Serializable {
 
     private String nickname;
     private String avatar;

@@ -12,15 +12,19 @@ public class ServerStub implements ServerStubInterface {
     private int restartSolicitation = 0;
     private int clientReady = 0;
 
-    public ServerStub() throws RemoteException {
+    public ServerStub() {
         super();
         clients = new ArrayList<>();
     }
 
     @Override
-    public void registerClient(ClientStubInterface client) throws RemoteException {
-        if(clients.size() < 2) {
-            System.out.println("Registrando novo cliente: " + client.getNickname());
+    public void registerClient(ClientStubInterface client) {
+        if (clients.size() < 2) {
+            try {
+                System.out.println("Registrando novo cliente: " + client.getNickname());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             clients.add(client);
             if (clients.size() == 2) {
                 System.out.println("2 jogadores conectados");
@@ -29,79 +33,136 @@ public class ServerStub implements ServerStubInterface {
         }
     }
 
-    private void forwardMessage(ClientStubInterface from, Message msg) {
-        if(clients.size() == 2) {
-            int index = clients.indexOf(from);
-            try {
-                clients.get(1 - index).receiveMessage(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void startGame(){
-        System.out.println("Iniciando partida");
-        restartSolicitation = 0;
-        Message msg = new Message(MessageType.START, null);
-        try {
-            clients.get(0).receiveMessage(msg);
-            clients.get(1).receiveMessage(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void onClientReady(){
+    @Override
+    public void onClientReady() {
         clientReady++;
-        if(clientReady == 2){
+        if (clientReady == 2) {
             clientReady = 0;
             definePlayersColorsAndFirstToPlay();
         }
     }
 
     @Override
-    public void handleClientMessage(ClientStubInterface client, Message msg) throws RemoteException {
-        MessageType type = msg.getType();
-        System.out.println("Mensagem do tipo " + type.getValue() + " enviada por " + client.getNickname());
-        switch (type) {
-            case START:
-                onClientReady();
-                break;
-            case QUIT:
-                System.out.println("Mensagem de desistencia recebida do cliente " + client.getNickname());
-                forwardMessage(client, msg);
-                System.out.println("Removendo cliente " + client.getNickname());
-                clients.remove(client);
-                break;
-            case CLOSE:
-                System.out.println("Removendo conexao do cliente " + client.getNickname());
-                clients.remove(client);
-                break;
-            case TEXT:
-                TextMessage txtMsg = (TextMessage) msg.getContent();
-                System.out.println("Texto: " + txtMsg.getText());
-                forwardMessage(client, msg);
-                break;
-            case RESTART:
-                System.out.println("Mensagem de solicitacao de reinicio de partida recebida do cliente "
-                        + client.getNickname());
-                forwardMessage(client, msg);
-                restartGame();
-                break;
-            case DENY_RESTART:
-                System.out.println("Mensagem de recuso de reinicio de partida recebida do cliente  " +
-                        client.getNickname());
-                forwardMessage(client, msg);
-                restartSolicitation--;
-                break;
-            case HANDSHAKE:
-            case MOVEMENT:
-            case TYPING_STATUS:
-                forwardMessage(client, msg);
-                break;
-            default:
-                break;
+    public void onClientQuit(ClientStubInterface client) {
+        try {
+            System.out.println("Mensagem de desistencia recebida do cliente " + client.getNickname());
+            clients.get(1 - clients.indexOf(client)).otherPlayerDisconnected();
+            System.out.println("Removendo cliente " + client.getNickname());
+            clients.remove(client);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void closeClientConnection(ClientStubInterface client) {
+        try {
+            System.out.println("Removendo conexao do cliente " + client.getNickname());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        clients.remove(client);
+    }
+
+    @Override
+    public void receiveClientTextMessage(ClientStubInterface client, String text) {
+        System.out.println("Texto: " + text);
+        try {
+            clients.get(1 - clients.indexOf(client)).receiveTextMessage(text);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRestartSolicitation(ClientStubInterface client) {
+        try {
+            System.out.println("Mensagem de solicitacao de reinicio de partida recebida do cliente "
+                    + client.getNickname());
+            clients.get(1 - clients.indexOf(client)).onRestartSolicitation();
+            restartGame();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRestartSolicitationDenied(ClientStubInterface client) {
+        try {
+            System.out.println("Mensagem de recuso de reinicio de partida recebida do cliente  " +
+                    client.getNickname());
+            clients.get(1 - clients.indexOf(client)).onRestartSolicitationDenied();
+            restartSolicitation--;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void receiveClientHandshake(ClientStubInterface client, Handshake handshake){
+        System.out.println("Recebendo handshake de cliente.\nNickname: " + handshake.getNickname() +
+                "\nAvatar: " + handshake.getAvatar());
+        try {
+            clients.get(1 -clients.indexOf(client)).receiveOtherPlayerHandshake(handshake);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClientMovePiece(ClientStubInterface client, PlayerMovement mov){
+        try {
+            System.out.println("Cliente " + client.getNickname() + " moveu peca. Movimento: \n" +
+                    "De: " + mov.getCoordSource() + "\nPara: " + mov.getCoordDest());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+            clients.get(1 -clients.indexOf(client)).movePiece(mov);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateClientTypingStatus(ClientStubInterface client, TypingStatus status){
+        try {
+            System.out.println("Atualizacao de status de digitacao do cliente " + client.getNickname() +
+                    "Status atual: " + status.getValue());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+            clients.get(1 -clients.indexOf(client)).updateTypingStatus(status);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startGame() {
+        System.out.println("Iniciando partida");
+        restartSolicitation = 0;
+        try {
+            clients.get(0).startGame();
+        } catch (RemoteException e) {
+            try {
+                System.out.println("Falha ao enviar mensagem de inicio de partida para o cliente " +
+                        clients.get(0).getNickname());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        try {
+            clients.get(1).startGame();
+        } catch (RemoteException e) {
+            try {
+                System.out.println("Falha ao enviar mensagem de inicio de partida para o cliente " +
+                        clients.get(1).getNickname());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
         }
     }
 
@@ -139,9 +200,6 @@ public class ServerStub implements ServerStubInterface {
             client2GameConfig.setPlayerPieceColor(CellColor.DARK);
         }
 
-        Message client1MessageConfig = new Message(MessageType.CONFIG, client1GameConfig);
-        Message client2MessageConfig = new Message(MessageType.CONFIG, client2GameConfig);
-
         try {
             System.out.println("Configuracao do jogador 1(" + clients.get(0).getNickname() + "):" +
                             "\nCor de Peca: " + client1GameConfig.getPlayerPieceColor().getValue() +
@@ -156,8 +214,8 @@ public class ServerStub implements ServerStubInterface {
         }
 
         try {
-            this.clients.get(0).receiveMessage(client1MessageConfig);
-            this.clients.get(1).receiveMessage(client2MessageConfig);
+            this.clients.get(0).receiveGameConfig(client1GameConfig);
+            this.clients.get(1).receiveGameConfig(client2GameConfig);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

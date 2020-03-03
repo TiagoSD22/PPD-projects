@@ -1,6 +1,8 @@
 package bizingo.commons;
 
-public class PlayerMovement extends MessageContent {
+import java.io.Serializable;
+
+public class PlayerMovement implements Serializable {
     private String coordSource;
     private String coordDest;
 

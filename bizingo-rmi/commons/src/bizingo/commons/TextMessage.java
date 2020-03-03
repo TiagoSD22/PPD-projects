@@ -1,6 +1,8 @@
 package bizingo.commons;
 
-public class TextMessage extends MessageContent {
+import java.io.Serializable;
+
+public class TextMessage implements Serializable {
     private String text;
 
     public TextMessage(String text){

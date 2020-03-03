@@ -9,8 +9,6 @@ import javafx.scene.image.Image;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import static bizingo.commons.MessageType.HANDSHAKE;
-
 public class ClientStub extends UnicastRemoteObject implements ClientStubInterface {
     private ServerStubInterface server;
     private String nickname;
@@ -30,6 +28,7 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
         this.avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" + avatar));
     }
 
+    @Override
     public String getNickname() {
         return nickname;
     }
@@ -38,6 +37,7 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
         this.nickname = nickname;
     }
 
+    @Override
     public String getAvatarName() {
         return avatarName;
     }
@@ -56,127 +56,143 @@ public class ClientStub extends UnicastRemoteObject implements ClientStubInterfa
     }
 
     @Override
-    public void receiveMessage(Message msg) throws RemoteException {
-        switch (msg.getType()){
-            case START:
-                System.out.println("Mensagem de jogo pronto para iniciar recebida, iniciando partida");
-                Platform.runLater(() -> this.menuController.gameReadyToStart());
-                break;
-            case HANDSHAKE:
-                Handshake handshake = (Handshake) msg.getContent();
-                System.out.println("Handshake recebido");
-                System.out.println("Nick do outro jogador: " + handshake.getNickname() +
-                        "\nAvatar do outro jogador: " + handshake.getAvatar());
-                otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
-                        handshake.getAvatar()));
-                otherClientNickname = handshake.getNickname();
-                mainController.getChatToolbarController().setOtherPlayerAvatar(otherClientAvatar);
-                mainController.getChatToolbarController().setOtherPlayerNickname(otherClientNickname);
-                break;
-            case CONFIG:
-                GameConfig playerConfig = (GameConfig) msg.getContent();
-                System.out.println("Mensagem de configuracao de partida recebida");
-                mainController.getGameController().setPlayerColor(playerConfig.getPlayerPieceColor());
-                mainController.getGameController().setTurnToPlay(playerConfig.isFirstTurn());
-                Platform.runLater(() -> sendHandshake(nickname, avatarName));
-                break;
-            case TEXT:
-                TextMessage txtMsg = (TextMessage) msg.getContent();
-                System.out.println("Mensagem recebida do servidor: " + txtMsg.getText());
-                mainController.getChatToolbarController().displayIncomingMessage(otherClientAvatar, txtMsg.getText());
-                break;
-            case TYPING_STATUS:
-                TypingStatusMessage statusMsg = (TypingStatusMessage) msg.getContent();
-                System.out.println("Mensagem de status de digitacao recebida, status: " +
-                        statusMsg.getStatus().getValue());
-                mainController.getChatToolbarController().showTypingStatus(statusMsg.getStatus());
-                break;
-            case MOVEMENT:
-                PlayerMovement mov = (PlayerMovement) msg.getContent();
-                String source = mov.getCoordSource();
-                String dest = mov.getCoordDest();
-                System.out.println("Mensagem de movimento recebida, movendo celula em " + source +
-                        " para " + dest);
-                mainController.getGameController().showOponentMove(source, dest);
-                break;
-            case RESTART:
-                System.out.println("Mensagem de solicitacao de recomeco de partida recebida");
-                Platform.runLater(() -> mainController.getGameController().otherPlayerWannaRestart());
-                break;
-            case DENY_RESTART:
-                System.out.println("Mensagem de recuso de reinicio de partida ecebida");
-                Platform.runLater(() -> mainController.getGameController().onRestartSolicitationDenied());
-                break;
-            case QUIT:
-                System.out.println("Mensagem de desistencia do outro jogador recebida. " +
-                        "Encerrando partida");
-                Platform.runLater(() -> mainController.getGameController().showGiveUpDialog());
-                break;
-            default:
-                break;
-        }
+    public void startGame(){
+        System.out.println("Iniciando partida");
+        Platform.runLater(() -> this.menuController.gameReadyToStart());
     }
 
-    private void sendMessage(Message msg){
+    @Override
+    public void receiveOtherPlayerHandshake(Handshake handshake){
+        System.out.println("Handshake recebido");
+        System.out.println("Nick do outro jogador: " + handshake.getNickname() +
+                "\nAvatar do outro jogador: " + handshake.getAvatar());
+        otherClientAvatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
+                handshake.getAvatar()));
+        otherClientNickname = handshake.getNickname();
+        mainController.getChatToolbarController().setOtherPlayerAvatar(otherClientAvatar);
+        mainController.getChatToolbarController().setOtherPlayerNickname(otherClientNickname);
+    }
+
+    @Override
+    public void receiveGameConfig(GameConfig playerConfig){
+        System.out.println("Mensagem de configuracao de partida recebida");
+        mainController.getGameController().setPlayerColor(playerConfig.getPlayerPieceColor());
+        mainController.getGameController().setTurnToPlay(playerConfig.isFirstTurn());
+        Platform.runLater(() -> sendHandshake(nickname, avatarName));
+    }
+
+    @Override
+    public void updateTypingStatus(TypingStatus status){
+        System.out.println("Mensagem de status de digitacao recebida, status: " + status.getValue());
+        mainController.getChatToolbarController().showTypingStatus(status);
+    }
+
+    @Override
+    public void movePiece(PlayerMovement mov){
+        String source = mov.getCoordSource();
+        String dest = mov.getCoordDest();
+        System.out.println("Mensagem de movimento recebida, movendo celula em " + source +
+                " para " + dest);
+        mainController.getGameController().showOponentMove(source, dest);
+    }
+
+    @Override
+    public void onRestartSolicitationDenied(){
+        System.out.println("Mensagem de recuso de reinicio de partida ecebida");
+        Platform.runLater(() -> mainController.getGameController().onRestartSolicitationDenied());
+    }
+
+    @Override
+    public void onRestartSolicitation(){
+        System.out.println("Mensagem de solicitacao de recomeco de partida recebida");
+        Platform.runLater(() -> mainController.getGameController().otherPlayerWannaRestart());
+    }
+
+    @Override
+    public void receiveTextMessage(String text){
+        System.out.println("Mensagem recebida do servidor: " + text);
+        mainController.getChatToolbarController().displayIncomingMessage(otherClientAvatar, text);
+    }
+
+    @Override
+    public void otherPlayerDisconnected(){
+        System.out.println("Jogador oponente desistiu. Encerrando partida");
+        Platform.runLater(() -> mainController.getGameController().showGiveUpDialog());
+    }
+
+    private void sendHandshake(String nickname, String avatar) {
+        Handshake handshake = new Handshake(nickname, avatar);
         try {
-            this.server.handleClientMessage(this, msg);
+            server.receiveClientHandshake(this, handshake);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendHandshake(String nickname, String avatar) {
-        Handshake handshake = new Handshake(nickname, avatar);
-        Message msg = new Message(HANDSHAKE, handshake);
-        sendMessage(msg);
-    }
-
     public void sendTextMessage(String text) {
         System.out.println("Mensagem digitada: " + text);
-        TextMessage txtMsg = new TextMessage(text);
-        Message msg = new Message(MessageType.TEXT, txtMsg);
-        sendMessage(msg);
+        try {
+            server.receiveClientTextMessage(this, text);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         mainController.getChatToolbarController().displayOwnMessage(avatar, text);
     }
 
     public void sendPlayerMovement(String source, String dest){
         PlayerMovement mov = new PlayerMovement(source, dest);
-        Message msg = new Message(MessageType.MOVEMENT, mov);
-        sendMessage(msg);
+        try {
+            server.onClientMovePiece(this, mov);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendCloseMessage(){
-        TextMessage txtMSg = new TextMessage("close");
-        Message msg = new Message(MessageType.CLOSE, txtMSg);
-        sendMessage(msg);
+        try {
+            server.closeClientConnection(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendQuitMessage(){
-        MessageContent content = new TextMessage("quit");
-        Message quitMsg = new Message(MessageType.QUIT, content);
-        sendMessage(quitMsg);
+        try {
+            server.onClientQuit(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendRestartMessage(){
-        TextMessage txt = new TextMessage("restart");
-        Message rtMsg = new Message(MessageType.RESTART, txt);
-        sendMessage(rtMsg);
+        try {
+            server.onRestartSolicitation(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendDenyRestartMessage(){
-        Message msg = new Message(MessageType.DENY_RESTART, null);
-        sendMessage(msg);
+        try {
+            server.onRestartSolicitationDenied(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendStartMessage(){
-        TextMessage txt = new TextMessage("start");
-        Message rtMsg = new Message(MessageType.START, txt);
-        sendMessage(rtMsg);
+        try {
+            server.onClientReady();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendTypingStatusMessage(TypingStatus status){
-        TypingStatusMessage statusMessage = new TypingStatusMessage(status);
-        Message msg = new Message(MessageType.TYPING_STATUS, statusMessage);
-        sendMessage(msg);
+        try {
+            server.updateClientTypingStatus(this, status);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
