@@ -18,7 +18,6 @@ public class AudioService {
     private Media loseSound;
     private Media opponentPieceCapturedSound;
     private Media ownPieceCapturedSound;
-    private Media ameno;
     private MediaPlayer newMessageMediaPlayer;
     private MediaPlayer pieceSelectedMediaPlayer;
     private MediaPlayer pieceDeselectedMediaPlayer;
@@ -28,7 +27,6 @@ public class AudioService {
     private MediaPlayer loseMediaPlayer;
     private MediaPlayer opponentPieceCapturedMediaPlayer;
     private MediaPlayer ownPieceCapturedMediaPlayer;
-    private MediaPlayer amenoMediaPlayer;
 
     public static boolean sound;
 
@@ -73,9 +71,6 @@ public class AudioService {
             opponentPieceCapturedSound = new Media(getClass().getResource("/assets/Sounds/opponent_piece_captured.mp3")
                     .toURI().toString()
             );
-            ameno = new Media(getClass().getResource("/assets/Sounds/ameno.mp3")
-                    .toURI().toString()
-            );
         } catch (URISyntaxException e) {
             System.out.println("Falha ao carregar audio");
             e.printStackTrace();
@@ -89,20 +84,6 @@ public class AudioService {
         loseMediaPlayer = new MediaPlayer(loseSound);
         ownPieceCapturedMediaPlayer = new MediaPlayer(ownPieceCapturedSound);
         opponentPieceCapturedMediaPlayer = new MediaPlayer(opponentPieceCapturedSound);
-        amenoMediaPlayer = new MediaPlayer(ameno);
-        amenoMediaPlayer.setOnEndOfMedia(new Runnable() {
-            public void run() {
-                amenoMediaPlayer.seek(Duration.ZERO);
-            }
-        });
-    }
-
-    public void playAmeno(){
-        amenoMediaPlayer.play();
-    }
-
-    public void stopAmeno(){
-        amenoMediaPlayer.stop();
     }
 
     public void onMute(){
