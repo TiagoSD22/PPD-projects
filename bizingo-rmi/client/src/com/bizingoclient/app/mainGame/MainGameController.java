@@ -2,14 +2,14 @@ package com.bizingoclient.app.mainGame;
 
 
 import com.bizingoclient.Main;
-import com.bizingoclient.app.mainGame.game.GameController;
 import com.bizingoclient.app.mainGame.chatToolbar.ChatToolbarController;
-import com.bizingoclient.app.services.AudioService;
+import com.bizingoclient.app.mainGame.game.GameController;
 import com.bizingoclient.app.services.ClientStub;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
 import java.util.HashMap;
 
 
