@@ -9,7 +9,6 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXSnackbar;
-import io.vavr.Tuple2;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -35,6 +34,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
+
+import java.util.ArrayList;
 
 
 public class GameController {
@@ -501,13 +502,22 @@ public class GameController {
     }
 
     private void analyseMovement(BizingoCell cellDest){
-        Tuple2<Boolean, BizingoCell> surrounded = bizingoBoard.cellHasSurrounded(cellDest);
-        if (surrounded._1) { //peca capturou alguma outra
-            BizingoCell captured = surrounded._2;
-            Polygon t = bizingoBoard.getCellMap().getKey(captured);
-            Circle c = bizingoBoard.getPieceMap().get(t);
-            playPieceCapturedAnimation(c);
-            notifyCapture(captured);
+        ArrayList<BizingoCell> surrounded = bizingoBoard.cellHasSurrounded(cellDest);
+        if (!surrounded.isEmpty()) { //peca capturou alguma outra
+            for(BizingoCell captured : surrounded) {
+                Polygon t = bizingoBoard.getCellMap().getKey(captured);
+                Circle c = bizingoBoard.getPieceMap().get(t);
+
+                ScaleTransition capturedPieceAnimation = new ScaleTransition(Duration.seconds(1.5));
+                capturedPieceAnimation.setFromX(1.0);
+                capturedPieceAnimation.setFromY(1.0);
+                capturedPieceAnimation.setToX(0.0);
+                capturedPieceAnimation.setToY(0.0);
+                capturedPieceAnimation.setNode(c);
+                capturedPieceAnimation.play();
+
+                notifyCapture(captured);
+            }
         } else {
             if (bizingoBoard.isSurrounded(cellDest)) { //peca se moveu para um cerco
                 Polygon t = bizingoBoard.getCellMap().getKey(cellDest);

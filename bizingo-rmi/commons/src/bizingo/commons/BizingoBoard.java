@@ -1,6 +1,5 @@
 package bizingo.commons;
 
-import io.vavr.Tuple2;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import org.apache.commons.collections4.BidiMap;
@@ -154,17 +153,17 @@ public class BizingoBoard {
         return false;
     }
 
-    public Tuple2<Boolean, BizingoCell> cellHasSurrounded(BizingoCell cell){
-        Tuple2<Boolean, BizingoCell> res = new Tuple2<>(false, null);
+    public ArrayList<BizingoCell> cellHasSurrounded(BizingoCell cell){
+        ArrayList<BizingoCell> surrounded = new ArrayList<>();
         for(BizingoCell neighbour : cell.getNeighboursOppositeColor()){
             if(neighbour.getContent() != CellContent.EMPTY){
                 if(isSurrounded(neighbour)){
                     neighbour.setContent(CellContent.EMPTY);
-                    return new Tuple2<Boolean, BizingoCell>(true, neighbour);
+                    surrounded.add(neighbour);
                 }
             }
         }
-        return res;
+        return surrounded;
     }
 
     public BidiMap<String, BizingoCell> getPositionCellMap() {
