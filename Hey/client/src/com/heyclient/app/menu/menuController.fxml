@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<AnchorPane fx:id="menuRoot" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.heyclient.app.menu.MenuController">
+<AnchorPane fx:id="menuRoot" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="732.0" prefWidth="412.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.heyclient.app.menu.MenuController">
    <children>
-      <GridPane layoutX="112.0" layoutY="-1.0" prefHeight="721.0" prefWidth="249.0" style="-fx-background-color: rgba(34, 46, 80,  0.55);">
+      <GridPane prefHeight="732.0" prefWidth="412.0" style="-fx-background-color: #2f2f2f; -fx-background-image: url('/assets/Images/menu.jpg');">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
@@ -31,39 +33,51 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <ImageView fitHeight="214.0" fitWidth="317.0" pickOnBounds="true" preserveRatio="true" translateY="-30.0" GridPane.rowIndex="1">
+            <ImageView fitHeight="214.0" fitWidth="317.0" pickOnBounds="true" preserveRatio="true" translateY="-30.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                <viewport>
                   <Rectangle2D />
                </viewport>
-            </ImageView>
-            <CustomTextField fx:id="nicknameField" alignment="CENTER" focusTraversable="false" promptText="Nickname" GridPane.rowIndex="3" />
-            <JFXButton fx:id="connectButton" alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" onAction="#connect" ripplerFill="#84d08d" style="-fx-background-color: #13C196;" text="CONECTAR" textFill="#040924" GridPane.rowIndex="6">
+               <image>
+                  <Image url="@../../../../assets/Images/logo.png" />
+               </image>
                <GridPane.margin>
-                  <Insets left="80.0" top="5.0" />
+                  <Insets right="20.0" top="80.0" />
+               </GridPane.margin>
+            </ImageView>
+            <CustomTextField fx:id="nicknameField" alignment="CENTER" focusTraversable="false" prefHeight="26.0" prefWidth="366.0" promptText="Usuário" style="-fx-background-radius: 50, 50, 50, 50; -fx-padding: 10, 0, 10, 0; -fx-background-color: #fcfcfc;" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="25.0" right="25.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="SansSerif Regular" size="13.0" />
+               </font></CustomTextField>
+            <JFXButton fx:id="connectButton" alignment="BOTTOM_LEFT" buttonType="RAISED" contentDisplay="CENTER" onAction="#connect" ripplerFill="#67aaf9" style="-fx-background-color: #f7717d; -fx-background-radius: 20, 20, 20, 20;" text="CONECTAR" textAlignment="CENTER" textFill="#040924" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets />
                </GridPane.margin>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
             </JFXButton>
             <StackPane fx:id="avatarRegion" maxHeight="64.0" maxWidth="64.0" prefHeight="64.0" prefWidth="64.0" GridPane.rowIndex="4">
                <opaqueInsets>
-                  <Insets left="30.0" />
+                  <Insets />
                </opaqueInsets>
                <GridPane.margin>
-                  <Insets left="20.0" />
+                  <Insets left="100.0" />
                </GridPane.margin>
                <children>
                   <ImageView fx:id="avatarPreview" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </StackPane>
-            <ComboBox fx:id="avatarSelect" maxHeight="34.0" maxWidth="130.0" prefHeight="34.0" prefWidth="130.0" promptText="Avatar" stylesheets="@stylesheet.css" visibleRowCount="2" GridPane.rowIndex="4">
+            <JFXComboBox fx:id="avatarSelect" focusColor="#087e8b" labelFloat="true" promptText="Avatar" stylesheets="@stylesheet.css" unFocusColor="#fcfcfc" visibleRowCount="2" GridPane.rowIndex="4">
                <GridPane.margin>
-                  <Insets left="120.0" right="5.0" />
+                  <Insets left="200.0" />
                </GridPane.margin>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </ComboBox>
+            </JFXComboBox>
          </children>
          <effect>
             <InnerShadow />

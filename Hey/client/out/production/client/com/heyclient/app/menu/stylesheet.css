@@ -78,3 +78,8 @@
 .list-cell {
     -fx-background-color: transparent;
 }
+
+.jfx-combo-box .prompt-text,
+.jfx-combo-box > .list-cell{
+    -fx-font-size: 15;
+}

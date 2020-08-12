@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -55,17 +56,16 @@ public class Main extends Application {
         try {
             stage = primaryStage;
 
-            //stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/Images/icone.png")));
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/Images/logo.png")));
             stage.setTitle("Hey");
 
             Parent fxmlMenu = FXMLLoader.load(getClass().getResource("app/menu/menuController.fxml"));
-            menuScene = new Scene(fxmlMenu, 960, 720);
+            menuScene = new Scene(fxmlMenu, 412, 732);
             Parent fxmlMainGame = FXMLLoader.load(getClass().getResource("app/mainChat/mainChatController.fxml"));
 
             mainGameScene = new Scene(fxmlMainGame, 1280, 720);
 
             stage.setTitle("Hey");
-            //stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/Images/icone.png")));
             stage.setScene(menuScene);
             stage.show();
         }

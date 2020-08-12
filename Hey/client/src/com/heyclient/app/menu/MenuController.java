@@ -7,6 +7,7 @@ import com.heyclient.app.services.MessageHandler;
 import com.heyclient.app.utils.Avatars;
 import com.heyclient.app.utils.ConnectionConfig;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import javafx.beans.value.ChangeListener;
@@ -18,7 +19,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.effect.DropShadow;
@@ -48,7 +48,7 @@ public class MenuController {
     private StackPane avatarRegion;
     private Circle clip;
     @FXML
-    private ComboBox avatarSelect;
+    private JFXComboBox avatarSelect;
     private Map<String, Image> avatarMap = new HashMap<String, Image>();
     @FXML
     private JFXButton connectButton;
@@ -125,6 +125,7 @@ public class MenuController {
                 imageView.setFitHeight(64);
                 imageView.setFitWidth(64);
                 imageView.setPreserveRatio(true);
+                this.setVisible(name != null || !empty);
                 if (empty) {
                     setText(null);
                     setGraphic(null);
@@ -138,6 +139,8 @@ public class MenuController {
                         setText("#" + String.valueOf(collection.indexOf(name) + 1));
                     }
                 }
+
+                setTextFill(Color.valueOf("#fcfcfc"));
             }
         };
     }
@@ -161,6 +164,8 @@ public class MenuController {
         ObservableList<String> selectItems = FXCollections.observableArrayList(avatarMap.keySet());
         avatarSelect.setItems(selectItems);
 
+        avatarSelect.setPromptText("Avatar");
+
         avatarSelect.setCellFactory(param -> avatarCellFactory(selectItems, true));
         avatarSelect.setButtonCell(avatarCellFactory(selectItems, false));
 
@@ -170,7 +175,7 @@ public class MenuController {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 avatarSelect.setBorder(null);
                 avatarPreview.setImage(avatarMap.get(newValue));
-                clip.setStroke(Color.valueOf("#9CEAEF"));
+                clip.setStroke(Color.valueOf("#67aaf9"));
                 clip.setStrokeWidth(3);
                 clip.setRadius(36);
                 avatarPreview.setFitWidth(64);
@@ -214,21 +219,31 @@ public class MenuController {
 
     private void loadWarningDialog() {
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setHeading(new Text("Informe seu nome de usuario e selecione um avatar"));
+        Text title = new Text("Informe seu nome e selecione um avatar");
+        title.setTextAlignment(TextAlignment.CENTER);
+        content.setHeading(title);
         Text info = new Text("Por favor, digite um nome de usuario no campo Usuario e escolha um avatar para poder " +
-                "iniciar o jogo");
-        info.setWrappingWidth(500);
+                "se conectar");
         info.setTextAlignment(TextAlignment.LEFT);
+        info.setWrappingWidth(364);
         content.setBody(info);
+        content.setMinWidth(388);
+        content.setMinHeight(200);
+
         StackPane stackPane = new StackPane();
-        stackPane.setLayoutY(230);
-        stackPane.setLayoutX(230);
-        info.setWrappingWidth(500);
+        stackPane.setLayoutY(260);
+        stackPane.setLayoutX(12);
+        stackPane.setPrefWidth(388);
+
         warningDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        warningDialog.setMinHeight(200);
+        warningDialog.setMinWidth(388);
+        warningDialog.setMaxSize(stackPane.getMaxWidth(), stackPane.getMaxHeight());
+
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#f7717d"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -236,26 +251,40 @@ public class MenuController {
                 warningDialog.close();
             }
         });
+        button.setLayoutX(10);
+
         content.setActions(button);
         menuRoot.getChildren().add(stackPane);
     }
 
     private void loadConnectionSolicitationRejectedDialog() {
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setHeading(new Text("Falha ao conectar"));
+        Text title = new Text("Falha ao conectar");
+        title.setTextAlignment(TextAlignment.CENTER);
+        content.setHeading(title);
         Text info = new Text("Esse nome de usuario ja esta sendo usuado. Por favor, escolha outro");
-        info.setWrappingWidth(500);
         info.setTextAlignment(TextAlignment.LEFT);
+        info.setWrappingWidth(364);
+
         content.setBody(info);
+        content.setMinWidth(388);
+        content.setMinHeight(200);
+        content.setBody(info);
+
         StackPane stackPane = new StackPane();
-        stackPane.setLayoutY(230);
-        stackPane.setLayoutX(230);
-        info.setWrappingWidth(500);
+        stackPane.setLayoutY(260);
+        stackPane.setLayoutX(12);
+        stackPane.setPrefWidth(388);
+
         connectionSolicitationRejected = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        connectionSolicitationRejected.setMinHeight(200);
+        connectionSolicitationRejected.setMinWidth(388);
+        connectionSolicitationRejected.setMaxSize(stackPane.getMaxWidth(), stackPane.getMaxHeight());
+
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#13C196"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#f7717d"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -268,5 +297,4 @@ public class MenuController {
         content.setActions(button);
         menuRoot.getChildren().add(stackPane);
     }
-
 }
