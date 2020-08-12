@@ -4,6 +4,7 @@ package com.heyclient.app.mainChat.toolbar;
 import com.hey.common.Client;
 import com.hey.common.Status;
 import com.heyclient.app.mainChat.MainChatController;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -48,6 +49,7 @@ public class ToolbarController {
         clip.setStrokeWidth(3);
         clip.setFill(Color.valueOf("#2f2f2f"));
         clip.setTranslateX(-110);
+        clip.setTranslateY(5);
         currentUserInfoRegion.getChildren().add(clip);
         clip.toBack();
 
@@ -94,8 +96,14 @@ public class ToolbarController {
                 }
                 currentSelectedContactInfoBox = contactInfoBox;
                 currentSelectedContactInfoBox.setFocus(true);
+
+                Platform.runLater(() -> {
+                    mainChatController.getChatController().setCurrentCollocutor(c);
+                });
             }
         });
-        contactListView.getItems().add(contactInfoBox);
+        Platform.runLater(() -> {
+            contactListView.getItems().add(contactInfoBox);
+        });
     }
 }

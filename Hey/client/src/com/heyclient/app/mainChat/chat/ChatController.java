@@ -2,6 +2,7 @@ package com.heyclient.app.mainChat.chat;
 
 
 import com.hey.common.Client;
+import com.hey.common.Status;
 import com.heyclient.app.mainChat.MainChatController;
 import com.heyclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
@@ -23,6 +24,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.logging.SimpleFormatter;
+
 
 public class ChatController {
 
@@ -40,9 +44,14 @@ public class ChatController {
     @FXML
     private Text currentCollocutorName;
     @FXML
+    private Text currentCollocutorStatus;
+    @FXML
     private StackPane currentCollocutorInfoRegion;
     @FXML
     private StackPane emptyChatBg;
+
+    private Client currentCollocutor;
+    private Circle currentCollocutorStatusInfo;
 
     public void init(MainChatController mainChatController) {
         sendMessageBt.setGraphic(new ImageView(new Image(getClass()
@@ -54,13 +63,12 @@ public class ChatController {
         sendMessageBt.setEffect(ds);
 
         this.mainChatController = mainChatController;
-        Circle clip = new Circle(36);
-        clip.setStroke(Color.valueOf("#B8D5B8"));
-        clip.setStrokeWidth(3);
-        clip.setFill(Color.valueOf("#2f2f2f"));
-        clip.setTranslateX(5);
-        currentCollocutorInfoRegion.getChildren().add(clip);
-        clip.toBack();
+        currentCollocutorStatusInfo = new Circle(36);
+        currentCollocutorStatusInfo.setStrokeWidth(3);
+        currentCollocutorStatusInfo.setFill(Color.valueOf("#2f2f2f"));
+        currentCollocutorStatusInfo.setTranslateX(5);
+        currentCollocutorInfoRegion.getChildren().add(currentCollocutorStatusInfo);
+        currentCollocutorStatusInfo.toBack();
 
         Image image = new Image(getClass().getResourceAsStream("/assets/Images/chat_bg.jpg"));
         BackgroundSize backgroundSize = new BackgroundSize(978, 588, false,
@@ -89,11 +97,7 @@ public class ChatController {
         if(!text.isEmpty()) {
             textInput.clear();
 
-            // mock
-            Client receiver = new Client();
-            receiver.setName("tiago");
-
-            mainChatController.getMessageHandler().sendMessageToBroker(receiver, text);
+            mainChatController.getMessageHandler().sendMessageToBroker(currentCollocutor, text);
         }
     }
 
@@ -218,12 +222,34 @@ public class ChatController {
         });
     }
 
-    public void setCurrentCollocutorAvatar(Image avatar) {
+    public void setCurrentCollocutor(Client c){
+        this.emptyChatBg.setVisible(false);
+        currentCollocutor = c;
+        setCurrentCollocutorAvatar(new Image(getClass().getResourceAsStream("/assets/Images/avatars/"
+                + c.getAvatarName())));
+        setCurrentCollocutorName(c.getName());
+
+        setCurrentCollocutorStatus(c);
+    }
+
+    private void setCurrentCollocutorAvatar(Image avatar) {
         currentCollocutorAvatar.setImage(avatar);
     }
 
-    public void setCurrentCollocutorName(String userName) {
+    private void setCurrentCollocutorName(String userName) {
         currentCollocutorName.setText(userName);
+    }
+
+    private void setCurrentCollocutorStatus(Client c){
+        if(c.getStatus().equals(Status.ONLINE)){
+            currentCollocutorStatus.setText("online");
+            currentCollocutorStatusInfo.setStroke(Color.valueOf("#087e8b"));
+        }
+        else{
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY HH:mm");
+            currentCollocutorStatus.setText("Visto por último " + df.format(c.getLastSeen()));
+            currentCollocutorStatusInfo.setStroke(Color.valueOf("#707070"));
+        }
     }
 
     public void clearMessages(){
