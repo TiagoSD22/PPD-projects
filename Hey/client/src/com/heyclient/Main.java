@@ -15,7 +15,7 @@ public class Main extends Application {
 
     private static Stage stage;
     private static Scene menuScene;
-    private static Scene mainGameScene;
+    private static Scene chatScene;
     private static ArrayList<OnChangeSceen> listeners = new ArrayList<>();
 
     public static void changeScreen(String scr, Object data) {
@@ -27,7 +27,7 @@ public class Main extends Application {
                 break;
 
             case "chat-screen":
-                stage.setScene(mainGameScene);
+                stage.setScene(chatScene);
                 stage.setResizable(false);
                 notifyAllListeners("chat-screen", data, stage);
                 break;
@@ -63,9 +63,10 @@ public class Main extends Application {
             menuScene = new Scene(fxmlMenu, 412, 732);
             Parent fxmlMainGame = FXMLLoader.load(getClass().getResource("app/mainChat/mainChatController.fxml"));
 
-            mainGameScene = new Scene(fxmlMainGame, 1280, 720);
+            chatScene = new Scene(fxmlMainGame, 1280, 720);
 
             stage.setTitle("Hey");
+            stage.setResizable(false);
             stage.setScene(menuScene);
             stage.show();
         }

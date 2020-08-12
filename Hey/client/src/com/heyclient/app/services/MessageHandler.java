@@ -109,6 +109,13 @@ public class MessageHandler {
                                     menuController.onConnectionSolicitationResponse(response.isAccepted());
                                 });
                                 break;
+                            case CONTACT_LIST:
+                                ContactList contactListMsg = (ContactList) msg.getContent();
+                                System.out.println("Mensagem de lista de contatos recebida do servidor " +
+                                        "\nTotal de contatos: " + contactListMsg.getContacts().size());
+
+                                mainChatController.onContactListReceived(contactListMsg.getContacts());
+                                break;
                             default:
                                 break;
                         }
@@ -140,10 +147,6 @@ public class MessageHandler {
         }
     }
 
-    private void sendMessageToQueue(String queueDestinationName){
-
-    }
-
     public void sendConnectionSolicitation(String userName, String avatarImageName){
         Message msg = new Message();
 
@@ -151,6 +154,12 @@ public class MessageHandler {
 
         msg.setType(MessageType.CONNECTION_SOLICITATION);
         msg.setContent(handshake);
+
+        sendMessageThroughSocket(msg);
+    }
+
+    public void getContactList(){
+        Message msg = new Message(MessageType.GET_CONTACTS, null);
 
         sendMessageThroughSocket(msg);
     }

@@ -2,15 +2,19 @@ package com.heyclient.app.mainChat;
 
 
 import com.hey.common.Client;
+import com.hey.common.Status;
 import com.heyclient.Main;
-import com.heyclient.app.mainChat.chatToolbar.ChatToolbarController;
 import com.heyclient.app.mainChat.chat.ChatController;
+import com.heyclient.app.mainChat.toolbar.ToolbarController;
 import com.heyclient.app.services.MessageHandler;
 import javafx.fxml.FXML;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainChatController {
@@ -18,9 +22,9 @@ public class MainChatController {
     @FXML
     private AnchorPane mainPane;
     @FXML
-    private ChatController chatController;
+    private ToolbarController toolbarController;
     @FXML
-    private ChatToolbarController chatToolbarController;
+    private ChatController chatController;
     private Stage mainStage;
     private MessageHandler msgh;
     private Client currentClient;
@@ -47,6 +51,8 @@ public class MainChatController {
                     currentClient = (Client) dataMap.get("client");
 
                     initControllers();
+
+                    getContactList();
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
 
@@ -56,8 +62,8 @@ public class MainChatController {
     }
 
     public void initControllers() {
-        chatToolbarController.init(this);
         chatController.init(this);
+        toolbarController.init(this);
         msgh.setMainChatController(this);
     }
 
@@ -65,16 +71,34 @@ public class MainChatController {
         return msgh;
     }
 
+    public ToolbarController getToolbarController() {
+        return toolbarController;
+    }
+
     public ChatController getChatController() {
         return chatController;
     }
 
-    public ChatToolbarController getChatToolbarController() {
-        return chatToolbarController;
-    }
-
     public Client getCurrentClient(){
         return currentClient;
+    }
+
+    private void getContactList(){
+        msgh.getContactList();
+    }
+
+    public void onContactListReceived(List<Client> contactList){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+        for(Client c: contactList){
+            System.out.println("Contato recebido: " +
+                    "\nNome: " + c.getName() +
+                    "\nAvatar: " + c.getAvatarName() +
+                    "\nStatus: " + c.getStatus() +
+                    (c.getStatus().equals(Status.OFFLINE)? ("\nVisto por ultimo " + dateFormat.format(c.getLastSeen()))
+                            : "")
+            );
+        }
     }
 }
 

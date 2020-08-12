@@ -67,8 +67,8 @@ public class MenuController {
         avatarPreview.setImage(imProfile);
 
         clip = new Circle(24);
-        avatarPreview.setFitWidth(32);
-        avatarPreview.setFitHeight(32);
+        avatarPreview.setFitWidth(64);
+        avatarPreview.setFitHeight(64);
         clip.setStroke(Color.WHITE);
         clip.setStrokeWidth(1);
         clip.setFill(Color.rgb(0, 0, 0, 0.7));
@@ -175,7 +175,7 @@ public class MenuController {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 avatarSelect.setBorder(null);
                 avatarPreview.setImage(avatarMap.get(newValue));
-                clip.setStroke(Color.valueOf("#67aaf9"));
+                clip.setStroke(Color.valueOf("#f7717d"));
                 clip.setStrokeWidth(3);
                 clip.setRadius(36);
                 avatarPreview.setFitWidth(64);

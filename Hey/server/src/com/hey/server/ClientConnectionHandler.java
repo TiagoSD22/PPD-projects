@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientConnectionHandler implements Runnable{
     private Socket clientSocket;
@@ -60,6 +62,10 @@ public class ClientConnectionHandler implements Runnable{
                         handshake.getUserName());
                 server.onConnectionSolicitation(handshake.getUserName(), handshake.getAvatarImageName(), this);
                 break;
+            case GET_CONTACTS:
+                System.out.println("Mensagem de solicitacao de busca de contatos recebida");
+                server.getContacts(this);
+                break;
             default:
                 break;
         }
@@ -71,6 +77,13 @@ public class ClientConnectionHandler implements Runnable{
         ConnectionAcceptance response = new ConnectionAcceptance(isAccepted, text);
 
         Message msg = new Message(MessageType.CONNECTION_ACCEPTANCE, response);
+        sendMessageThroughSocket(msg);
+    }
+
+    void sendContactList(List<Client> contactList){
+        ContactList contactListMsg = new ContactList(contactList);
+        Message msg = new Message(MessageType.CONTACT_LIST, contactListMsg);
+
         sendMessageThroughSocket(msg);
     }
 

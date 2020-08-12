@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
@@ -92,6 +94,7 @@ class Server {
             if(c != null){ // usuario conhecido da aplicacao que estava offline e voltou a se conectar
                 System.out.println("Usuario " + c.getName() + " se reconectou ao servidor");
                 c.setStatus(Status.ONLINE);
+                c.setAvatarName(avatarImageName); // perceber alteracao de avatar e comunicar demais contatos
                 clientHandlerMap.put(c, cch);
             }
             else{ // primeiro usuario com esse nome se conectando ao servidor
@@ -111,5 +114,16 @@ class Server {
         }
 
         cch.sendConnectionSolicitationResponse(isAccepted, text);
+    }
+
+    public void getContacts(ClientConnectionHandler cch){
+        Client requestingClient = clientHandlerMap.getKey(cch);
+
+        System.out.println("Retornando contatos para usuario " + requestingClient.getName());
+
+        List<Client> contactList = applicationClientList.stream()
+                .filter(client -> !client.getName().equals(requestingClient.getName())).collect(Collectors.toList());
+
+        cch.sendContactList(contactList);
     }
 }
