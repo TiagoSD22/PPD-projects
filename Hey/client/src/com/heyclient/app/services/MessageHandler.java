@@ -56,13 +56,17 @@ public class MessageHandler {
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] data)
                         throws IOException {
 
-                    Message msg =    SerializationUtils.deserialize(data);
+                    Message msg = SerializationUtils.deserialize(data);
 
                     ChatMessage chatMsg = (ChatMessage) msg.getContent();
 
                     System.out.println("Mensagem recebida na fila do broker: " +
                             "\nTipo: " + msg.getType() + "\nRemetente: " + chatMsg.getSender().getName() +
                             "\nTexto: " + chatMsg.getText() + "\nEnviada em: " + chatMsg.getCreationDate());
+
+                    Platform.runLater(() -> {
+                        mainChatController.getChatController().onMessageReceived(chatMsg);
+                    });
                 }
             };
 

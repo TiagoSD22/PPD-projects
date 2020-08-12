@@ -10,8 +10,6 @@ import com.heyclient.app.services.MessageHandler;
 import javafx.fxml.FXML;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -38,14 +36,6 @@ public class MainChatController {
                 if (newScreen.equals("chat-screen")) {
                     mainStage = stage;
                     HashMap dataMap = ((HashMap<String, Object>) data);
-
-                    /*Image image = new Image(getClass().getResourceAsStream("/assets/Images/game_bg.jpg"));
-                    BackgroundSize backgroundSize = new BackgroundSize(1366, 768, false,
-                            false, false, false);
-                    BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,
-                            BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, backgroundSize);
-                    Background background = new Background(backgroundImage);
-                    mainPane.setBackground(background);*/
 
                     msgh = (MessageHandler) dataMap.get("msgHandler");
                     currentClient = (Client) dataMap.get("client");

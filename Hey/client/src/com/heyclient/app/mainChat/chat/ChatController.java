@@ -1,11 +1,13 @@
 package com.heyclient.app.mainChat.chat;
 
 
+import com.hey.common.ChatMessage;
 import com.hey.common.Client;
 import com.hey.common.Status;
 import com.heyclient.app.mainChat.MainChatController;
 import com.heyclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -256,4 +258,16 @@ public class ChatController {
         messageArea.getItems().clear();
     }
 
+    public void onMessageReceived(ChatMessage msg){
+        if(currentCollocutor != null && msg.getSender().getName().equals(currentCollocutor.getName())){
+            System.out.println("Recebida mensagem do cliente com conversa em aberta no momento");
+            // exibir mensagem da conversa em aberto
+        }
+        else{
+            System.out.println("Registrando mensagem nao lida para o cliente " + msg.getSender().getName());
+            Platform.runLater(() -> {
+                mainChatController.getToolbarController().registerUnreadMsg(msg.getSender());
+            });
+        }
+    }
 }

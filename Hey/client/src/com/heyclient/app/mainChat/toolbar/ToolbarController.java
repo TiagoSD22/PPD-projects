@@ -2,13 +2,10 @@ package com.heyclient.app.mainChat.toolbar;
 
 
 import com.hey.common.Client;
-import com.hey.common.Status;
 import com.heyclient.app.mainChat.MainChatController;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -17,11 +14,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -38,8 +35,9 @@ public class ToolbarController {
     private ListView<GridPane> contactListView;
 
     private MainChatController mainChatController;
-    private BidiMap<Client, ContactInfoBox> clientContactInfoBoxMap;
+    private BidiMap<String, ContactInfoBox> clientContactInfoBoxMap;
     private ContactInfoBox currentSelectedContactInfoBox;
+    private HashMap<String, Integer> clientUnreadMsgRegisterMap;
 
     public void init(MainChatController mainChatController) {
         this.mainChatController = mainChatController;
@@ -61,9 +59,8 @@ public class ToolbarController {
         setCurrentUserAvatar(avatar);
         setCurrentUserName(currentClient.getName());
 
-        //contactListView.
-
         clientContactInfoBoxMap = new DualHashBidiMap<>();
+        clientUnreadMsgRegisterMap = new HashMap<>();
     }
 
     private void setCurrentUserName(String name) {
@@ -86,7 +83,7 @@ public class ToolbarController {
         );
         ContactInfoBox contactInfoBox = new ContactInfoBox(avatar, c.getName(), c.getStatus());
 
-        clientContactInfoBoxMap.put(c, contactInfoBox);
+        clientContactInfoBoxMap.put(c.getName(), contactInfoBox);
         contactInfoBox.setCursor(Cursor.HAND);
         contactInfoBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -97,6 +94,11 @@ public class ToolbarController {
                 currentSelectedContactInfoBox = contactInfoBox;
                 currentSelectedContactInfoBox.setFocus(true);
 
+                if(clientUnreadMsgRegisterMap.containsKey(c.getName())){
+                    clientUnreadMsgRegisterMap.put(c.getName(), 0);
+                    contactInfoBox.registerUnreadMsg(0);
+                }
+
                 Platform.runLater(() -> {
                     mainChatController.getChatController().setCurrentCollocutor(c);
                 });
@@ -105,5 +107,19 @@ public class ToolbarController {
         Platform.runLater(() -> {
             contactListView.getItems().add(contactInfoBox);
         });
+    }
+
+    public void registerUnreadMsg(Client c){
+        if(clientUnreadMsgRegisterMap.containsKey(c.getName())){
+            int unreadMsgQtd = clientUnreadMsgRegisterMap.get(c.getName());
+            unreadMsgQtd++;
+            clientUnreadMsgRegisterMap.put(c.getName(), unreadMsgQtd);
+        }
+        else{
+            clientUnreadMsgRegisterMap.put(c.getName(), 1);
+        }
+
+        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(c.getName());
+        contactInfoBox.registerUnreadMsg(clientUnreadMsgRegisterMap.get(c.getName()));
     }
 }
