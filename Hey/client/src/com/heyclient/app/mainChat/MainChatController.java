@@ -99,6 +99,8 @@ public class MainChatController {
                             : "")
             );
         }
+
+        toolbarController.displayContactList(contactList);
     }
 }
 

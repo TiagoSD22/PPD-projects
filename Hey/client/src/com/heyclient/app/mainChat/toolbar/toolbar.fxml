@@ -2,6 +2,7 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -25,13 +26,17 @@
             </ImageView>
             <Text fx:id="currentUserName" fill="#fcfcfc" strokeType="OUTSIDE" strokeWidth="0.0" StackPane.alignment="CENTER_LEFT">
                <StackPane.margin>
-                  <Insets bottom="30.0" left="85.0" />
+                  <Insets bottom="15.0" left="85.0" />
                </StackPane.margin>
             </Text>
          </children>
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
+         <padding>
+            <Insets bottom="10.0" />
+         </padding>
       </StackPane>
+      <ListView fx:id="contactListView" layoutY="70.0" prefHeight="650.0" prefWidth="302.0" style="-fx-background-color: #2f2f2f;" />
    </children>
 </AnchorPane>
