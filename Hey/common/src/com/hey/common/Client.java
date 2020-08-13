@@ -11,10 +11,10 @@ public class Client implements Serializable {
 
     public Client(){};
 
-    public Client(String name, String avatarName){
+    public Client(String name, String avatarName, Status status){
         this.name = name;
         this.avatarName = avatarName;
-        this.status = Status.ONLINE;
+        this.status = status;
     }
 
     public String getName() {
