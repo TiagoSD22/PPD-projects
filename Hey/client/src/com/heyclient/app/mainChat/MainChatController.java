@@ -6,6 +6,7 @@ import com.hey.common.Status;
 import com.heyclient.Main;
 import com.heyclient.app.mainChat.chat.ChatController;
 import com.heyclient.app.mainChat.toolbar.ToolbarController;
+import com.heyclient.app.services.AudioService;
 import com.heyclient.app.services.MessageHandler;
 import javafx.fxml.FXML;
 import javafx.scene.layout.*;
@@ -97,6 +98,7 @@ public class MainChatController {
 
     public void onNewClientConnected(Client c){
         toolbarController.displayContact(c);
+        AudioService.getInstance().playNewClientConnectedSound();
         chatController.showNewClientConnectedNotification(c);
     }
 

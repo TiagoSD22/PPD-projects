@@ -6,6 +6,7 @@ import com.hey.common.Client;
 import com.hey.common.Status;
 import com.hey.common.TypingStatus;
 import com.heyclient.app.mainChat.MainChatController;
+import com.heyclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 import javafx.application.Platform;
@@ -256,13 +257,13 @@ public class ChatController {
     private void setCurrentCollocutorStatus(Client c){
         if(c.getStatus().equals(Status.ONLINE)){
             currentCollocutorStatus.setText("online");
-            currentCollocutorStatus.setFill(Color.valueOf("#fcfcfc"));
+            currentCollocutorStatus.setFill(Color.valueOf("#2f2f2f"));
             currentCollocutorStatusInfo.setStroke(Color.valueOf("#087e8b"));
         }
         else{
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY HH:mm");
             currentCollocutorStatus.setText("Visto por último " + df.format(c.getLastSeen()));
-            currentCollocutorStatus.setFill(Color.valueOf("#fcfcfc"));
+            currentCollocutorStatus.setFill(Color.valueOf("#2f2f2f"));
             currentCollocutorStatusInfo.setStroke(Color.valueOf("#707070"));
         }
     }
@@ -274,6 +275,8 @@ public class ChatController {
                 mainChatController.getToolbarController().registerUnreadMsg(msg.getSender());
             });
         }
+
+        AudioService.getInstance().playIncomingMessageSound();
 
         addIncomingMessageToConversation(msg.getSender().getName(), msg.getText());
     }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
@@ -33,6 +35,14 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Text>
+            <JFXButton fx:id="soundBt" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#onSoundBtClicked" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 100 100 100 100; -fx-background-color: #0ab9c2;" StackPane.alignment="CENTER_LEFT">
+               <StackPane.margin>
+                  <Insets left="250.0" top="5.0" />
+               </StackPane.margin>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
          </children>
          <opaqueInsets>
             <Insets />

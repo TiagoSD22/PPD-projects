@@ -5,11 +5,14 @@ import com.hey.common.Client;
 import com.hey.common.Status;
 import com.hey.common.TypingStatus;
 import com.heyclient.app.mainChat.MainChatController;
+import com.heyclient.app.services.AudioService;
+import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -36,15 +39,33 @@ public class ToolbarController {
     private StackPane currentUserInfoRegion;
     @FXML
     private ListView<GridPane> contactListView;
+    @FXML
+    private JFXButton soundBt;
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
     private BidiMap<String, ContactInfoBox> clientContactInfoBoxMap;
     private HashMap<String, Integer> clientUnreadMsgRegisterMap;
     private HashMap<ContactInfoBox, Client> contactInfoBoxClientMap;
+    private boolean sound = true;
+    private ImageView soundOnImage;
+    private ImageView soundOffImage;
 
     public void init(MainChatController mainChatController) {
         this.mainChatController = mainChatController;
+
+        soundOnImage = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/sound_on.png")));
+        soundOffImage = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/sound_off.png")));
+        soundOnImage.setFitHeight(30);
+        soundOnImage.setFitWidth(30);
+        soundOffImage.setFitHeight(30);
+        soundOffImage.setFitWidth(30);
+        soundBt.setGraphic(soundOnImage);
+        DropShadow ds = new DropShadow();
+        ds.setOffsetX(1.3);
+        ds.setOffsetY(1.3);
+        ds.setColor(Color.BLACK);
+        soundBt.setEffect(ds);
 
         Circle clip = new Circle(36);
         clip.setStroke(Color.valueOf("#087e8b"));
@@ -152,5 +173,16 @@ public class ToolbarController {
     public void updateClientTypingStatus(String clientName, TypingStatus typingStatus){
         ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(clientName);
         contactInfoBox.setUserTypingStatus(typingStatus);
+    }
+
+    public void onSoundBtClicked(){
+        sound = !sound;
+        AudioService.getInstance().onMute();
+        if(sound){
+            soundBt.setGraphic(soundOnImage);
+        }
+        else{
+            soundBt.setGraphic(soundOffImage);
+        }
     }
 }
