@@ -21,14 +21,12 @@
     -fx-border-color: transparent;
 }
 
-.scroll-bar:horizontal .track,
 .scroll-bar:vertical .track{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-background-radius: 0em;
 }
 
-.scroll-bar:horizontal .thumb,
 .scroll-bar:vertical .thumb {
     -fx-background-color: #6D8A96;
     -fx-background-radius: 5em;
@@ -40,11 +38,6 @@
 
 .scroll-bar:vertical {
     -fx-pref-width: 16.5;
-    -fx-padding: 3;
-}
-
-.scroll-bar:horizontal {
-    -fx-pref-height: 16.5;
     -fx-padding: 3;
 }
 
@@ -91,4 +84,11 @@
 .jfx-snackbar-toast {
     -fx-text-fill: #FCFCFC;
     -fx-font-size: 20;
+}
+
+.list-view .scroll-bar:horizontal .increment-arrow,
+.list-view .scroll-bar:horizontal .decrement-arrow,
+.list-view .scroll-bar:horizontal .increment-button,
+.list-view .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
 }

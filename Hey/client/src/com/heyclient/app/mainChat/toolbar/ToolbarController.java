@@ -3,6 +3,7 @@ package com.heyclient.app.mainChat.toolbar;
 
 import com.hey.common.Client;
 import com.hey.common.Status;
+import com.hey.common.TypingStatus;
 import com.heyclient.app.mainChat.MainChatController;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -146,5 +147,10 @@ public class ToolbarController {
         c.setAvatarName(newAvatar);
 
         contactInfoBox.setAvatar(new Image(getClass().getResourceAsStream("/assets/Images/avatars/" + newAvatar)));
+    }
+
+    public void updateClientTypingStatus(String clientName, TypingStatus typingStatus){
+        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(clientName);
+        contactInfoBox.setUserTypingStatus(typingStatus);
     }
 }

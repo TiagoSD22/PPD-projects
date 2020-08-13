@@ -1,6 +1,7 @@
 package com.heyclient.app.mainChat.toolbar;
 
 import com.hey.common.Status;
+import com.hey.common.TypingStatus;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -13,7 +14,7 @@ import javafx.scene.text.Text;
 public class ContactInfoBox extends GridPane {
     private ImageView avatar;
     private Text userName;
-    private Text userStatus;
+    private Text userTypingStatus;
     private Circle statusClip;
     private Circle statusIndicator;
     private Label unreadMsgCounter;
@@ -49,7 +50,7 @@ public class ContactInfoBox extends GridPane {
 
         this.statusClip = new Circle(32);
         this.statusIndicator = new Circle(7);
-        this.userStatus = new Text();
+        this.userTypingStatus = new Text();
 
         setUserStatus(status);
         this.statusClip.setStrokeWidth(2);
@@ -62,7 +63,7 @@ public class ContactInfoBox extends GridPane {
         this.userName = new Text(userName);
         this.userName.setTranslateY(15);
         this.userName.setFill(Color.valueOf("#fcfcfc"));
-        this.userStatus.setFill(Color.valueOf("#fcfcfc"));
+        this.userTypingStatus.setFill(Color.valueOf("#0ab9c2"));
 
         unreadMsgPane = new StackPane();
         unreadMsgCounter = new Label();
@@ -81,6 +82,7 @@ public class ContactInfoBox extends GridPane {
         this.add(this.statusClip, 0, 0, 1, 2);
         this.add(this.avatar, 0, 0, 1, 2);
         this.add(this.userName, 1, 0, 3, 1);
+        this.add(this.userTypingStatus, 1, 1, 3, 1);
         this.add(this.statusIndicator, 0, 1, 1, 1);
         this.add(unreadMsgPane, 4, 0, 1, 1);
     }
@@ -97,10 +99,10 @@ public class ContactInfoBox extends GridPane {
         }
         else{
             statusColor = "#707070";
+            this.userTypingStatus.setText("");
         }
 
         this.statusClip.setStroke(Color.valueOf(statusColor));
-        this.userStatus.setText(status.getValue());
         this.statusIndicator.setStroke(Color.valueOf(statusColor));
         this.statusIndicator.setFill(Color.valueOf(statusColor));
     }
@@ -123,6 +125,15 @@ public class ContactInfoBox extends GridPane {
         else{
             unreadMsgPane.setVisible(true);
             unreadMsgCounter.setText(String.valueOf(qtd));
+        }
+    }
+
+    public void setUserTypingStatus(TypingStatus typingStatus){
+        if(typingStatus.equals(TypingStatus.TYPING)){
+            this.userTypingStatus.setText("Digitando...");
+        }
+        else{
+            this.userTypingStatus.setText("");
         }
     }
 }

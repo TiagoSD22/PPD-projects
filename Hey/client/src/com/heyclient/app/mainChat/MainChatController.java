@@ -42,8 +42,9 @@ public class MainChatController {
                     currentClient = (Client) dataMap.get("client");
 
                     initControllers();
-
                     getContactList();
+
+                    msgh.connectToMessageBroker(currentClient.getName());
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
 

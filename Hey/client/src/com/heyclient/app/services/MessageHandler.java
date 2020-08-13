@@ -58,15 +58,28 @@ public class MessageHandler {
 
                     Message msg = SerializationUtils.deserialize(data);
 
-                    ChatMessage chatMsg = (ChatMessage) msg.getContent();
+                    MessageType type = msg.getType();
 
-                    System.out.println("Mensagem recebida na fila do broker: " +
-                            "\nTipo: " + msg.getType() + "\nRemetente: " + chatMsg.getSender().getName() +
-                            "\nTexto: " + chatMsg.getText() + "\nEnviada em: " + chatMsg.getCreationDate());
+                    if(type.equals(MessageType.CHAT)){
+                        ChatMessage chatMsg = (ChatMessage) msg.getContent();
 
-                    Platform.runLater(() -> {
-                        mainChatController.getChatController().onMessageReceived(chatMsg);
-                    });
+                        System.out.println("Mensagem recebida na fila do broker: " +
+                                "\nTipo: " + msg.getType() + "\nRemetente: " + chatMsg.getSender().getName() +
+                                "\nTexto: " + chatMsg.getText() + "\nEnviada em: " + chatMsg.getCreationDate());
+
+                        Platform.runLater(() -> {
+                            mainChatController.getChatController().onMessageReceived(chatMsg);
+                        });
+                    }
+                    else if(type.equals(MessageType.TYPING_STATUS)){
+                        UpdateTypingStatus updateTypingStatusMsg = (UpdateTypingStatus) msg.getContent();
+
+                        Platform.runLater(() -> {
+                            mainChatController.getChatController().showTypingStatus(
+                                    updateTypingStatusMsg.getClientSenderName(), updateTypingStatusMsg.getTypingStatus()
+                            );
+                        });
+                    }
                 }
             };
 
@@ -82,6 +95,22 @@ public class MessageHandler {
 
             ChatMessage chatMsg = new ChatMessage(mainChatController.getCurrentClient(), receiver, text);
             Message msg = new Message(MessageType.CHAT, chatMsg);
+
+            byte[] data = SerializationUtils.serialize(msg);
+
+            clientBrokerChannel.basicPublish("", receiver.getName(), null, data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendTypingStatusMessageToBroker(Client sender, Client receiver, TypingStatus typingStatus){
+        try {
+            System.out.println("Enviando mensagem de atualizacao de status de digitacao para usuario " +
+                    receiver.getName());
+
+            UpdateTypingStatus updateTypingStatusMsg = new UpdateTypingStatus(typingStatus, sender.getName(), receiver.getName());
+            Message msg = new Message(MessageType.TYPING_STATUS, updateTypingStatusMsg);
 
             byte[] data = SerializationUtils.serialize(msg);
 

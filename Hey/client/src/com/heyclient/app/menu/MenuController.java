@@ -210,7 +210,6 @@ public class MenuController {
         }
         else{
             Client c = new Client(userName, avatarImageName, Status.ONLINE);
-            msgHandler.connectToMessageBroker(userName);
             Map<String, Object> data = new HashMap<>();
             data.put("msgHandler", this.msgHandler);
             data.put("client", c);

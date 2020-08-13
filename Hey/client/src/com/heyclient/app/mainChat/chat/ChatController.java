@@ -4,12 +4,11 @@ package com.heyclient.app.mainChat.chat;
 import com.hey.common.ChatMessage;
 import com.hey.common.Client;
 import com.hey.common.Status;
+import com.hey.common.TypingStatus;
 import com.heyclient.app.mainChat.MainChatController;
-import com.heyclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -28,8 +27,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.SimpleFormatter;
+import java.util.*;
 
 
 public class ChatController {
@@ -57,6 +55,7 @@ public class ChatController {
     private JFXSnackbar notificationSnack;
     private Client currentCollocutor;
     private Circle currentCollocutorStatusInfo;
+    private HashMap<String, List<HBox>> conversationMap;
 
     public void init(MainChatController mainChatController) {
         sendMessageBt.setGraphic(new ImageView(new Image(getClass()
@@ -66,6 +65,8 @@ public class ChatController {
         ds.setOffsetY(1.3);
         ds.setColor(Color.BLACK);
         sendMessageBt.setEffect(ds);
+
+        conversationMap = new HashMap<>();
 
         this.mainChatController = mainChatController;
         currentCollocutorStatusInfo = new Circle(36);
@@ -97,12 +98,14 @@ public class ChatController {
         notificationSnack.setEffect(dropShadow);
 
         textInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            /*if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
-                mainGameController.getClientStub().sendTypingStatusMessage(TypingStatus.STOPED);
+            if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
+                mainChatController.getMessageHandler()
+                        .sendTypingStatusMessageToBroker(mainChatController.getCurrentClient(), currentCollocutor, TypingStatus.STOPED);
             }
             else if(oldValue.length() == 0 && newValue.length() > 0){ //comecou a digitar
-                mainGameController.getClientStub().sendTypingStatusMessage(TypingStatus.TYPING);
-            }*/
+                mainChatController.getMessageHandler()
+                        .sendTypingStatusMessageToBroker(mainChatController.getCurrentClient(), currentCollocutor, TypingStatus.TYPING);
+            }
         });
     }
 
@@ -110,111 +113,97 @@ public class ChatController {
         String text = textInput.getText();
         if(!text.isEmpty()) {
             textInput.clear();
-
             mainChatController.getMessageHandler().sendMessageToBroker(currentCollocutor, text);
+            addOwnMessageToConversation(text);
         }
     }
 
-    /*public void showTypingStatus(TypingStatus status){
-        if(status == TypingStatus.TYPING){
-            typingStatus.setText("Digitando...");
+    public void showTypingStatus(String senderName, TypingStatus typingStatus){
+        if(currentCollocutor != null && currentCollocutor.getName().equals(senderName)){
+            if(typingStatus.equals(TypingStatus.TYPING)) {
+                currentCollocutorStatus.setText("Digitando...");
+                currentCollocutorStatus.setFill(Color.valueOf("#0ab9c2"));
+            }
+            else{
+                currentCollocutorStatus.setText(currentCollocutor.getStatus().getValue().toLowerCase());
+                currentCollocutorStatus.setFill(Color.valueOf("#fcfcfc"));
+            }
         }
         else{
-            typingStatus.setText("");
+            mainChatController.getToolbarController().updateClientTypingStatus(senderName, typingStatus);
         }
-    }*/
-
-    public synchronized void displayIncomingMessage(Image avatar, String text) {
-        Task<HBox> messageBox = new Task<HBox>() {
-
-            @Override
-            protected HBox call() throws Exception {
-                HBox messageBody = new HBox();
-
-                Label ta = new Label();
-                ta.setWrapText(true);
-                ta.setBackground(new Background(new BackgroundFill(Color.rgb(255, 255, 255),
-                        null, null)));
-                ta.setText(text);
-                ta.setPrefSize(Label.USE_COMPUTED_SIZE, Label.USE_COMPUTED_SIZE);
-                ta.setPadding(new Insets(10, 7, 10, 7));
-
-                DropShadow ds = new DropShadow();
-                ds.setOffsetX(1.3);
-                ds.setOffsetY(1.3);
-                ds.setColor(Color.BLACK);
-
-                ta.setEffect(ds);
-
-                ImageView playerAvatar = new ImageView(avatar);
-                playerAvatar.setFitHeight(52);
-                playerAvatar.setFitWidth(52);
-
-                messageBody.getChildren().addAll(playerAvatar, ta);
-                messageBody.setSpacing(5);
-                messageBody.setPadding(new Insets(5, 0, 5, 0));
-                messageBody.setAlignment(Pos.TOP_LEFT);
-                messageBody.setTranslateX(5);
-                messageBody.setMaxWidth(290);
-                return messageBody;
-            }
-        };
-
-        messageBox.setOnSucceeded(event -> {
-            messageArea.getItems().add(messageBox.getValue());
-            messageArea.scrollTo(messageArea.getItems().size());
-            AudioService.getInstance().playIncomingMessageSound();
-        });
-
-        Thread t = new Thread(messageBox);
-        t.setDaemon(true);
-        t.start();
     }
 
-    public synchronized void displayOwnMessage(Image avatar, String text) {
-        Task<HBox> messageBox = new Task<HBox>() {
+    private void addIncomingMessageToConversation(String receiverName, String text) {
+        HBox messageBody = new HBox();
 
-            @Override
-            protected HBox call() throws Exception {
-                HBox messageBody = new HBox();
+        Label ta = new Label();
+        ta.setWrapText(true);
+        ta.setBackground(new Background(new BackgroundFill(Color.valueOf("#fcfcfc"),
+                null, null)));
+        ta.setText(text);
+        ta.setPrefSize(Label.USE_COMPUTED_SIZE, Label.USE_COMPUTED_SIZE);
+        ta.setPadding(new Insets(10, 7, 10, 7));
 
-                Label ta = new Label();
-                ta.setWrapText(true);
-                ta.setBackground(new Background(new BackgroundFill(Color.rgb(184, 213, 184),
-                        null, null)));
-                ta.setText(text);
-                ta.setPrefSize(Label.USE_COMPUTED_SIZE, Label.USE_COMPUTED_SIZE);
-                ta.setPadding(new Insets(10, 7, 10, 7));
+        DropShadow ds = new DropShadow();
+        ds.setOffsetX(1.3);
+        ds.setOffsetY(1.3);
+        ds.setColor(Color.BLACK);
 
-                DropShadow ds = new DropShadow();
-                ds.setOffsetX(1.3);
-                ds.setOffsetY(1.3);
-                ds.setColor(Color.BLACK);
+        ta.setEffect(ds);
 
-                ta.setEffect(ds);
+        messageBody.getChildren().add(ta);
+        messageBody.setPadding(new Insets(5, 0, 5, 0));
+        messageBody.setAlignment(Pos.TOP_LEFT);
+        messageBody.setTranslateX(10);
+        messageBody.setMaxWidth(650);
 
-                ImageView playerAvatar = new ImageView(avatar);
-                playerAvatar.setFitHeight(52);
-                playerAvatar.setFitWidth(52);
+        if(!conversationMap.containsKey(receiverName)){
+            conversationMap.put(receiverName, new ArrayList<>());
+        }
 
-                messageBody.getChildren().addAll(ta, playerAvatar);
-                messageBody.setSpacing(5);
-                messageBody.setPadding(new Insets(5, 15, 5, 0));
-                messageBody.setAlignment(Pos.TOP_RIGHT);
-                messageBody.setTranslateX(50);
-                messageBody.setMaxWidth(290);
-                return messageBody;
-            }
-        };
+        List<HBox> conversation = conversationMap.get(receiverName);
+        conversation.add(messageBody);
 
-        messageBox.setOnSucceeded(event -> {
-            messageArea.getItems().add(messageBox.getValue());
+        if(currentCollocutor != null && currentCollocutor.getName().equals(receiverName)){
+            messageArea.getItems().add(messageBody);
             messageArea.scrollTo(messageArea.getItems().size());
-        });
+        }
+    }
 
-        Thread t = new Thread(messageBox);
-        t.setDaemon(true);
-        t.start();
+    private void addOwnMessageToConversation(String text) {
+        HBox messageBody = new HBox();
+
+        Label ta = new Label();
+        ta.setWrapText(true);
+        ta.setBackground(new Background(new BackgroundFill(Color.valueOf("#0ab9c2"),
+                null, null)));
+        ta.setText(text);
+        ta.setPrefSize(Label.USE_COMPUTED_SIZE, Label.USE_COMPUTED_SIZE);
+        ta.setPadding(new Insets(10, 7, 10, 7));
+
+        DropShadow ds = new DropShadow();
+        ds.setOffsetX(1.3);
+        ds.setOffsetY(1.3);
+        ds.setColor(Color.BLACK);
+
+        ta.setEffect(ds);
+
+        messageBody.getChildren().add(ta);
+        messageBody.setPadding(new Insets(5, 0, 5, 0));
+        messageBody.setAlignment(Pos.TOP_RIGHT);
+        messageBody.setTranslateX(300);
+        messageBody.setMaxWidth(650);
+
+        if(!conversationMap.containsKey(currentCollocutor.getName())){
+            conversationMap.put(currentCollocutor.getName(), new ArrayList<>());
+        }
+
+        List<HBox> conversation = conversationMap.get(currentCollocutor.getName());
+        conversation.add(messageBody);
+
+        messageArea.getItems().add(messageBody);
+        messageArea.scrollTo(messageArea.getItems().size());
     }
 
     public void removeNewLineEvent() {
@@ -237,6 +226,11 @@ public class ChatController {
     }
 
     public void setCurrentCollocutor(Client c){
+        boolean collocutorChanged = false;
+        if(currentCollocutor == null || !currentCollocutor.getName().equals(c.getName())){
+            collocutorChanged = true;
+        }
+
         this.emptyChatBg.setVisible(false);
         currentCollocutor = c;
         setCurrentCollocutorAvatar(new Image(getClass().getResourceAsStream("/assets/Images/avatars/"
@@ -244,6 +238,11 @@ public class ChatController {
         setCurrentCollocutorName(c.getName());
 
         setCurrentCollocutorStatus(c);
+
+        if(collocutorChanged) {
+            messageArea.getItems().clear();
+            loadCurrentCollocutorConversation();
+        }
     }
 
     private void setCurrentCollocutorAvatar(Image avatar) {
@@ -257,30 +256,26 @@ public class ChatController {
     private void setCurrentCollocutorStatus(Client c){
         if(c.getStatus().equals(Status.ONLINE)){
             currentCollocutorStatus.setText("online");
+            currentCollocutorStatus.setFill(Color.valueOf("#fcfcfc"));
             currentCollocutorStatusInfo.setStroke(Color.valueOf("#087e8b"));
         }
         else{
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY HH:mm");
             currentCollocutorStatus.setText("Visto por último " + df.format(c.getLastSeen()));
+            currentCollocutorStatus.setFill(Color.valueOf("#fcfcfc"));
             currentCollocutorStatusInfo.setStroke(Color.valueOf("#707070"));
         }
     }
 
-    public void clearMessages(){
-        messageArea.getItems().clear();
-    }
-
     public void onMessageReceived(ChatMessage msg){
-        if(currentCollocutor != null && msg.getSender().getName().equals(currentCollocutor.getName())){
-            System.out.println("Recebida mensagem do cliente com conversa em aberta no momento");
-            // exibir mensagem da conversa em aberto
-        }
-        else{
+        if(currentCollocutor == null || !msg.getSender().getName().equals(currentCollocutor.getName())){
             System.out.println("Registrando mensagem nao lida para o cliente " + msg.getSender().getName());
             Platform.runLater(() -> {
                 mainChatController.getToolbarController().registerUnreadMsg(msg.getSender());
             });
         }
+
+        addIncomingMessageToConversation(msg.getSender().getName(), msg.getText());
     }
 
     public void showNewClientConnectedNotification(Client c){
@@ -300,6 +295,13 @@ public class ChatController {
         if(currentCollocutor != null && currentCollocutor.getName().equals(clientName)){
             currentCollocutor.setAvatarName(newAvatar);
             setCurrentCollocutor(currentCollocutor);
+        }
+    }
+
+    private void loadCurrentCollocutorConversation(){
+        if(conversationMap.containsKey(currentCollocutor.getName())) {
+            List<HBox> conversation = conversationMap.get(currentCollocutor.getName());
+            messageArea.getItems().addAll(conversation);
         }
     }
 }

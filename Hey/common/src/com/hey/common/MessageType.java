@@ -10,8 +10,7 @@ public enum MessageType {
     AVATAR_UPDATE("AVATAR_UPDATE"),
     NEW_CLIENT("NEW_CLIENT"),
     TYPING_STATUS("TYPING_STATUS"),
-    CLOSE("CLOSE"),
-    QUIT("QUIT");
+    CLOSE("CLOSE");
 
     private String value;
 
