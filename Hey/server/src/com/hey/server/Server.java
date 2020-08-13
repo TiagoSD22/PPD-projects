@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
@@ -76,6 +75,43 @@ class Server {
         c.setLastSeen(new Date());
 
         clientHandlerTaskMap.remove(clientConnectionHandler);
+
+        notifyClientStatusUpdateToAll(c);
+    }
+
+    private void notifyClientStatusUpdateToAll(Client clientUpdated){
+        List<Client> clientList = applicationClientList.stream().filter(c ->
+                !c.getName().equals(clientUpdated.getName()) && c.getStatus().equals(Status.ONLINE)
+        ).collect(Collectors.toList());
+
+        for(Client c: clientList){
+            ClientConnectionHandler cch = clientHandlerMap.get(c);
+            cch.sendClientStatusUpdateMsg(clientUpdated.getName(), clientUpdated.getStatus(),
+                    clientUpdated.getLastSeen()
+            );
+        }
+    }
+
+    private void notifyClientAvatarUpdateToAll(Client clientUpdated){
+        List<Client> clientList = applicationClientList.stream().filter(c ->
+                !c.getName().equals(clientUpdated.getName()) && c.getStatus().equals(Status.ONLINE)
+        ).collect(Collectors.toList());
+
+        for(Client c: clientList){
+            ClientConnectionHandler cch = clientHandlerMap.get(c);
+            cch.sendClientAvatarUpdate(clientUpdated.getName(), clientUpdated.getAvatarName());
+        }
+    }
+
+    private void notifyNewClientToAll(Client newClient){
+        List<Client> clientList = applicationClientList.stream().filter(c ->
+                !c.getName().equals(newClient.getName())
+        ).collect(Collectors.toList());
+
+        for(Client c: clientList){
+            ClientConnectionHandler cch = clientHandlerMap.get(c);
+            cch.sendNewClientConnectedMsg(newClient);
+        }
     }
 
     void onConnectionSolicitation(String userName, String avatarImageName, ClientConnectionHandler cch){
@@ -94,8 +130,13 @@ class Server {
             if(c != null){ // usuario conhecido da aplicacao que estava offline e voltou a se conectar
                 System.out.println("Usuario " + c.getName() + " se reconectou ao servidor");
                 c.setStatus(Status.ONLINE);
-                c.setAvatarName(avatarImageName); // perceber alteracao de avatar e comunicar demais contatos
+                if(!c.getAvatarName().equals(avatarImageName)){ // perceber alteracao de avatar e comunicar demais contatos
+                    c.setAvatarName(avatarImageName);
+                    notifyClientAvatarUpdateToAll(c);
+                }
                 clientHandlerMap.put(c, cch);
+
+                notifyClientStatusUpdateToAll(c);
             }
             else{ // primeiro usuario com esse nome se conectando ao servidor
                 System.out.println("Novo usuario " + userName + " se registrando ao servidor");
@@ -107,6 +148,8 @@ class Server {
 
                 applicationClientList.add(newClient);
                 clientHandlerMap.put(newClient, cch);
+
+                notifyNewClientToAll(newClient);
             }
 
             isAccepted = true;

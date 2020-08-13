@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ClientConnectionHandler implements Runnable{
@@ -83,6 +84,30 @@ public class ClientConnectionHandler implements Runnable{
     void sendContactList(List<Client> contactList){
         ContactList contactListMsg = new ContactList(contactList);
         Message msg = new Message(MessageType.CONTACT_LIST, contactListMsg);
+
+        sendMessageThroughSocket(msg);
+    }
+
+    void sendClientStatusUpdateMsg(String clientName, Status newStatus, Date lastSeen){
+        StatusUpdate statusUpdateMsg = new StatusUpdate(clientName, newStatus, lastSeen);
+
+        Message msg = new Message(MessageType.STATUS_UPDATE, statusUpdateMsg);
+
+        sendMessageThroughSocket(msg);
+    }
+
+    void sendClientAvatarUpdate(String clientName, String newAvatarName){
+        AvatarUpdate avatarUpdateMsg = new AvatarUpdate(clientName, newAvatarName);
+
+        Message msg = new Message(MessageType.AVATAR_UPDATE, avatarUpdateMsg);
+
+        sendMessageThroughSocket(msg);
+    }
+
+    void sendNewClientConnectedMsg(Client newClient){
+        ClientInfo clientInfo = new ClientInfo(newClient);
+
+        Message msg = new Message(MessageType.NEW_CLIENT, clientInfo);
 
         sendMessageThroughSocket(msg);
     }
