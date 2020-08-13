@@ -147,7 +147,7 @@ public class MenuController {
     }
 
     private void connectToServer(){
-        String host = ConnectionConfig.getHOST();
+        String host = ConnectionConfig.getSocketHost();
         int port = ConnectionConfig.getSocketPort();
         try {
             System.out.println("Conectando ao servidor em " + host + " na porta " + port);

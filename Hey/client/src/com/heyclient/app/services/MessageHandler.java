@@ -44,7 +44,8 @@ public class MessageHandler {
         this.clientQueueName = queueName;
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(ConnectionConfig.getHOST());
+        factory.setHost(ConnectionConfig.getBrokerHost());
+        factory.setPort(ConnectionConfig.getMessageBrokerPort());
         try {
             Connection connection = factory.newConnection();
             clientBrokerChannel = connection.createChannel();
