@@ -115,10 +115,44 @@ public class MessageHandler {
                                 break;
                             case CONTACT_LIST:
                                 ContactList contactListMsg = (ContactList) msg.getContent();
-                                System.out.println("Mensagem de lista de contatos recebida do servidor " +
+                                System.out.println("Mensagem de lista de contatos recebida do servidor" +
                                         "\nTotal de contatos: " + contactListMsg.getContacts().size());
 
-                                mainChatController.onContactListReceived(contactListMsg.getContacts());
+                                Platform.runLater(() -> {
+                                    mainChatController.onContactListReceived(contactListMsg.getContacts());
+                                });
+                                break;
+                            case NEW_CLIENT:
+                                ClientInfo newClientInfo = (ClientInfo) msg.getContent();
+                                System.out.println("Mensagem de novo cliente conectado recebida do servidor" +
+                                        "\nCliente: " + newClientInfo.getClient().getName() +
+                                        "\nAvatar: " + newClientInfo.getClient().getAvatarName());
+
+                                Platform.runLater(() -> {
+                                    mainChatController.onNewClientConnected(newClientInfo.getClient());
+                                });
+                                break;
+                            case STATUS_UPDATE:
+                                StatusUpdate statusUpdateMsg = (StatusUpdate) msg.getContent();
+                                System.out.println("Mensagem de alteracao de status de cliente " +
+                                        "recebida do servidor.\nCliente: " + statusUpdateMsg.getClientName() +
+                                        "\nNovo status: " + statusUpdateMsg.getNewStatus());
+                                Platform.runLater(() -> {
+                                    mainChatController.onClientStatusUpdated(statusUpdateMsg.getClientName(),
+                                            statusUpdateMsg.getNewStatus(), statusUpdateMsg.getLastSeen()
+                                    );
+                                });
+                                break;
+                            case AVATAR_UPDATE:
+                                AvatarUpdate avatarUpdateMsg = (AvatarUpdate) msg.getContent();
+                                System.out.println("Mensagem de alteracao de avatar de cliente " +
+                                        "recebida do servidor.\nCliente: " + avatarUpdateMsg.getClientName() +
+                                        "\nNovo avatar: " + avatarUpdateMsg.getNewAvatarName());
+                                Platform.runLater(() -> {
+                                    mainChatController.onClientAvatarUpdated(avatarUpdateMsg.getClientName(),
+                                            avatarUpdateMsg.getNewAvatarName()
+                                    );
+                                });
                                 break;
                             default:
                                 break;

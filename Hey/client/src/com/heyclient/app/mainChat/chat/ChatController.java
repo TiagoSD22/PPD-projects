@@ -7,6 +7,7 @@ import com.hey.common.Status;
 import com.heyclient.app.mainChat.MainChatController;
 import com.heyclient.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSnackbar;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -27,6 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.SimpleFormatter;
 
 
@@ -52,6 +54,7 @@ public class ChatController {
     @FXML
     private StackPane emptyChatBg;
 
+    private JFXSnackbar notificationSnack;
     private Client currentCollocutor;
     private Circle currentCollocutorStatusInfo;
 
@@ -83,6 +86,15 @@ public class ChatController {
         messageArea.setBackground(background);
 
         removeNewLineEvent();
+
+        notificationSnack = new JFXSnackbar(root);
+        notificationSnack.setPrefWidth(300);
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0, 0, 0));
+        notificationSnack.setEffect(dropShadow);
 
         textInput.textProperty().addListener((observable, oldValue, newValue) -> {
             /*if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
@@ -268,6 +280,26 @@ public class ChatController {
             Platform.runLater(() -> {
                 mainChatController.getToolbarController().registerUnreadMsg(msg.getSender());
             });
+        }
+    }
+
+    public void showNewClientConnectedNotification(Client c){
+        System.out.println("Novo cliente " + c.getName() + " conectado!");
+        notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(c.getName() + " entrou no servidor")));
+    }
+
+    public void updateClientStatus(String clientName, Status newStatus, Date lastSeen){
+        if(currentCollocutor != null && currentCollocutor.getName().equals(clientName)){
+            currentCollocutor.setStatus(newStatus);
+            currentCollocutor.setLastSeen(lastSeen);
+            setCurrentCollocutor(currentCollocutor);
+        }
+    }
+
+    public void updateClientAvatar(String clientName, String newAvatar){
+        if(currentCollocutor != null && currentCollocutor.getName().equals(clientName)){
+            currentCollocutor.setAvatarName(newAvatar);
+            setCurrentCollocutor(currentCollocutor);
         }
     }
 }

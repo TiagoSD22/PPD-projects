@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -91,6 +92,21 @@ public class MainChatController {
         }
 
         toolbarController.displayContactList(contactList);
+    }
+
+    public void onNewClientConnected(Client c){
+        toolbarController.displayContact(c);
+        chatController.showNewClientConnectedNotification(c);
+    }
+
+    public void onClientStatusUpdated(String clientName, Status newStatus, Date lastSeen){
+        toolbarController.updateClientStatus(clientName, newStatus, lastSeen);
+        chatController.updateClientStatus(clientName, newStatus, lastSeen);
+    }
+
+    public void onClientAvatarUpdated(String clientName, String newAvatar){
+        toolbarController.updateClientAvatar(clientName, newAvatar);
+        chatController.updateClientAvatar(clientName, newAvatar);
     }
 }
 

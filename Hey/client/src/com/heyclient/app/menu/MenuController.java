@@ -2,6 +2,7 @@ package com.heyclient.app.menu;
 
 
 import com.hey.common.Client;
+import com.hey.common.Status;
 import com.heyclient.Main;
 import com.heyclient.app.services.MessageHandler;
 import com.heyclient.app.utils.Avatars;
@@ -208,7 +209,7 @@ public class MenuController {
             connectionSolicitationRejected.show();
         }
         else{
-            Client c = new Client(userName, avatarImageName);
+            Client c = new Client(userName, avatarImageName, Status.ONLINE);
             msgHandler.connectToMessageBroker(userName);
             Map<String, Object> data = new HashMap<>();
             data.put("msgHandler", this.msgHandler);

@@ -82,3 +82,13 @@
 .list-cell {
     -fx-background-color: transparent;
 }
+
+.jfx-snackbar-content   {
+    -fx-background-color: #08949b;
+    -fx-pref-height: 50;
+}
+
+.jfx-snackbar-toast {
+    -fx-text-fill: #FCFCFC;
+    -fx-font-size: 20;
+}
