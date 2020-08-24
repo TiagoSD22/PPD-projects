@@ -13,7 +13,7 @@ public class ConnectionSolicitation {
         this.avatarName = avatarName;
     }
 
-    @SpaceId(autoGenerate = false)
+    @SpaceId(autoGenerate = true)
     public String getUserName() {
         return userName;
     }
