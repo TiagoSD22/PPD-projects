@@ -24,7 +24,7 @@
       </JFXButton>
       <TextArea fx:id="textInput" layoutX="10.0" layoutY="670.0" prefHeight="40.0" prefWidth="900.0" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #d6d6d6;" wrapText="true" />
       <ListView fx:id="messageArea" layoutY="75.0" prefHeight="588.0" prefWidth="978.0" />
-      <StackPane fx:id="currentCollocutorInfoRegion" alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="978.0" style="-fx-background-color: #fcfcfc;">
+      <StackPane fx:id="currentCollocutorInfoRegion" alignment="CENTER_LEFT" maxHeight="70.0" minHeight="70.0" prefHeight="70.0" prefWidth="978.0" style="-fx-background-color: #fcfcfc;">
          <children>
             <ImageView fx:id="currentCollocutorAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" translateY="-1.0" x="-5.0">
                <StackPane.margin>
@@ -33,11 +33,16 @@
             </ImageView>
             <Text fx:id="currentCollocutorName" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0">
                <StackPane.margin>
-                  <Insets bottom="30.0" left="80.0" />
+                  <Insets bottom="30.0" left="90.0" />
                </StackPane.margin>
                <font>
-                  <Font name="System Italic" size="13.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
+            </Text>
+            <Text fx:id="currentCollocutorStatus" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0">
+               <StackPane.margin>
+                  <Insets bottom="-5.0" left="90.0" />
+               </StackPane.margin>
             </Text>
          </children>
       </StackPane>

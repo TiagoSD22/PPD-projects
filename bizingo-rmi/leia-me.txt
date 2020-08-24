@@ -1,0 +1,4 @@
+Aluno: Tiago Siqueira Dionizio
+
+Os executáveis do projeto podem ser encontrados na pasta "executaveis" no codigo fonte hospedado no Github. 
+Link do projeto no Github: https://github.com/TiagoSD22/PPD-projects/tree/master/bizingo-rmi

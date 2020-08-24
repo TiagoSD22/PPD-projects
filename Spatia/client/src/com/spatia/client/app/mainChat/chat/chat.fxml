@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="978.0" style="-fx-background-color: #fcfcfc; -fx-background-radius: 0 20 20 0;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spatia.client.app.mainChat.chat.ChatController">
+   <children>
+      <JFXButton fx:id="sendMessageBt" contentDisplay="GRAPHIC_ONLY" layoutX="918.0" layoutY="665.0" onAction="#sendMessage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 100 100 100 100; -fx-background-color: #f7717d;">
+         <padding>
+            <Insets right="5.0" />
+         </padding>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
+      <TextArea fx:id="textInput" layoutX="10.0" layoutY="670.0" prefHeight="40.0" prefWidth="900.0" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #d6d6d6;" wrapText="true" />
+      <ListView fx:id="messageArea" layoutY="75.0" prefHeight="588.0" prefWidth="978.0" />
+      <StackPane fx:id="currentCollocutorInfoRegion" alignment="CENTER_LEFT" maxHeight="70.0" minHeight="70.0" prefHeight="70.0" prefWidth="978.0" style="-fx-background-color: #fcfcfc;">
+         <children>
+            <ImageView fx:id="currentCollocutorAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" translateY="-1.0" x="-5.0">
+               <StackPane.margin>
+                  <Insets left="10.0" />
+               </StackPane.margin>
+            </ImageView>
+            <Text fx:id="currentCollocutorName" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0">
+               <StackPane.margin>
+                  <Insets bottom="30.0" left="90.0" />
+               </StackPane.margin>
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="currentCollocutorStatus" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0">
+               <StackPane.margin>
+                  <Insets bottom="-5.0" left="90.0" />
+               </StackPane.margin>
+            </Text>
+         </children>
+      </StackPane>
+      <StackPane fx:id="emptyChatBg" prefHeight="720.0" prefWidth="978.0" style="-fx-background-color: #3d3d3d;">
+         <children>
+            <ImageView fitHeight="720.0" fitWidth="978.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fitHeight="211.0" fitWidth="211.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+               <image>
+                  <Image url="@../../../../../assets/Images/logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </StackPane>
+
+   </children>
+</AnchorPane>

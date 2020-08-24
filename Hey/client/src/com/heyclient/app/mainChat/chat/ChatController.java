@@ -127,7 +127,7 @@ public class ChatController {
             }
             else{
                 currentCollocutorStatus.setText(currentCollocutor.getStatus().getValue().toLowerCase());
-                currentCollocutorStatus.setFill(Color.valueOf("#fcfcfc"));
+                currentCollocutorStatus.setFill(Color.valueOf("#2f2f2f"));
             }
         }
         else{

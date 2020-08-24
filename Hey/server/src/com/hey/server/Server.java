@@ -105,7 +105,7 @@ class Server {
 
     private void notifyNewClientToAll(Client newClient){
         List<Client> clientList = applicationClientList.stream().filter(c ->
-                !c.getName().equals(newClient.getName())
+                !c.getName().equals(newClient.getName()) && c.getStatus().equals(Status.ONLINE)
         ).collect(Collectors.toList());
 
         for(Client c: clientList){
