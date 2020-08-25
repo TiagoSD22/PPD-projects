@@ -18,7 +18,7 @@ public class Client implements Serializable {
         this.status = status;
     }
 
-    @SpaceId(autoGenerate = true)
+    @SpaceId(autoGenerate = false)
     public String getName() {
         return name;
     }

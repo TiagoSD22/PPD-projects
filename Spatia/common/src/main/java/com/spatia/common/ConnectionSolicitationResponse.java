@@ -4,17 +4,17 @@ import com.gigaspaces.annotation.pojo.SpaceId;
 
 public class ConnectionSolicitationResponse {
     private String userName;
-    private Boolean accepted;
+    private Boolean isAccepted;
 
     public ConnectionSolicitationResponse() {
     }
 
-    public ConnectionSolicitationResponse(String userName, Boolean accepted) {
+    public ConnectionSolicitationResponse(String userName, Boolean isAccepted) {
         this.userName = userName;
-        this.accepted = accepted;
+        this.isAccepted = isAccepted;
     }
 
-    @SpaceId(autoGenerate = true)
+    @SpaceId(autoGenerate = false)
     public String getUserName() {
         return userName;
     }
@@ -23,11 +23,11 @@ public class ConnectionSolicitationResponse {
         this.userName = userName;
     }
 
-    public Boolean getAccepted() {
-        return accepted;
+    public Boolean getIsAccepted() {
+        return isAccepted;
     }
 
-    public void setAccepted(Boolean accepted) {
-        this.accepted = accepted;
+    public void setIsAccepted(Boolean isAccepted) {
+        this.isAccepted = isAccepted;
     }
 }

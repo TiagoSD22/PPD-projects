@@ -16,7 +16,7 @@ public class ChatRoom {
         this.connectedClientList = connectedClientList;
     }
 
-    @SpaceId(autoGenerate = true)
+    @SpaceId(autoGenerate = false)
     public String getName() {
         return name;
     }
