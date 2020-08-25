@@ -57,7 +57,7 @@ public class Main extends Application {
             stage = primaryStage;
 
             stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/Images/logo.png")));
-            stage.setTitle("Hey");
+            stage.setTitle("Spatia");
 
             Parent fxmlMenu = FXMLLoader.load(getClass().getResource("app/menu/menuController.fxml"));
             menuScene = new Scene(fxmlMenu, 412, 732);
@@ -65,7 +65,7 @@ public class Main extends Application {
 
             chatScene = new Scene(fxmlMainGame, 1280, 720);
 
-            stage.setTitle("Hey");
+            stage.setTitle("Spatia");
             stage.setResizable(false);
             stage.setScene(menuScene);
             stage.show();

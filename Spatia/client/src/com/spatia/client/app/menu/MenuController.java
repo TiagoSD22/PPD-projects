@@ -74,6 +74,8 @@ public class MenuController {
         clip.setStrokeWidth(1);
         clip.setFill(Color.rgb(0, 0, 0, 0.7));
         avatarRegion.getChildren().add(clip);
+        clip.setTranslateX(1);
+        clip.setTranslateY(0.5);
         clip.toBack();
 
         DropShadow ds = new DropShadow();
@@ -143,14 +145,14 @@ public class MenuController {
                     }
                 }
 
-                setTextFill(Color.valueOf("#fcfcfc"));
+                setTextFill(Color.valueOf("#A74482"));
             }
         };
     }
 
     private void setAvatarIconOnSelectBox() {
         ObservableList<String> selectItems = FXCollections.observableArrayList(avatarMap.keySet());
-        avatarSelect.setItems(selectItems);
+        avatarSelect.setItems(selectItems.sorted());
 
         avatarSelect.setPromptText("Avatar");
 
@@ -163,7 +165,7 @@ public class MenuController {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 avatarSelect.setBorder(null);
                 avatarPreview.setImage(avatarMap.get(newValue));
-                clip.setStroke(Color.valueOf("#f7717d"));
+                clip.setStroke(Color.valueOf("#A74482"));
                 clip.setStrokeWidth(3);
                 clip.setRadius(36);
                 avatarPreview.setFitWidth(64);
@@ -190,6 +192,7 @@ public class MenuController {
                 e.printStackTrace();
             }
         } else {
+            connectButton.setDisable(true);
             warningDialog.show();
         }
     }
@@ -202,6 +205,7 @@ public class MenuController {
             @Override
             public void handle(JFXDialogEvent event) {
                 if(!isAccepted){
+                    connectButton.setDisable(true);
                     connectionSolicitationRejected.show();
                 }
                 else{
@@ -240,11 +244,12 @@ public class MenuController {
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#f7717d"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#A74482"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                connectButton.setDisable(false);
                 warningDialog.close();
             }
         });
@@ -279,7 +284,7 @@ public class MenuController {
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#f7717d"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#A74482"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -320,11 +325,12 @@ public class MenuController {
         JFXButton button = new JFXButton("OK");
         button.setButtonType(JFXButton.ButtonType.RAISED);
         button.setCursor(Cursor.HAND);
-        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#f7717d"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#A74482"), CornerRadii.EMPTY, Insets.EMPTY)));
         button.setTextFill(Color.WHITE);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                connectButton.setDisable(false);
                 connectionSolicitationRejected.close();
                 nicknameField.setDisable(false);
                 avatarSelect.setDisable(false);

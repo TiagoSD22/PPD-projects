@@ -1,10 +1,6 @@
-.text-field{
-    -fx-text-inner-color: white;
-    -jfx-focus-color: #F7A800;
-}
 
 .list-view .list-cell {
-    -fx-background-color: #1B2328;
+    -fx-background-color: #1D100C;
     //-fx-text-fill: black;
 }
 
@@ -26,7 +22,7 @@
 
 .scroll-bar:horizontal .thumb,
 .scroll-bar:vertical .thumb {
-    -fx-background-color: #6D8A96;
+    -fx-background-color: #9FD3C7;
     -fx-background-radius: 5em;
 }
 
@@ -82,4 +78,9 @@
 .jfx-combo-box .prompt-text,
 .jfx-combo-box > .list-cell{
     -fx-font-size: 15;
+    -fx-text-fill: #ECECEC;
+}
+
+.jfx-combo-box {
+	-fx-prompt-text-fill: #A74482;
 }
