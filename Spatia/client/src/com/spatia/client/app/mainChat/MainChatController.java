@@ -5,6 +5,7 @@ import com.spatia.client.Main;
 import com.spatia.client.app.mainChat.chat.ChatController;
 import com.spatia.client.app.mainChat.toolbar.ToolbarController;
 import com.spatia.client.app.services.AudioService;
+import com.spatia.common.Client;
 import javafx.fxml.FXML;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -23,6 +24,7 @@ public class MainChatController {
     @FXML
     private ChatController chatController;
     private Stage mainStage;
+    private Client currentClient;
 
     @FXML
     public void initialize() {
@@ -34,13 +36,11 @@ public class MainChatController {
                     mainStage = stage;
                     HashMap dataMap = ((HashMap<String, Object>) data);
 
-                    //msgh = (MessageHandler) dataMap.get("msgHandler");
-                    //currentClient = (Client) dataMap.get("client");
+                    currentClient = (Client) dataMap.get("client");
 
                     initControllers();
                     //getContactList();
 
-                    //msgh.connectToMessageBroker(currentClient.getName());
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
 
@@ -64,9 +64,9 @@ public class MainChatController {
         return chatController;
     }
 
-    /*public Client getCurrentClient(){
+    public Client getCurrentClient(){
         return currentClient;
-    }*/
+    }
 
     /*private void getContactList(){
         msgh.getContactList();

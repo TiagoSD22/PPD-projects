@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="302.0" style="-fx-background-color: #2f2f2f;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spatia.client.app.mainChat.toolbar.ToolbarController">
+<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="384.0" style="-fx-background-color: #1D100C;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spatia.client.app.mainChat.toolbar.ToolbarController">
     <stylesheets>
         <URL value="@stylesheet.css" />
     </stylesheets>
@@ -20,24 +22,24 @@
       <DropShadow blurType="GAUSSIAN" color="#0c0c0d" height="15.18" radius="10.059999999999999" spread="0.12" width="27.06" />
    </effect>
    <children>
-      <StackPane fx:id="currentUserInfoRegion" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="76.0" prefWidth="302.0" style="-fx-background-color: #f7717d; -fx-border-color: #010a13; -fx-border-width: 0 0 1 0;">
+      <StackPane fx:id="currentUserInfoRegion" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="384.0" style="-fx-background-color: #223144; -fx-border-color: #010a13; -fx-border-width: 0 0 1 0;">
          <children>
-            <ImageView fx:id="currentUserAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" translateY="5.0" StackPane.alignment="CENTER_LEFT">
+            <ImageView fx:id="currentUserAvatar" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" translateY="5.0" StackPane.alignment="CENTER_LEFT">
                <StackPane.margin>
                   <Insets left="10.0" />
                </StackPane.margin>
             </ImageView>
-            <Text fx:id="currentUserName" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0" StackPane.alignment="CENTER_LEFT">
+            <Text fx:id="currentUserName" fill="#ececec" strokeLineCap="BUTT" strokeLineJoin="BEVEL" strokeMiterLimit="0.0" strokeType="INSIDE" strokeWidth="0.0" StackPane.alignment="CENTER_LEFT">
                <StackPane.margin>
-                  <Insets bottom="15.0" left="85.0" />
+                  <Insets bottom="-5.0" left="60.0" />
                </StackPane.margin>
                <font>
-                  <Font name="System Bold" size="16.0" />
+                  <Font name="Roboto Slab Regular" size="14.0" />
                </font>
             </Text>
-            <JFXButton fx:id="soundBt" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#onSoundBtClicked" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 100 100 100 100; -fx-background-color: #0ab9c2;" StackPane.alignment="CENTER_LEFT">
+            <JFXButton fx:id="soundBt" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#onSoundBtClicked" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 100 100 100 100;" translateY="3.0" StackPane.alignment="CENTER_LEFT">
                <StackPane.margin>
-                  <Insets left="250.0" top="5.0" />
+                  <Insets left="320.0" top="5.0" />
                </StackPane.margin>
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -51,6 +53,21 @@
             <Insets bottom="10.0" />
          </padding>
       </StackPane>
-      <ListView fx:id="contactListView" layoutY="76.0" prefHeight="644.0" prefWidth="302.0" style="-fx-background-color: #2f2f2f;" />
+      <JFXTabPane layoutY="50.0" prefHeight="670.0" prefWidth="384.0" tabClosingPolicy="UNAVAILABLE">
+         <tabs>
+            <Tab fx:id="chatTab" closable="false" style="-fx-background-color: #1B2736; -fx-pref-width: 182;" text="Chat">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="contactListView" prefHeight="638.0" prefWidth="384.0" style="-fx-background-color: #1D100C;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="roomsTab" closable="false" style="-fx-background-color: #1B2736; -fx-pref-width: 192; -fx-padding: 0 0 0 0;" text="Salas">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+         </tabs></JFXTabPane>
    </children>
 </AnchorPane>

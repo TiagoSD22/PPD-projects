@@ -137,3 +137,48 @@
 .list-view .scroll-bar:horizontal .decrement-button {
     -fx-padding:0;
 }
+
+.tab-header-background{
+    -fx-background-color: #1B2736;
+}
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke-width: 5pt;
+    -fx-border-color: #9FD3C7;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.tab-pane
+{
+    -fx-tab-min-width:90px;
+}
+
+.tab-pane .tab
+{
+    -fx-background-color: #ECECEC;
+
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: #ECECEC;
+}
+
+.tab .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #ECECEC;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #9FD3C7;
+}
+
+.tab-label {
+    -fx-content-display: right;
+}

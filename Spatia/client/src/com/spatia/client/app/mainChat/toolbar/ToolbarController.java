@@ -3,11 +3,13 @@ package com.spatia.client.app.mainChat.toolbar;
 import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
+import com.spatia.common.Client;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,6 +39,10 @@ public class ToolbarController {
     private ListView<GridPane> contactListView;
     @FXML
     private JFXButton soundBt;
+    @FXML
+    private Tab chatTab;
+    @FXML
+    private Tab roomsTab;
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
@@ -52,10 +58,10 @@ public class ToolbarController {
 
         soundOnImage = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/sound_on.png")));
         soundOffImage = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/sound_off.png")));
-        soundOnImage.setFitHeight(30);
-        soundOnImage.setFitWidth(30);
-        soundOffImage.setFitHeight(30);
-        soundOffImage.setFitWidth(30);
+        soundOnImage.setFitHeight(18);
+        soundOnImage.setFitWidth(18);
+        soundOffImage.setFitHeight(18);
+        soundOffImage.setFitWidth(18);
         soundBt.setGraphic(soundOnImage);
         DropShadow ds = new DropShadow();
         ds.setOffsetX(1.3);
@@ -63,22 +69,20 @@ public class ToolbarController {
         ds.setColor(Color.BLACK);
         soundBt.setEffect(ds);
 
-        Circle clip = new Circle(36);
-        clip.setStroke(Color.valueOf("#087e8b"));
-        clip.setStrokeWidth(3);
-        clip.setFill(Color.valueOf("#2f2f2f"));
-        clip.setTranslateX(-110);
-        clip.setTranslateY(5);
-        currentUserInfoRegion.getChildren().add(clip);
-        clip.toBack();
+        Client currentClient = mainChatController.getCurrentClient();
 
-        //Client currentClient = mainChatController.getCurrentClient();
+        Image avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
+                currentClient.getAvatarName()));
 
-        /*Image avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
-                currentClient.getAvatarName()));*/
+        setCurrentUserAvatar(avatar);
+        setCurrentUserName(currentClient.getName());
 
-        /*setCurrentUserAvatar(avatar);
-        setCurrentUserName(currentClient.getName());*/
+        chatTab.setGraphic(new ImageView(
+                new Image(getClass().getResourceAsStream("/assets/Images/chat_icon.png"))
+        ));
+        roomsTab.setGraphic(new ImageView(
+                new Image(getClass().getResourceAsStream("/assets/Images/rooms_icon.png"))
+        ));
 
         clientContactInfoBoxMap = new DualHashBidiMap<>();
         clientUnreadMsgRegisterMap = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.spatia.client.app.services;
 
+import com.j_spaces.core.client.FinderException;
 import com.spatia.client.app.menu.MenuController;
 import com.spatia.client.app.utils.ConnectionConfig;
 import com.spatia.common.ConnectionSolicitation;
@@ -7,8 +8,8 @@ import com.spatia.common.ConnectionSolicitationResponse;
 import javafx.application.Platform;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.GigaSpaceConfigurer;
+import org.openspaces.core.space.CannotFindSpaceException;
 import org.openspaces.core.space.SpaceProxyConfigurer;
-import org.openspaces.events.polling.SimplePollingEventListenerContainer;
 
 public class SpaceHandler {
     private static SpaceHandler instance;
@@ -16,11 +17,16 @@ public class SpaceHandler {
 
     private MenuController menuController;
 
-    private SimplePollingEventListenerContainer csrListener;
-
     private SpaceHandler(){
-        applicationSpace = new GigaSpaceConfigurer(new SpaceProxyConfigurer(ConnectionConfig.getSpaceName()))
-                .gigaSpace();
+        try {
+            applicationSpace = new GigaSpaceConfigurer(new SpaceProxyConfigurer(ConnectionConfig.getSpaceName()))
+                    .gigaSpace();
+        } catch (CannotFindSpaceException e){
+            System.out.println("Nao foi possivel encontrar o espaco " + ConnectionConfig.getSpaceName() + "." +
+                    "\nCertifique-se de que o espaco foi criado e tente novamente.");
+
+            System.exit(-1);
+        }
     }
 
     public static SpaceHandler getInstance() {
