@@ -1,9 +1,11 @@
 package com.spatia.common;
 
+import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
 import java.io.Serializable;
 
+@SpaceClass
 public class Client implements Serializable {
     private String name;
     private String avatarName;

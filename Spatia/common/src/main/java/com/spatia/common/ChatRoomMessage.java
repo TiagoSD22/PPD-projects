@@ -1,5 +1,8 @@
 package com.spatia.common;
 
+import com.gigaspaces.annotation.pojo.SpaceClass;
+
+@SpaceClass
 public class ChatRoomMessage extends ChatMessage {
     private String roomName;
 

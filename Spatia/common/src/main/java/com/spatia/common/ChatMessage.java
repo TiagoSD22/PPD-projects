@@ -1,7 +1,9 @@
 package com.spatia.common;
 
+import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
+@SpaceClass
 public class ChatMessage {
     private String senderName;
     private String receiverName;

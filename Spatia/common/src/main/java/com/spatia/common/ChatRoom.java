@@ -1,9 +1,11 @@
 package com.spatia.common;
 
+import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
 import java.util.List;
 
+@SpaceClass
 public class ChatRoom {
     private String name;
     private List<Client> connectedClientList;

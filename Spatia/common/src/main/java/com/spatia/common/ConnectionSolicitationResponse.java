@@ -1,7 +1,9 @@
 package com.spatia.common;
 
+import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
+@SpaceClass
 public class ConnectionSolicitationResponse {
     private String userName;
     private Boolean isAccepted;
