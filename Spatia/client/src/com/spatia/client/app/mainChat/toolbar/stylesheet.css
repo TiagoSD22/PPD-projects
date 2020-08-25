@@ -171,6 +171,7 @@
     -fx-alignment: CENTER;
     -fx-text-fill: #ECECEC;
     -fx-font-size: 12px;
+    -fx-font-family: 'Roboto Slab';
     -fx-font-weight: bold;
 }
 

@@ -80,6 +80,7 @@ public class ToolbarController {
         chatTab.setGraphic(new ImageView(
                 new Image(getClass().getResourceAsStream("/assets/Images/chat_icon.png"))
         ));
+        
         roomsTab.setGraphic(new ImageView(
                 new Image(getClass().getResourceAsStream("/assets/Images/rooms_icon.png"))
         ));

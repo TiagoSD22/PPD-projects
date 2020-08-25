@@ -5,9 +5,11 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
@@ -55,15 +57,28 @@
       </StackPane>
       <JFXTabPane layoutY="50.0" prefHeight="670.0" prefWidth="384.0" tabClosingPolicy="UNAVAILABLE">
          <tabs>
-            <Tab fx:id="chatTab" closable="false" style="-fx-background-color: #1B2736; -fx-pref-width: 182;" text="Chat">
+            <Tab fx:id="chatTab" closable="false" style="-fx-background-color: #1B2736; -fx-cursor: &quot;Hand&quot;; -fx-pref-width: 182;" text="Chat">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ListView fx:id="contactListView" prefHeight="638.0" prefWidth="384.0" style="-fx-background-color: #1D100C;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ImageView fitHeight="638.0" fitWidth="384.0" pickOnBounds="true" preserveRatio="true" smooth="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <image>
+                              <Image url="@../../../../../../assets/Images/no_room.png" />
+                           </image>
+                        </ImageView>
+                        <Label alignment="CENTER" contentDisplay="CENTER" layoutY="500.0" text="Você não está em nenhuma sala" textFill="#ececec">
+                           <font>
+                              <Font name="Roboto Slab Regular" size="24.0" />
+                           </font>
+                           <padding>
+                              <Insets left="10.0" right="10.0" />
+                           </padding>
+                        </Label>
+                        <ListView fx:id="contactListView" prefHeight="638.0" prefWidth="384.0" style="-fx-background-color: #1D100C;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>
               </content>
             </Tab>
-            <Tab fx:id="roomsTab" closable="false" style="-fx-background-color: #1B2736; -fx-pref-width: 192; -fx-padding: 0 0 0 0;" text="Salas">
+            <Tab fx:id="roomsTab" closable="false" style="-fx-background-color: #1B2736; -fx-pref-width: 192; -fx-cursor: &quot;hand&quot;;" text="Salas">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>
