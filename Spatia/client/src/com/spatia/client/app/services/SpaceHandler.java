@@ -59,7 +59,6 @@ public class SpaceHandler {
     }
 
     private void onConnectionSolicitationResponseReceived(ConnectionSolicitationResponse response){
-        System.out.println("Resposta de solicitacao de conexao recebida");
         Platform.runLater(() -> {
             menuController.onConnectionSolicitationResponseReceived(response.getIsAccepted());
         });
