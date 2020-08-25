@@ -2,13 +2,17 @@ package com.spatia.client.app.menu;
 
 
 
+import com.jfoenix.controls.events.JFXDialogEvent;
 import com.spatia.client.Main;
+import com.spatia.client.app.services.SpaceHandler;
 import com.spatia.client.app.utils.Avatars;
 import com.spatia.client.app.utils.ConnectionConfig;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.spatia.common.Client;
+import com.spatia.common.Status;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -30,12 +34,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
-
-import java.io.IOException;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-
 
 public class MenuController {
 
@@ -54,10 +54,13 @@ public class MenuController {
     @FXML
     private CustomTextField nicknameField;
     private JFXDialog warningDialog;
+    private JFXDialog waitingConnectionResponseDialog;
     private JFXDialog connectionSolicitationRejected;
 
     private String userName;
     private String avatarImageName;
+
+    private SpaceHandler spaceHandlerInstance;
 
     @FXML
     public void initialize() {
@@ -85,6 +88,10 @@ public class MenuController {
 
         loadWarningDialog();
         loadConnectionSolicitationRejectedDialog();
+        loadWaitingConnectionResponseDialog();
+
+        spaceHandlerInstance = SpaceHandler.getInstance();
+        spaceHandlerInstance.setMenuController(this);
 
         Main.addOnChangeScreenListener(new Main.OnChangeSceen() {
             @Override
@@ -174,7 +181,10 @@ public class MenuController {
                 userName = nicknameField.getText();
                 avatarImageName = (String)avatarSelect.getSelectionModel().getSelectedItem();
 
-                //msgHandler.sendConnectionSolicitation(userName, avatarImageName);
+                waitingConnectionResponseDialog.show();
+
+                spaceHandlerInstance.writeConnectionSolicitation(userName, avatarImageName);
+                spaceHandlerInstance.startConnectionSolicitationResponseListener();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -184,17 +194,24 @@ public class MenuController {
         }
     }
 
-    public void onConnectionSolicitationResponse(boolean accepted){
-        if(!accepted){
-            connectionSolicitationRejected.show();
-        }
-        else{
-            /*Client c = new Client(userName, avatarImageName, Status.ONLINE);
-            Map<String, Object> data = new HashMap<>();
-            data.put("msgHandler", this.msgHandler);
-            data.put("client", c);
-            Main.changeScreen("chat-screen", data);*/
-        }
+    public void onConnectionSolicitationResponseReceived(boolean isAccepted){
+        System.out.println("Resposta de solicitacao de conexao recebida: " + isAccepted);
+        waitingConnectionResponseDialog.close();
+
+        waitingConnectionResponseDialog.onDialogClosedProperty().set(new EventHandler<JFXDialogEvent>() {
+            @Override
+            public void handle(JFXDialogEvent event) {
+                if(!isAccepted){
+                    connectionSolicitationRejected.show();
+                }
+                else{
+                    Client c = new Client(userName, avatarImageName, Status.ONLINE);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("client", c);
+                    Main.changeScreen("chat-screen", data);
+                }
+            }
+        });
     }
 
     private void loadWarningDialog() {
@@ -229,6 +246,45 @@ public class MenuController {
             @Override
             public void handle(ActionEvent event) {
                 warningDialog.close();
+            }
+        });
+        button.setLayoutX(10);
+
+        content.setActions(button);
+        menuRoot.getChildren().add(stackPane);
+    }
+
+    private void loadWaitingConnectionResponseDialog(){
+        JFXDialogLayout content = new JFXDialogLayout();
+        Text title = new Text("Aguarde");
+        title.setTextAlignment(TextAlignment.CENTER);
+        content.setHeading(title);
+        Text info = new Text("Conectando ao servidor");
+        info.setTextAlignment(TextAlignment.LEFT);
+        info.setWrappingWidth(364);
+        content.setBody(info);
+        content.setMinWidth(388);
+        content.setMinHeight(200);
+
+        StackPane stackPane = new StackPane();
+        stackPane.setLayoutY(260);
+        stackPane.setLayoutX(12);
+        stackPane.setPrefWidth(388);
+
+        waitingConnectionResponseDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+        waitingConnectionResponseDialog.setMinHeight(200);
+        waitingConnectionResponseDialog.setMinWidth(388);
+        waitingConnectionResponseDialog.setMaxSize(stackPane.getMaxWidth(), stackPane.getMaxHeight());
+
+        JFXButton button = new JFXButton("OK");
+        button.setButtonType(JFXButton.ButtonType.RAISED);
+        button.setCursor(Cursor.HAND);
+        button.setBackground(new Background(new BackgroundFill(Color.valueOf("#f7717d"), CornerRadii.EMPTY, Insets.EMPTY)));
+        button.setTextFill(Color.WHITE);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                waitingConnectionResponseDialog.close();
             }
         });
         button.setLayoutX(10);
@@ -276,5 +332,13 @@ public class MenuController {
         });
         content.setActions(button);
         menuRoot.getChildren().add(stackPane);
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getAvatarImageName() {
+        return avatarImageName;
     }
 }
