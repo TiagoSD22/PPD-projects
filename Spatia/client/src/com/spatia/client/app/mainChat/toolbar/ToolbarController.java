@@ -43,6 +43,8 @@ public class ToolbarController {
     private Tab chatTab;
     @FXML
     private Tab roomsTab;
+    @FXML
+    private ListView<GridPane> roomListView;
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
@@ -80,7 +82,7 @@ public class ToolbarController {
         chatTab.setGraphic(new ImageView(
                 new Image(getClass().getResourceAsStream("/assets/Images/chat_icon.png"))
         ));
-        
+
         roomsTab.setGraphic(new ImageView(
                 new Image(getClass().getResourceAsStream("/assets/Images/rooms_icon.png"))
         ));
@@ -185,5 +187,9 @@ public class ToolbarController {
         else{
             soundBt.setGraphic(soundOffImage);
         }
+    }
+
+    public void onCreateRoomBtClicked(){
+        System.out.println("Solicitando criar nova sala");
     }
 }

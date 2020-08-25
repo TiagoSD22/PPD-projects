@@ -183,3 +183,17 @@
 .tab-label {
     -fx-content-display: right;
 }
+
+#searchRoomTF{
+    -fx-background-image:url('../../../../../../assets/Images/search.png');
+    -fx-background-size: 24px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: 5%;
+}
+
+#createRoomBt{
+    -fx-background-image:url('../../../../../../assets/Images/add_room.png');
+    -fx-background-size: 24px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}

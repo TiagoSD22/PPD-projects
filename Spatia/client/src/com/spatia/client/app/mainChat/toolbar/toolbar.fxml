@@ -8,10 +8,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -80,7 +84,42 @@
             </Tab>
             <Tab fx:id="roomsTab" closable="false" style="-fx-background-color: #1B2736; -fx-pref-width: 192; -fx-cursor: &quot;hand&quot;;" text="Salas">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane prefHeight="50.0" prefWidth="384.0" style="-fx-background-color: #858585;">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <TextField fx:id="searchRoomTF" promptText="Buscar sala" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #ececec;" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                                 <cursor>
+                                    <Cursor fx:constant="TEXT" />
+                                 </cursor>
+                                 <padding>
+                                    <Insets bottom="10.0" left="40.0" top="10.0" />
+                                 </padding>
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin>
+                              </TextField>
+                              <JFXButton fx:id="createRoomBt" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#onCreateRoomBtClicked" prefHeight="40.0" prefWidth="40.0" ripplerFill="#385170" style="-fx-background-radius: 100 100 100 100; -fx-background-color: #9FD3C7;" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <padding>
+                                    <Insets left="5.0" right="5.0" />
+                                 </padding>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                           </children>
+                        </GridPane>
+                        <ListView fx:id="roomListView" layoutY="50.0" orientation="HORIZONTAL" prefHeight="588.0" prefWidth="384.0" style="-fx-background-color: #1D100C;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
+                     </children></AnchorPane>
               </content>
             </Tab>
          </tabs></JFXTabPane>
