@@ -1,5 +1,8 @@
 package com.spatia.client.app.mainChat.toolbar;
 
+import com.jfoenix.controls.JFXButton;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,14 +12,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
 class ChatRoomInfoBox extends GridPane {
 
     private Background unfocusedBackground;
     private Background focusedBackground;
+    private String roomName;
+    private GridPane enterRoomPane;
+    private ToolbarController toolbarController;
 
-    public ChatRoomInfoBox(String roomName, int clientsConnected){
+    ChatRoomInfoBox(String roomName, int clientsConnected, ToolbarController toolbarController){
+        this.toolbarController = toolbarController;
 
         this.setVgap(10);
         this.setHgap(5);
@@ -37,8 +43,11 @@ class ChatRoomInfoBox extends GridPane {
 
         this.getColumnConstraints().addAll(col1, col2);
 
-        Text roomNameText = new Text(roomName);
-        roomNameText.setFill(Color.valueOf("#ececec"));
+        this.roomName = roomName;
+
+        Label roomNameText = new Label(roomName);
+        roomNameText.setTextFill(Color.valueOf("#ececec"));
+        roomNameText.setPadding(new Insets(0, 10, 20, 10));
         roomNameText.setTranslateX(20);
 
         Label clientsConnectedInfoText = new Label(String.valueOf(clientsConnected));
@@ -47,20 +56,84 @@ class ChatRoomInfoBox extends GridPane {
         clientIcon.setFitWidth(22);
         clientIcon.setFitHeight(22);
         clientsConnectedInfoText.setGraphic(clientIcon);
-        clientsConnectedInfoText.setPadding(new Insets(0, 10, 0, 10));
+        clientsConnectedInfoText.setPadding(new Insets(0, 10, 20, 10));
+
+        enterRoomPane = new GridPane();
+        enterRoomPane.setBackground(new Background(new BackgroundFill(Color.valueOf("#30343F"), null, null)));
+
+        Text text = new Text("Entrar nesta sala?");
+        text.setFill(Color.valueOf("#ececec"));
+
+        JFXButton enterRoomBt = new JFXButton("Entrar");
+        enterRoomBt.setButtonType(JFXButton.ButtonType.RAISED);
+        enterRoomBt.setBackground(new Background(new BackgroundFill(Color.valueOf("#9FD3C7"), null, null)));
+        enterRoomBt.setPadding(new Insets(5, 5, 5, 5));
+        enterRoomBt.setTextFill(Color.valueOf("#040A10"));
+        ImageView enterRoomIcon = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/enter.png")));
+        enterRoomIcon.setFitWidth(18);
+        enterRoomIcon.setFitHeight(18);
+        enterRoomBt.setGraphic(enterRoomIcon);
+        enterRoomBt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                hideEnterRoomPane();
+                toolbarController.onEnterRoomConfirm(roomName);
+            }
+        });
+
+        JFXButton cancelEnterRoomBt = new JFXButton("Cancelar");
+        cancelEnterRoomBt.setButtonType(JFXButton.ButtonType.RAISED);
+        cancelEnterRoomBt.setBackground(new Background(new BackgroundFill(Color.valueOf("#D69ABF"), null, null)));
+        cancelEnterRoomBt.setPadding(new Insets(5, 5, 5, 5));
+        cancelEnterRoomBt.setTextFill(Color.valueOf("#040A10"));
+        ImageView cancelRoomIcon = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/cancel.png")));
+        cancelRoomIcon.setFitWidth(18);
+        cancelRoomIcon.setFitHeight(18);
+        cancelEnterRoomBt.setGraphic(cancelRoomIcon);
+        cancelEnterRoomBt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                hideEnterRoomPane();
+            }
+        });
+
+        enterRoomPane.setAlignment(Pos.CENTER_RIGHT);
+        enterRoomPane.setHgap(10);
+        enterRoomPane.setPadding(new Insets(10, 5, 10, 5));
+
+        enterRoomPane.add(text, 0, 0, 1, 1);
+        enterRoomPane.add(enterRoomBt, 1, 0, 1, 1);
+        enterRoomPane.add(cancelEnterRoomBt, 2, 0, 1, 1);
+        enterRoomPane.setVisible(false);
 
         this.add(roomNameText, 0, 0, 1, 1);
         this.add(clientsConnectedInfoText, 1, 0, 1, 1);
 
-        this.setPadding(new Insets(20, 0, 20, 0));
+        this.setPadding(new Insets(20, 0, 0, 0));
     }
 
-    public void setFocus(boolean isFocused){
+    private void showEnterRoomPane(){
+        enterRoomPane.setVisible(true);
+        this.add(enterRoomPane, 0, 1, 2, 1);
+    }
+
+    private void hideEnterRoomPane(){
+        enterRoomPane.setVisible(false);
+        this.getChildren().removeIf(node -> getRowIndex(node) == 1);
+    }
+
+    void setFocus(boolean isFocused){
         if(isFocused){
             this.setBackground(focusedBackground);
+            showEnterRoomPane();
         }
         else{
             this.setBackground(unfocusedBackground);
+            hideEnterRoomPane();
         }
+    }
+
+    public String getRoomName() {
+        return roomName;
     }
 }

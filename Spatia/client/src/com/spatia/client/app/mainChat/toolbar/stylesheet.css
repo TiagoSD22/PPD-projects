@@ -44,12 +44,12 @@
 
 
 .jfx-snackbar-content   {
-    -fx-background-color: #30343F;
+    -fx-background-color: #9FD3C7;
     -fx-pref-height: 50;
 }
 
 .jfx-snackbar-toast {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: #141414;
     -fx-font-size: 20;
 }
 
@@ -184,7 +184,7 @@
     -fx-content-display: right;
 }
 
-#searchRoomTF{
+#searchRoomTf{
     -fx-background-image:url('../../../../../../assets/Images/search.png');
     -fx-background-size: 24px;
     -fx-background-repeat: no-repeat;

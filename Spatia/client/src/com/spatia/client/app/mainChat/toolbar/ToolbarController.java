@@ -1,6 +1,7 @@
 package com.spatia.client.app.mainChat.toolbar;
 
 import com.j_spaces.core.client.EntryAlreadyInSpaceException;
+import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
 import com.spatia.client.app.mainChat.MainChatController;
@@ -10,21 +11,23 @@ import com.spatia.client.app.services.SpaceHandler;
 import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.apache.commons.collections4.BidiMap;
@@ -66,6 +69,8 @@ public class ToolbarController {
     private JFXButton createRoomConfirmBt;
     @FXML
     private JFXButton createRoomCancelBt;
+    @FXML
+    private TextField searchRoomTf;
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
@@ -78,6 +83,8 @@ public class ToolbarController {
     private ImageView soundOffImage;
     private TranslateTransition showCreateRoomCard;
     private TranslateTransition hideCreateRoomCard;
+    private JFXSnackbar notificationSnack;
+    private List<ChatRoomInfoBox> chatRoomInfoBoxList;
 
     public void init(MainChatController mainChatController) {
         this.mainChatController = mainChatController;
@@ -139,6 +146,17 @@ public class ToolbarController {
             }
         });
         chatRoomInfoBoxMap = new DualHashBidiMap<>();
+
+        notificationSnack = new JFXSnackbar(root);
+        notificationSnack.setPrefWidth(300);
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0, 0, 0));
+        notificationSnack.setEffect(dropShadow);
+
+        chatRoomInfoBoxList = new ArrayList<>();
     }
 
     private void loadShowCreateRoomCardAnimation(){
@@ -290,12 +308,20 @@ public class ToolbarController {
 
         try {
             spaceHandlerInstance.writeChatRoom(roomName);
+            showRoomCreatedMessage(roomName);
             hideCreateRoomCard.play();
         } catch (EntryAlreadyInSpaceException e){
-            System.out.println("Ja existe sala com o nome " + roomName + " registrada");
+            System.out.println(e.getMessage());
+            showRoomAlreadyExistMessage(roomName);
         }
+    }
 
+    private void showRoomAlreadyExistMessage(String roomName){
+        notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text("Sala " + roomName + "  já existe")));
+    }
 
+    private void showRoomCreatedMessage(String roomName){
+        notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text("Sala " + roomName + " criada com sucesso!")));
     }
 
     public void onCreateRoomCancelBtClicked(){
@@ -303,7 +329,7 @@ public class ToolbarController {
     }
 
     private void getChatRoomRegisteredList(){
-        roomListView.getItems().clear();
+        chatRoomInfoBoxList.clear();
 
         SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
 
@@ -316,10 +342,29 @@ public class ToolbarController {
         for(ChatRoom c: roomList){
             displayChatRoom(c);
         }
+
+        FilteredList<ChatRoomInfoBox> filteredData = new FilteredList<>(
+                FXCollections.observableList(chatRoomInfoBoxList), box -> true);
+
+        searchRoomTf.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(box ->{
+                if(newValue == null || newValue.isEmpty()){
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                return box.getRoomName().toLowerCase().startsWith(lowerCaseFilter);
+            });
+        });
+
+        SortedList<ChatRoomInfoBox> sortedData = new SortedList<>(filteredData);
+
+        roomListView.setItems(sortedData);
     }
 
-    public void displayChatRoom(ChatRoom c){
-        ChatRoomInfoBox box = new ChatRoomInfoBox(c.getName(), c.getConnectedClientList().size());
+    private void displayChatRoom(ChatRoom c){
+        ChatRoomInfoBox box = new ChatRoomInfoBox(c.getName(), c.getConnectedClientList().size(), this);
 
         chatRoomInfoBoxMap.put(c.getName(), box);
         box.setCursor(Cursor.HAND);
@@ -334,8 +379,10 @@ public class ToolbarController {
             }
         });
 
-        Platform.runLater(() -> {
-            roomListView.getItems().add(box);
-        });
+        chatRoomInfoBoxList.add(box);
+    }
+
+    public void onEnterRoomConfirm(String roomName){
+        System.out.println("Entrando na sala " + roomName);
     }
 }

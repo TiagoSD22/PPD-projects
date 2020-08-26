@@ -5,10 +5,7 @@ import com.j_spaces.core.client.EntryAlreadyInSpaceException;
 import com.j_spaces.core.client.FinderException;
 import com.spatia.client.app.menu.MenuController;
 import com.spatia.client.app.utils.ConnectionConfig;
-import com.spatia.common.ChatRoom;
-import com.spatia.common.ChatRoomRegister;
-import com.spatia.common.ConnectionSolicitation;
-import com.spatia.common.ConnectionSolicitationResponse;
+import com.spatia.common.*;
 import javafx.application.Platform;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.GigaSpaceConfigurer;
@@ -83,7 +80,13 @@ public class SpaceHandler {
         System.out.println("Escrevendo sala de nome " + roomName + " no espaco");
 
         ChatRoom room = new ChatRoom(roomName, new ArrayList<>());
-        applicationSpace.write(room, WriteModifiers.WRITE_ONLY);
+
+        try {
+            applicationSpace.write(room, WriteModifiers.WRITE_ONLY);
+        }
+        catch (Exception e){
+            throw new EntryAlreadyInSpaceException("Erro", "Ja existe sala com o nome " + roomName + " no espaco");
+        }
     }
 
     public SortedSet<ChatRoom> readChatRoomRegisteredList(){
