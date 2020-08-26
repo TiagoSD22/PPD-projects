@@ -3,10 +3,11 @@ package com.spatia.common;
 import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
+import java.io.Serializable;
 import java.util.List;
 
 @SpaceClass
-public class ChatRoom {
+public class ChatRoom implements Serializable, Comparable<ChatRoom>{
     private String name;
     private List<Client> connectedClientList;
 
@@ -18,7 +19,7 @@ public class ChatRoom {
         this.connectedClientList = connectedClientList;
     }
 
-    @SpaceId(autoGenerate = false)
+    @SpaceId(autoGenerate = true)
     public String getName() {
         return name;
     }
@@ -33,5 +34,10 @@ public class ChatRoom {
 
     public void setConnectedClientList(List<Client> connectedClientList) {
         this.connectedClientList = connectedClientList;
+    }
+
+    @Override
+    public int compareTo(ChatRoom c) {
+        return this.name.compareTo(c.getName());
     }
 }

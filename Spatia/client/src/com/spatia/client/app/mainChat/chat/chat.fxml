@@ -46,7 +46,7 @@
             </Text>
          </children>
       </StackPane>
-      <StackPane fx:id="emptyChatBg" prefHeight="720.0" prefWidth="896.0" style="-fx-background-color: #1F1825;">
+      <StackPane fx:id="emptyChatBg" prefHeight="720.0" prefWidth="896.0" style="-fx-background-color: #021013;">
          <children>
             <ImageView fitHeight="720.0" fitWidth="896.0" pickOnBounds="true" preserveRatio="true" />
             <ImageView fitHeight="211.0" fitWidth="211.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">

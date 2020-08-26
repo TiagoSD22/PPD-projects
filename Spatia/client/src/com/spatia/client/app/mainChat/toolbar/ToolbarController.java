@@ -1,13 +1,18 @@
 package com.spatia.client.app.mainChat.toolbar;
 
+import com.j_spaces.core.client.EntryAlreadyInSpaceException;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
 import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
+import com.spatia.client.app.services.SpaceHandler;
+import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
@@ -25,9 +30,7 @@ import javafx.util.Duration;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class ToolbarController {
@@ -50,7 +53,7 @@ public class ToolbarController {
     @FXML
     private Tab roomsTab;
     @FXML
-    private ListView<GridPane> roomListView;
+    private ListView<ChatRoomInfoBox> roomListView;
     @FXML
     private JFXButton createRoomBt;
     @FXML
@@ -68,7 +71,8 @@ public class ToolbarController {
     private ContactInfoBox currentSelectedContactInfoBox;
     private BidiMap<String, ContactInfoBox> clientContactInfoBoxMap;
     private HashMap<String, Integer> clientUnreadMsgRegisterMap;
-    //private HashMap<ContactInfoBox, Client> contactInfoBoxClientMap;
+    private BidiMap<String, ChatRoomInfoBox> chatRoomInfoBoxMap;
+    private ChatRoomInfoBox currentSelectedChatRoomInfoBox;
     private boolean sound = true;
     private ImageView soundOnImage;
     private ImageView soundOffImage;
@@ -121,7 +125,20 @@ public class ToolbarController {
 
         loadShowCreateRoomCardAnimation();
         loadHideCreateRoomCardAnimation();
-        //contactInfoBoxClientMap = new HashMap<>();
+
+        createRoomConfirmBt.setDisable(true);
+
+        createRoomNameTf.textProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                if(t1.equals(""))
+                    createRoomConfirmBt.setDisable(true);
+                else
+                    createRoomConfirmBt.setDisable(false);
+            }
+        });
+        chatRoomInfoBoxMap = new DualHashBidiMap<>();
     }
 
     private void loadShowCreateRoomCardAnimation(){
@@ -139,6 +156,8 @@ public class ToolbarController {
             createRoomCard.setVisible(false);
             roomListView.setVisible(true);
             createRoomNameTf.clear();
+
+            getChatRoomRegisteredList();
         });
     }
 
@@ -254,17 +273,69 @@ public class ToolbarController {
 
     private void onRoomTabClicked(){
         System.out.println("Clicou na tab de salas");
+
+        getChatRoomRegisteredList();
     }
 
     public void onRefreshRoomListBtClicked(){
+        System.out.println("Clicou no botao para atualizar lista de salas");
 
+        getChatRoomRegisteredList();
     }
 
     public void onCreateRoomConfirmBtClicked(){
-        hideCreateRoomCard.play();
+        String roomName = createRoomNameTf.getText();
+
+        SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+
+        try {
+            spaceHandlerInstance.writeChatRoom(roomName);
+            hideCreateRoomCard.play();
+        } catch (EntryAlreadyInSpaceException e){
+            System.out.println("Ja existe sala com o nome " + roomName + " registrada");
+        }
+
+
     }
 
     public void onCreateRoomCancelBtClicked(){
         hideCreateRoomCard.play();
+    }
+
+    private void getChatRoomRegisteredList(){
+        roomListView.getItems().clear();
+
+        SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+
+        SortedSet<ChatRoom> roomList = spaceHandlerInstance.readChatRoomRegisteredList();
+
+        displayRoomList(roomList);
+    }
+
+    private void displayRoomList(SortedSet<ChatRoom> roomList){
+        for(ChatRoom c: roomList){
+            displayChatRoom(c);
+        }
+    }
+
+    public void displayChatRoom(ChatRoom c){
+        ChatRoomInfoBox box = new ChatRoomInfoBox(c.getName(), c.getConnectedClientList().size());
+
+        chatRoomInfoBoxMap.put(c.getName(), box);
+        box.setCursor(Cursor.HAND);
+        box.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(currentSelectedChatRoomInfoBox != null){
+                    currentSelectedChatRoomInfoBox.setFocus(false);
+                }
+                currentSelectedChatRoomInfoBox = box;
+                currentSelectedChatRoomInfoBox.setFocus(true);
+            }
+        });
+
+        Platform.runLater(() -> {
+            roomListView.getItems().add(box);
+        });
     }
 }

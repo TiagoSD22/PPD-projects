@@ -18,7 +18,7 @@
 
 <AnchorPane fx:id="menuRoot" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="732.0" prefWidth="412.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spatia.client.app.menu.MenuController">
    <children>
-      <GridPane prefHeight="732.0" prefWidth="412.0" style="-fx-background-color: #1D100C; -fx-background-image: url('/assets/Images/menu.jpg');">
+      <GridPane prefHeight="732.0" prefWidth="412.0" style="-fx-background-color:#141414; -fx-background-image: url('/assets/Images/menu.jpg');">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>

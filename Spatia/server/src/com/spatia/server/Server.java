@@ -1,22 +1,25 @@
 package com.spatia.server;
 
-import com.spatia.common.Client;
-import com.spatia.common.ConnectionSolicitation;
-import com.spatia.common.ConnectionSolicitationResponse;
-import com.spatia.common.Status;
+import com.gigaspaces.client.ChangeSet;
+import com.spatia.common.*;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.GigaSpaceConfigurer;
 import org.openspaces.core.space.EmbeddedSpaceConfigurer;
+import org.openspaces.events.notify.SimpleNotifyContainerConfigurer;
+import org.openspaces.events.notify.SimpleNotifyEventListenerContainer;
 import org.openspaces.events.polling.SimplePollingContainerConfigurer;
 import org.openspaces.events.polling.SimplePollingEventListenerContainer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 class Server {
     private GigaSpace applicationSpace;
     private List<Client> applicationClientList;
-    private SimplePollingEventListenerContainer  connectionSolicitationListener;
+    private ChatRoomRegister chatRoomRegister;
+    private SimplePollingEventListenerContainer connectionSolicitationListener;
+    private SimpleNotifyEventListenerContainer chatRoomCreatedListener;
 
     Server(String spaceName){
         System.out.println("Iniciando aplicacao do servidor, criando espaco de nome " + spaceName);
@@ -25,6 +28,12 @@ class Server {
             applicationClientList = new ArrayList<>();
 
             System.out.println("Espaco " + spaceName + " criado com sucesso");
+
+            applicationClientList = new ArrayList<>();
+            chatRoomRegister = new ChatRoomRegister();
+            chatRoomRegister.setRegisteredRoomList(new TreeSet<>());
+
+            applicationSpace.write(chatRoomRegister);
         }
         catch (Exception e){
             System.out.println("Falha ao criar espaco " + spaceName + ".\n");
@@ -35,7 +44,10 @@ class Server {
 
     void run(){
         registerConnectionSolicitationListener();
+        registerChatRoomCreatedListener();
+
         connectionSolicitationListener.start();
+        chatRoomCreatedListener.start();
     }
 
     private void registerConnectionSolicitationListener(){
@@ -43,6 +55,13 @@ class Server {
                 .template(new ConnectionSolicitation())
                 .eventListenerAnnotation(new ConnectionSolicitationListener(this))
                 .pollingContainer();
+    }
+
+    private void registerChatRoomCreatedListener(){
+        chatRoomCreatedListener = new SimpleNotifyContainerConfigurer(applicationSpace)
+                .template(new ChatRoom())
+                .eventListenerAnnotation(new ChatRoomCreationListener(this))
+                .notifyContainer();
     }
 
     private void sendConnectionSolicitationResponse(String userName, boolean isAccepted){
@@ -94,5 +113,16 @@ class Server {
         }
 
         sendConnectionSolicitationResponse(userName, isAccepted);
+    }
+
+    void onChatRoomCreated(ChatRoom chatRoom){
+        System.out.println("Nova sala criada.\nNome: " + chatRoom.getName());
+
+        chatRoomRegister.getRegisteredRoomList().add(chatRoom);
+
+        applicationSpace.change(new ChatRoomRegister(), new ChangeSet().addToCollection("registeredRoomList", chatRoom));
+
+        System.out.println("Sala " + chatRoom.getName() + " adicionada ao registro de salas no espaco");
+
     }
 }
