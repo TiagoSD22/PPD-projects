@@ -66,18 +66,15 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ImageView fitHeight="638.0" fitWidth="384.0" pickOnBounds="true" preserveRatio="true" smooth="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                        <ImageView fx:id="toolbarBg" fitHeight="638.0" fitWidth="384.0" pickOnBounds="true" preserveRatio="true" smooth="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                            <image>
                               <Image url="@../../../../../../assets/Images/no_room.png" />
                            </image>
                         </ImageView>
-                        <Label alignment="CENTER" contentDisplay="CENTER" layoutY="500.0" text="Você não está em nenhuma sala" textFill="#ececec">
+                        <Label fx:id="toolbarInfo" alignment="CENTER" contentDisplay="CENTER" layoutY="500.0" prefWidth="384.0" text="Você não está em nenhuma sala" textFill="#ececec">
                            <font>
                               <Font name="Roboto Slab Regular" size="24.0" />
                            </font>
-                           <padding>
-                              <Insets left="10.0" right="10.0" />
-                           </padding>
                         </Label>
                         <ListView fx:id="contactListView" prefHeight="638.0" prefWidth="384.0" style="-fx-background-color:#141414;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>

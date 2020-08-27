@@ -19,6 +19,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -71,6 +72,10 @@ public class ToolbarController {
     private JFXButton createRoomCancelBt;
     @FXML
     private TextField searchRoomTf;
+    @FXML
+    private ImageView toolbarBg;
+    @FXML
+    private Label toolbarInfo;
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
@@ -85,6 +90,9 @@ public class ToolbarController {
     private TranslateTransition hideCreateRoomCard;
     private JFXSnackbar notificationSnack;
     private List<ChatRoomInfoBox> chatRoomInfoBoxList;
+    private ChatRoom currentRoom;
+    private Image noRoom;
+    private Image lonely;
 
     public void init(MainChatController mainChatController) {
         this.mainChatController = mainChatController;
@@ -157,6 +165,9 @@ public class ToolbarController {
         notificationSnack.setEffect(dropShadow);
 
         chatRoomInfoBoxList = new ArrayList<>();
+
+        noRoom = new Image(getClass().getResourceAsStream("/assets/Images/no_room.png"));
+        lonely = new Image(getClass().getResourceAsStream("/assets/Images/lonely.png"));
     }
 
     private void loadShowCreateRoomCardAnimation(){
@@ -364,7 +375,7 @@ public class ToolbarController {
     }
 
     private void displayChatRoom(ChatRoom c){
-        ChatRoomInfoBox box = new ChatRoomInfoBox(c.getName(), c.getConnectedClientList().size(), this);
+        ChatRoomInfoBox box = new ChatRoomInfoBox(c, this);
 
         chatRoomInfoBoxMap.put(c.getName(), box);
         box.setCursor(Cursor.HAND);
@@ -382,7 +393,35 @@ public class ToolbarController {
         chatRoomInfoBoxList.add(box);
     }
 
-    public void onEnterRoomConfirm(String roomName){
-        System.out.println("Entrando na sala " + roomName);
+    void onEnterRoomConfirm(ChatRoom room){
+        if(currentRoom != null && currentRoom.getName().equals(room.getName())){
+            System.out.println("Usuario ja esta na sala " + room.getName());
+
+            notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text("Você já está nesta sala")));
+        }
+        else {
+            System.out.println("Entrando na sala " + room.getName());
+
+            currentRoom = room;
+            if (currentRoom.getConnectedClientList().isEmpty()) {
+                showLonelyBg();
+            } else {
+                contactListView.setVisible(true);
+            }
+        }
+    }
+
+    private void showNoRoomBg(){
+        this.toolbarBg.setImage(noRoom);
+        this.toolbarBg.setLayoutY(0);
+        this.toolbarInfo.setText("Você não está em nenhuma sala");
+        contactListView.setVisible(false);
+    }
+
+    private void showLonelyBg(){
+        this.toolbarBg.setImage(lonely);
+        this.toolbarBg.setLayoutY(80);
+        this.toolbarInfo.setText("Acho que você é o único aqui");
+        contactListView.setVisible(false);
     }
 }

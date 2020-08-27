@@ -1,6 +1,7 @@
 package com.spatia.client.app.mainChat.toolbar;
 
 import com.jfoenix.controls.JFXButton;
+import com.spatia.common.ChatRoom;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -17,11 +18,11 @@ class ChatRoomInfoBox extends GridPane {
 
     private Background unfocusedBackground;
     private Background focusedBackground;
-    private String roomName;
+    private ChatRoom room;
     private GridPane enterRoomPane;
     private ToolbarController toolbarController;
 
-    ChatRoomInfoBox(String roomName, int clientsConnected, ToolbarController toolbarController){
+    ChatRoomInfoBox(ChatRoom room, ToolbarController toolbarController){
         this.toolbarController = toolbarController;
 
         this.setVgap(10);
@@ -43,14 +44,14 @@ class ChatRoomInfoBox extends GridPane {
 
         this.getColumnConstraints().addAll(col1, col2);
 
-        this.roomName = roomName;
+        this.room = room;
 
-        Label roomNameText = new Label(roomName);
+        Label roomNameText = new Label(room.getName());
         roomNameText.setTextFill(Color.valueOf("#ececec"));
         roomNameText.setPadding(new Insets(0, 10, 20, 10));
         roomNameText.setTranslateX(20);
 
-        Label clientsConnectedInfoText = new Label(String.valueOf(clientsConnected));
+        Label clientsConnectedInfoText = new Label(String.valueOf(room.getConnectedClientList().size()));
         clientsConnectedInfoText.setTextFill(Color.valueOf("#ececec"));
         ImageView clientIcon = new ImageView(new Image(getClass().getResourceAsStream("/assets/Images/people.png")));
         clientIcon.setFitWidth(22);
@@ -77,7 +78,7 @@ class ChatRoomInfoBox extends GridPane {
             @Override
             public void handle(ActionEvent event) {
                 hideEnterRoomPane();
-                toolbarController.onEnterRoomConfirm(roomName);
+                toolbarController.onEnterRoomConfirm(room);
             }
         });
 
@@ -134,6 +135,6 @@ class ChatRoomInfoBox extends GridPane {
     }
 
     public String getRoomName() {
-        return roomName;
+        return room.getName();
     }
 }
