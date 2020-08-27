@@ -76,6 +76,12 @@ public class ToolbarController {
     private ImageView toolbarBg;
     @FXML
     private Label toolbarInfo;
+    @FXML
+    private GridPane currentRoomIndicator;
+    @FXML
+    private Label currentRoomNameLabel;
+    @FXML
+    private JFXButton leaveCurrentRoomBt;
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
@@ -402,16 +408,47 @@ public class ToolbarController {
         else {
             System.out.println("Entrando na sala " + room.getName());
 
+            if(currentRoom != null){
+                leaveCurrentRoom();
+            }
+
             currentRoom = room;
-            if (currentRoom.getConnectedClientList().isEmpty()) {
+            enterRoom();
+
+            chatTabPane.getSelectionModel().select(0);
+
+            currentRoomNameLabel.setText(currentRoom.getName());
+            if (currentRoom.getConnectedClientList().size() <= 1) {
                 showLonelyBg();
             } else {
+                currentRoomIndicator.setVisible(true);
                 contactListView.setVisible(true);
+
+                //TODO exibir a lista de clientes conectados a mesma sala
             }
         }
     }
 
+    public void leaveCurrentRoom(){
+        System.out.println("Saindo da sala " + currentRoom.getName());
+
+        SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+
+        spaceHandlerInstance.writeLeaveRoomInteraction(mainChatController.getCurrentClient(), currentRoom.getName());
+
+        currentRoom = null;
+
+        showNoRoomBg();
+    }
+
+    private void enterRoom(){
+        SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+
+        spaceHandlerInstance.writeEnterRoomInteraction(mainChatController.getCurrentClient(), currentRoom.getName());
+    }
+
     private void showNoRoomBg(){
+        currentRoomIndicator.setVisible(false);
         this.toolbarBg.setImage(noRoom);
         this.toolbarBg.setLayoutY(0);
         this.toolbarInfo.setText("Você não está em nenhuma sala");
@@ -419,9 +456,14 @@ public class ToolbarController {
     }
 
     private void showLonelyBg(){
+        currentRoomIndicator.setVisible(true);
         this.toolbarBg.setImage(lonely);
         this.toolbarBg.setLayoutY(80);
         this.toolbarInfo.setText("Acho que você é o único aqui");
         contactListView.setVisible(false);
+    }
+
+    public ChatRoom getCurrentRoom(){
+        return currentRoom;
     }
 }

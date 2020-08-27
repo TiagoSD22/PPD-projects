@@ -204,3 +204,10 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
 }
+
+#leaveCurrentRoomBt{
+    -fx-background-image:url('../../../../../../assets/Images/leave.png');
+    -fx-background-size: 24px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}

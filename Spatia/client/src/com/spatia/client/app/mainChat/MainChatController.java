@@ -5,6 +5,8 @@ import com.spatia.client.Main;
 import com.spatia.client.app.mainChat.chat.ChatController;
 import com.spatia.client.app.mainChat.toolbar.ToolbarController;
 import com.spatia.client.app.services.AudioService;
+import com.spatia.client.app.services.SpaceHandler;
+import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
 import javafx.fxml.FXML;
 import javafx.scene.layout.*;
@@ -13,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 public class MainChatController {
@@ -39,11 +42,14 @@ public class MainChatController {
                     currentClient = (Client) dataMap.get("client");
 
                     initControllers();
-                    //getContactList();
 
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
+                    SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+                    ChatRoom currentInRoom = toolbarController.getCurrentRoom();
 
+                    String currentInRoomName = currentInRoom != null? currentInRoom.getName(): null;
+                    spaceHandlerInstance.writeCloseConnectionSolicitation(currentClient.getName(), currentInRoomName);
                 }
             }
         });
@@ -52,7 +58,6 @@ public class MainChatController {
     public void initControllers() {
         chatController.init(this);
         toolbarController.init(this);
-        //msgh.setMainChatController(this);
     }
 
 

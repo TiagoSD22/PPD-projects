@@ -2,7 +2,6 @@ package com.spatia.client.app.services;
 
 import com.gigaspaces.client.WriteModifiers;
 import com.j_spaces.core.client.EntryAlreadyInSpaceException;
-import com.j_spaces.core.client.FinderException;
 import com.spatia.client.app.menu.MenuController;
 import com.spatia.client.app.utils.ConnectionConfig;
 import com.spatia.common.*;
@@ -13,8 +12,6 @@ import org.openspaces.core.space.CannotFindSpaceException;
 import org.openspaces.core.space.SpaceProxyConfigurer;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 
 public class SpaceHandler {
@@ -76,6 +73,12 @@ public class SpaceHandler {
         });
     }
 
+    public void writeCloseConnectionSolicitation(String userName, String currentInRoomName){
+        CloseConnectionSolicitation solicitation = new CloseConnectionSolicitation(userName, currentInRoomName);
+
+        applicationSpace.write(solicitation);
+    }
+
     public void writeChatRoom(String roomName) throws EntryAlreadyInSpaceException {
         System.out.println("Escrevendo sala de nome " + roomName + " no espaco");
 
@@ -92,5 +95,21 @@ public class SpaceHandler {
     public SortedSet<ChatRoom> readChatRoomRegisteredList(){
         ChatRoomRegister register = applicationSpace.read(new ChatRoomRegister());
         return register.getRegisteredRoomList();
+    }
+
+    public void writeEnterRoomInteraction(Client client, String roomName){
+        ChatRoomInteraction interaction = new ChatRoomInteraction(InteractionType.ENTER, roomName, client);
+
+        writeChatRoomInteraction(interaction);
+    }
+
+    public void writeLeaveRoomInteraction(Client client, String roomName){
+        ChatRoomInteraction interaction = new ChatRoomInteraction(InteractionType.LEAVE, roomName, client);
+
+        writeChatRoomInteraction(interaction);
+    }
+
+    private void writeChatRoomInteraction(ChatRoomInteraction interaction){
+        applicationSpace.write(interaction);
     }
 }

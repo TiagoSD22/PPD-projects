@@ -102,12 +102,6 @@ public class MenuController {
                     nicknameField.setDisable(false);
                     avatarSelect.setDisable(false);
                 }
-                else if(newScreen.equalsIgnoreCase("stop")){
-                    /*if(client != null && !gameStarted){
-                        System.out.println("Cliente desconectando antes de iniciar partida, enviando solicitacao de CLOSE");
-                        client.sendCloseMessage();
-                    }*/
-                }
             }
         });
     }
