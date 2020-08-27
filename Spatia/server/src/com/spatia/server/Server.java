@@ -9,6 +9,7 @@ import org.openspaces.events.notify.SimpleNotifyContainerConfigurer;
 import org.openspaces.events.notify.SimpleNotifyEventListenerContainer;
 import org.openspaces.events.polling.SimplePollingContainerConfigurer;
 import org.openspaces.events.polling.SimplePollingEventListenerContainer;
+import org.openspaces.memcached.protocol.Op;
 
 import java.io.Serializable;
 import java.util.*;
@@ -20,6 +21,7 @@ class Server {
     private List<Client> applicationClientList;
     private ChatRoomRegister chatRoomRegister;
     private SimplePollingEventListenerContainer connectionSolicitationListener;
+    private SimplePollingEventListenerContainer closeConnectionSolicitationListener;
     private SimpleNotifyEventListenerContainer chatRoomCreatedListener;
     private SimplePollingEventListenerContainer chatRoomInteractionListener;
     private Map<String, Timer> removeEmptyRoomTaskMap;
@@ -50,10 +52,12 @@ class Server {
         registerConnectionSolicitationListener();
         registerChatRoomCreatedListener();
         registerChatRoomInteractionListener();
+        registerCloseConnectionSolicitationListener();
 
         connectionSolicitationListener.start();
         chatRoomCreatedListener.start();
         chatRoomInteractionListener.start();
+        closeConnectionSolicitationListener.start();
     }
 
     private List<Client> getNotifiableRoomConnectedClientList(String roomName, Client c){
@@ -65,9 +69,16 @@ class Server {
     }
 
     private void registerConnectionSolicitationListener(){
-        connectionSolicitationListener  = new SimplePollingContainerConfigurer(applicationSpace)
+        connectionSolicitationListener = new SimplePollingContainerConfigurer(applicationSpace)
                 .template(new ConnectionSolicitation())
                 .eventListenerAnnotation(new ConnectionSolicitationListener(this))
+                .pollingContainer();
+    }
+
+    private void registerCloseConnectionSolicitationListener(){
+        closeConnectionSolicitationListener = new SimplePollingContainerConfigurer(applicationSpace)
+                .template(new CloseConnectionSolicitation())
+                .eventListenerAnnotation(new CloseConnectionSolicitationListener(this))
                 .pollingContainer();
     }
 
@@ -154,6 +165,8 @@ class Server {
     }
 
     private void registerClientInRoom(String roomName, Client client){
+        System.out.println("Registrando cliente " + client.getName() + " na sala " + roomName);
+
         ChatRoom room = chatRoomRegister.getRegisteredRoomList().stream()
                 .filter(r -> r.getName().equals(roomName)).findFirst().orElse(null);
 
@@ -177,11 +190,13 @@ class Server {
     }
 
     private void removeClientFromRoom(String roomName, Client client){
+        System.out.println("Removendo cliente " + client.getName() + " da sala " + roomName);
+
         ChatRoom room = chatRoomRegister.getRegisteredRoomList().stream()
                 .filter(r -> r.getName().equals(roomName)).findFirst().orElse(null);
 
         assert room != null;
-        room.getConnectedClientList().remove(client);
+        room.getConnectedClientList().removeIf(c -> c.getName().equals(client.getName()));
 
         updateChatRoomRegisterInSpace();
 
@@ -220,5 +235,21 @@ class Server {
         else{ // usuario solicitou sair de uma sala
             removeClientFromRoom(roomName, client);
         }
+    }
+
+    void onCloseConnectionSolicitationReceived(CloseConnectionSolicitation solicitation){
+        System.out.println("Cliente " + solicitation.getUserName() + " se desconectou");
+
+        Client client = applicationClientList.stream().
+                filter(c -> c.getName().equals(solicitation.getUserName()))
+                .findFirst()
+                .orElse(null);
+
+        assert client != null;
+        if(solicitation.getCurrentInRoomName() != null){
+            removeClientFromRoom(solicitation.getCurrentInRoomName(), client);
+        }
+
+        client.setStatus(Status.OFFLINE);
     }
 }
