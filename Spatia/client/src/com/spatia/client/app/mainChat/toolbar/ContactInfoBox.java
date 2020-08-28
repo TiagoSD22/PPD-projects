@@ -1,6 +1,7 @@
 package com.spatia.client.app.mainChat.toolbar;
 
 import com.spatia.common.Status;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -17,12 +18,13 @@ public class ContactInfoBox extends GridPane {
     private Label unreadMsgCounter;
     private StackPane unreadMsgPane;
 
-    ContactInfoBox(Image avatar, String userName){
+    ContactInfoBox(Image avatar, String userName, boolean isRoom){
         this.setVgap(10);
         this.setHgap(5);
-        this.setBackground(new Background(new BackgroundFill(Color.valueOf("#292929"),
+        this.setBackground(new Background(new BackgroundFill(Color.valueOf("30343F"),
                 null, null)));
         this.setMinWidth(282);
+        this.setMinHeight(74);
         this.setAlignment(Pos.CENTER_LEFT);
 
         ColumnConstraints constraints = new ColumnConstraints();
@@ -42,12 +44,12 @@ public class ContactInfoBox extends GridPane {
         }
 
         this.avatar = new ImageView(avatar);
-        this.avatar.setFitWidth(64);
-        this.avatar.setFitHeight(64);
+        this.avatar.setFitWidth(60);
+        this.avatar.setFitHeight(60);
 
         this.userTypingStatus = new Text();
 
-        this.userName = new Text(userName);
+        this.userName = new Text(isRoom? "Sala " + userName: userName);
         this.userName.setTranslateY(15);
         this.userName.setFill(Color.valueOf("#fcfcfc"));
         this.userTypingStatus.setFill(Color.valueOf("#0ab9c2"));
@@ -56,7 +58,7 @@ public class ContactInfoBox extends GridPane {
         unreadMsgCounter = new Label();
         unreadMsgCounter.setStyle("-fx-text-fill: #fcfcfc");
 
-        Circle badge = new Circle(10, Color.valueOf("#f7717d"));
+        Circle badge = new Circle(10, Color.valueOf("#A74482"));
         badge.setStrokeWidth(2.0);
         badge.setStyle("-fx-background-insets: 0 0 -1 0, 0, 1, 2;");
         badge.setSmooth(true);
@@ -70,6 +72,8 @@ public class ContactInfoBox extends GridPane {
         this.add(this.userName, 1, 0, 3, 1);
         this.add(this.userTypingStatus, 1, 1, 3, 1);
         this.add(unreadMsgPane, 4, 0, 1, 1);
+
+        this.setPadding(new Insets(5, 0, 5, 5));
     }
 
     public void setAvatar(Image avatar){
@@ -78,11 +82,11 @@ public class ContactInfoBox extends GridPane {
 
     public void setFocus(boolean focus){
         if(!focus){
-            this.setBackground(new Background(new BackgroundFill(Color.valueOf("#292929"),
+            this.setBackground(new Background(new BackgroundFill(Color.valueOf("#30343F"),
                     null, null)));
         }
         else{
-            this.setBackground(new Background(new BackgroundFill(Color.valueOf("#03203a"),
+            this.setBackground(new Background(new BackgroundFill(Color.valueOf("#385170"),
                     null, null)));
         }
     }

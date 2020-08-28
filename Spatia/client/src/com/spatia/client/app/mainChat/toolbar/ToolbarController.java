@@ -367,16 +367,49 @@ public class ToolbarController {
     private void displayRoomContactList(List<Client> clientList){
         contactListView.getItems().clear();
 
+        createRoomInfoBox();
+
         for(Client c: clientList){
             displayContact(c);
         }
+    }
+
+    private void createRoomInfoBox(){
+        Image roomIcon = new Image(getClass().getResourceAsStream("/assets/Images/room.png"));
+
+        ContactInfoBox roomBox = new ContactInfoBox(roomIcon, currentRoom.getName(), true);
+
+        roomBox.setCursor(Cursor.HAND);
+        roomBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(currentSelectedContactInfoBox != null){
+                    currentSelectedContactInfoBox.setFocus(false);
+                }
+                currentSelectedContactInfoBox = roomBox;
+                currentSelectedContactInfoBox.setFocus(true);
+
+                if(clientUnreadMsgRegisterMap.containsKey(currentRoom.getName())){
+                    clientUnreadMsgRegisterMap.put(currentRoom.getName(), 0);
+                    roomBox.registerUnreadMsg(0);
+                }
+
+                /*Platform.runLater(() -> {
+                    mainChatController.getChatController()
+                            .setCurrentCollocutor(contactInfoBoxClientMap.get(contactInfoBox));
+                });*/
+            }
+        });
+        Platform.runLater(() -> {
+            contactListView.getItems().add(roomBox);
+        });
     }
 
     private void displayContact(Client c){
         Image avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
                 c.getAvatarName())
         );
-        ContactInfoBox contactInfoBox = new ContactInfoBox(avatar, c.getName());
+        ContactInfoBox contactInfoBox = new ContactInfoBox(avatar, c.getName(), false);
 
         clientContactInfoBoxMap.put(c.getName(), contactInfoBox);
         contactInfoBox.setCursor(Cursor.HAND);
@@ -465,21 +498,8 @@ public class ToolbarController {
     public void onClientLeftRoom(Client client){
         System.out.println("Removendo cliente " + client.getName() + " da lista de contatos");
 
-        System.out.println("Existem os seguintes contatos na sala: ");
-        for(Client c: currentRoom.getConnectedClientList()){
-            System.out.println(c.getName());
-        }
-
         currentRoom.getConnectedClientList().remove(client);
         clientContactInfoBoxMap.remove(client.getName());
-
-        System.out.println("Clientes restantes na sala atual " + currentRoom.getName() + ": " +
-                currentRoom.getConnectedClientList().size());
-
-        for(Client c: currentRoom.getConnectedClientList()){
-            System.out.println(c.getName());
-        }
-
 
         Platform.runLater(() -> {
             notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(client.getName() + " saiu da sala")));

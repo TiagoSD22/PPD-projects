@@ -28,7 +28,7 @@ class ChatRoomInfoBox extends GridPane {
         this.setVgap(10);
         this.setHgap(5);
 
-        unfocusedBackground = new Background(new BackgroundFill(Color.valueOf("#040A10"), null, null));
+        unfocusedBackground = new Background(new BackgroundFill(Color.valueOf("#30343F"), null, null));
         focusedBackground = new Background(new BackgroundFill(Color.valueOf("#3C5E7C"), null, null));
 
         this.setBackground(unfocusedBackground);
