@@ -86,7 +86,7 @@ public class ToolbarController {
 
     private MainChatController mainChatController;
     private ContactInfoBox currentSelectedContactInfoBox;
-    private BidiMap<String, ContactInfoBox> clientContactInfoBoxMap;
+    private BidiMap<Client, ContactInfoBox> clientContactInfoBoxMap;
     private HashMap<String, Integer> clientUnreadMsgRegisterMap;
     private BidiMap<String, ChatRoomInfoBox> chatRoomInfoBoxMap;
     private ChatRoomInfoBox currentSelectedChatRoomInfoBox;
@@ -394,10 +394,9 @@ public class ToolbarController {
                     roomBox.registerUnreadMsg(0);
                 }
 
-                /*Platform.runLater(() -> {
-                    mainChatController.getChatController()
-                            .setCurrentCollocutor(contactInfoBoxClientMap.get(contactInfoBox));
-                });*/
+                Platform.runLater(() -> {
+                    mainChatController.getChatController().setRoomAsCurrentCollocutor(true);
+                });
             }
         });
         Platform.runLater(() -> {
@@ -411,7 +410,7 @@ public class ToolbarController {
         );
         ContactInfoBox contactInfoBox = new ContactInfoBox(avatar, c.getName(), false);
 
-        clientContactInfoBoxMap.put(c.getName(), contactInfoBox);
+        clientContactInfoBoxMap.put(c, contactInfoBox);
         contactInfoBox.setCursor(Cursor.HAND);
         contactInfoBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -427,10 +426,10 @@ public class ToolbarController {
                     contactInfoBox.registerUnreadMsg(0);
                 }
 
-                /*Platform.runLater(() -> {
+                Platform.runLater(() -> {
                     mainChatController.getChatController()
-                            .setCurrentCollocutor(contactInfoBoxClientMap.get(contactInfoBox));
-                });*/
+                            .setCurrentCollocutor(clientContactInfoBoxMap.getKey(contactInfoBox));
+                });
             }
         });
         Platform.runLater(() -> {
@@ -453,6 +452,10 @@ public class ToolbarController {
         currentRoom = null;
 
         showNoRoomBg();
+
+        Platform.runLater(() -> {
+            mainChatController.getChatController().showEmptyChatBg();
+        });
     }
 
     private void enterRoom(String roomName){
@@ -499,7 +502,7 @@ public class ToolbarController {
         System.out.println("Removendo cliente " + client.getName() + " da lista de contatos");
 
         currentRoom.getConnectedClientList().remove(client);
-        clientContactInfoBoxMap.remove(client.getName());
+        clientContactInfoBoxMap.remove(client);
 
         Platform.runLater(() -> {
             notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(client.getName() + " saiu da sala")));

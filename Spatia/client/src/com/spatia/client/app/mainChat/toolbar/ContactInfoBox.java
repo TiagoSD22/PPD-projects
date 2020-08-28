@@ -50,7 +50,7 @@ public class ContactInfoBox extends GridPane {
         this.userTypingStatus = new Text();
 
         this.userName = new Text(isRoom? "Sala " + userName: userName);
-        this.userName.setTranslateY(15);
+        this.userName.setTranslateY(0);
         this.userName.setFill(Color.valueOf("#fcfcfc"));
         this.userTypingStatus.setFill(Color.valueOf("#0ab9c2"));
 

@@ -14,7 +14,7 @@
 
 <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="896.0" style="-fx-background-color: #fcfcfc; -fx-background-radius: 0 20 20 0;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spatia.client.app.mainChat.chat.ChatController">
    <children>
-      <JFXButton fx:id="sendMessageBt" contentDisplay="GRAPHIC_ONLY" layoutX="836.0" layoutY="665.0" onAction="#sendMessage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 100 100 100 100; -fx-background-color: #f7717d;">
+      <JFXButton fx:id="sendMessageBt" contentDisplay="GRAPHIC_ONLY" layoutX="836.0" layoutY="665.0" onAction="#sendMessage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 100 100 100 100; -fx-background-color: #9FD3C7;">
          <padding>
             <Insets right="5.0" />
          </padding>
@@ -22,21 +22,24 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </JFXButton>
-      <TextArea fx:id="textInput" layoutX="10.0" layoutY="670.0" prefHeight="40.0" prefWidth="818.0" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #d6d6d6;" wrapText="true" />
-      <ListView fx:id="messageArea" layoutY="75.0" prefHeight="588.0" prefWidth="896.0" />
+      <TextArea fx:id="textInput" layoutX="10.0" layoutY="670.0" prefHeight="40.0" prefWidth="818.0" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #d6d6d6;" wrapText="true">
+         <padding>
+            <Insets left="10.0" />
+         </padding></TextArea>
+      <ListView fx:id="messageArea" layoutY="79.0" prefHeight="585.0" prefWidth="896.0" />
       <StackPane fx:id="currentCollocutorInfoRegion" alignment="CENTER_LEFT" maxHeight="70.0" minHeight="70.0" prefHeight="70.0" prefWidth="896.0" style="-fx-background-color: #fcfcfc;">
          <children>
             <ImageView fx:id="currentCollocutorAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" translateY="-1.0" x="-5.0">
                <StackPane.margin>
-                  <Insets left="10.0" />
+                  <Insets left="10.0" top="9.0" />
                </StackPane.margin>
             </ImageView>
-            <Text fx:id="currentCollocutorName" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0">
+            <Text fx:id="currentCollocutorName" fill="#1d100c" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0">
                <StackPane.margin>
                   <Insets bottom="30.0" left="90.0" />
                </StackPane.margin>
                <font>
-                  <Font name="System Bold" size="14.0" />
+                  <Font name="Roboto Slab Regular" size="15.0" />
                </font>
             </Text>
             <Text fx:id="currentCollocutorStatus" fill="#2f2f2f" strokeType="OUTSIDE" strokeWidth="0.0">

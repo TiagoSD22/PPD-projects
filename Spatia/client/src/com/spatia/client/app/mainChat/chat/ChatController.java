@@ -5,6 +5,7 @@ import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
+import com.spatia.common.Client;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -23,7 +24,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -50,9 +50,11 @@ public class ChatController {
     private StackPane emptyChatBg;
 
     private JFXSnackbar notificationSnack;
-    //private Client currentCollocutor;
+    private Client currentCollocutor;
+    private boolean isRoomCurrentCollocutor;
     private Circle currentCollocutorStatusInfo;
     private HashMap<String, List<HBox>> conversationMap;
+    private Image roomIcon;
 
     public void init(MainChatController mainChatController) {
         sendMessageBt.setGraphic(new ImageView(new Image(getClass()
@@ -66,12 +68,6 @@ public class ChatController {
         conversationMap = new HashMap<>();
 
         this.mainChatController = mainChatController;
-        currentCollocutorStatusInfo = new Circle(36);
-        currentCollocutorStatusInfo.setStrokeWidth(3);
-        currentCollocutorStatusInfo.setFill(Color.valueOf("#2f2f2f"));
-        currentCollocutorStatusInfo.setTranslateX(5);
-        currentCollocutorInfoRegion.getChildren().add(currentCollocutorStatusInfo);
-        currentCollocutorStatusInfo.toBack();
 
         Image image = new Image(getClass().getResourceAsStream("/assets/Images/chat_bg.jpg"));
         BackgroundSize backgroundSize = new BackgroundSize(978, 588, false,
@@ -93,6 +89,8 @@ public class ChatController {
         dropShadow.setOffsetY(3.0);
         dropShadow.setColor(Color.color(0, 0, 0));
         notificationSnack.setEffect(dropShadow);
+
+        roomIcon = new Image(getClass().getResourceAsStream("/assets/Images/room.png"));
 
         /*textInput.textProperty().addListener((observable, oldValue, newValue) -> {
             if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
@@ -222,8 +220,9 @@ public class ChatController {
         });
     }
 
-    /*public void setCurrentCollocutor(Client c){
+    public void setCurrentCollocutor(Client c){
         boolean collocutorChanged = false;
+
         if(currentCollocutor == null || !currentCollocutor.getName().equals(c.getName())){
             collocutorChanged = true;
         }
@@ -234,13 +233,14 @@ public class ChatController {
                 + c.getAvatarName())));
         setCurrentCollocutorName(c.getName());
 
-        setCurrentCollocutorStatus(c);
-
-        if(collocutorChanged) {
+        if(collocutorChanged || isRoomCurrentCollocutor) {
             messageArea.getItems().clear();
+            textInput.clear();
             loadCurrentCollocutorConversation();
         }
-    }*/
+
+        isRoomCurrentCollocutor = false;
+    }
 
     private void setCurrentCollocutorAvatar(Image avatar) {
         currentCollocutorAvatar.setImage(avatar);
@@ -295,12 +295,32 @@ public class ChatController {
             currentCollocutor.setAvatarName(newAvatar);
             setCurrentCollocutor(currentCollocutor);
         }
-    }
+    }*/
 
     private void loadCurrentCollocutorConversation(){
         if(conversationMap.containsKey(currentCollocutor.getName())) {
             List<HBox> conversation = conversationMap.get(currentCollocutor.getName());
             messageArea.getItems().addAll(conversation);
         }
-    }*/
+    }
+
+    public void setRoomAsCurrentCollocutor(boolean value){
+        if(value && !isRoomCurrentCollocutor){
+            textInput.clear();
+        }
+
+        isRoomCurrentCollocutor = value;
+
+        Platform.runLater(() -> {
+            setCurrentCollocutorAvatar(roomIcon);
+        });
+
+        Platform.runLater(() -> {
+            setCurrentCollocutorName(mainChatController.getToolbarController().getCurrentRoom().getName());
+        });
+    }
+
+    public void showEmptyChatBg(){
+        this.emptyChatBg.setVisible(true);
+    }
 }
