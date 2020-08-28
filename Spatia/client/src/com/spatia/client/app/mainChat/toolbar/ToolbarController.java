@@ -11,6 +11,7 @@ import com.spatia.client.app.services.SpaceHandler;
 import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -35,7 +36,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.util.*;
-
+import java.util.stream.Collectors;
 
 public class ToolbarController {
     @FXML
@@ -47,7 +48,7 @@ public class ToolbarController {
     @FXML
     private StackPane currentUserInfoRegion;
     @FXML
-    private ListView<GridPane> contactListView;
+    private ListView<ContactInfoBox> contactListView;
     @FXML
     private JFXButton soundBt;
     @FXML
@@ -204,84 +205,6 @@ public class ToolbarController {
         currentUserAvatar.setImage(avatar);
     }
 
-    /*public void displayContactList(List<Client> contactList){
-        for(Client c: contactList){
-            displayContact(c);
-        }
-    }
-
-    public void displayContact(Client c){
-        Image avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
-                c.getAvatarName())
-        );
-        ContactInfoBox contactInfoBox = new ContactInfoBox(avatar, c.getName(), c.getStatus());
-
-        clientContactInfoBoxMap.put(c.getName(), contactInfoBox);
-        contactInfoBoxClientMap.put(contactInfoBox, c);
-        contactInfoBox.setCursor(Cursor.HAND);
-        contactInfoBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(currentSelectedContactInfoBox != null){
-                    currentSelectedContactInfoBox.setFocus(false);
-                }
-                currentSelectedContactInfoBox = contactInfoBox;
-                currentSelectedContactInfoBox.setFocus(true);
-
-                if(clientUnreadMsgRegisterMap.containsKey(c.getName())){
-                    clientUnreadMsgRegisterMap.put(c.getName(), 0);
-                    contactInfoBox.registerUnreadMsg(0);
-                }
-
-                Platform.runLater(() -> {
-                    mainChatController.getChatController()
-                            .setCurrentCollocutor(contactInfoBoxClientMap.get(contactInfoBox));
-                });
-            }
-        });
-        Platform.runLater(() -> {
-            contactListView.getItems().add(contactInfoBox);
-        });
-    }
-
-    public void registerUnreadMsg(Client c){
-        if(clientUnreadMsgRegisterMap.containsKey(c.getName())){
-            int unreadMsgQtd = clientUnreadMsgRegisterMap.get(c.getName());
-            unreadMsgQtd++;
-            clientUnreadMsgRegisterMap.put(c.getName(), unreadMsgQtd);
-        }
-        else{
-            clientUnreadMsgRegisterMap.put(c.getName(), 1);
-        }
-
-        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(c.getName());
-        contactInfoBox.registerUnreadMsg(clientUnreadMsgRegisterMap.get(c.getName()));
-    }
-
-    public void updateClientStatus(String clientName, Status newStatus, Date lastSeen){
-        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(clientName);
-        Client c = contactInfoBoxClientMap.get(contactInfoBox);
-
-        c.setStatus(newStatus);
-        c.setLastSeen(lastSeen);
-
-        contactInfoBox.setUserStatus(c.getStatus());
-    }
-
-    public void updateClientAvatar(String clientName, String newAvatar){
-        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(clientName);
-        Client c = contactInfoBoxClientMap.get(contactInfoBox);
-
-        c.setAvatarName(newAvatar);
-
-        contactInfoBox.setAvatar(new Image(getClass().getResourceAsStream("/assets/Images/avatars/" + newAvatar)));
-    }
-
-    public void updateClientTypingStatus(String clientName, TypingStatus typingStatus){
-        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(clientName);
-        contactInfoBox.setUserTypingStatus(typingStatus);
-    }*/
-
     public void onSoundBtClicked(){
         sound = !sound;
         AudioService.getInstance().onMute();
@@ -350,7 +273,9 @@ public class ToolbarController {
 
         SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
 
-        SortedSet<ChatRoom> roomList = spaceHandlerInstance.readChatRoomRegisteredList();
+        SortedSet<ChatRoom> l = spaceHandlerInstance.readChatRoomRegisteredList();
+
+        SortedSet<ChatRoom> roomList = new TreeSet<>(l);
 
         displayRoomList(roomList);
     }
@@ -412,21 +337,72 @@ public class ToolbarController {
                 leaveCurrentRoom();
             }
 
-            currentRoom = room;
-            enterRoom();
+            SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+
+            enterRoom(room.getName());
+
+            currentRoom = spaceHandlerInstance.readRoom(room.getName());
 
             chatTabPane.getSelectionModel().select(0);
 
             currentRoomNameLabel.setText(currentRoom.getName());
-            if (currentRoom.getConnectedClientList().size() <= 1) {
+
+            List<Client> others = currentRoom.getConnectedClientList().stream().
+                    filter(c -> !c.getName().equals(mainChatController.getCurrentClient().getName()))
+                    .collect(Collectors.toList());
+            if (others.size() == 0) {
                 showLonelyBg();
             } else {
+                this.toolbarBg.setVisible(false);
                 currentRoomIndicator.setVisible(true);
                 contactListView.setVisible(true);
 
-                //TODO exibir a lista de clientes conectados a mesma sala
+                displayRoomContactList(others);
             }
+
+            spaceHandlerInstance.startChatRoomInteractionListener(currentRoom);
         }
+    }
+
+    private void displayRoomContactList(List<Client> clientList){
+        contactListView.getItems().clear();
+
+        for(Client c: clientList){
+            displayContact(c);
+        }
+    }
+
+    private void displayContact(Client c){
+        Image avatar = new Image(getClass().getResourceAsStream("/assets/Images/avatars/" +
+                c.getAvatarName())
+        );
+        ContactInfoBox contactInfoBox = new ContactInfoBox(avatar, c.getName());
+
+        clientContactInfoBoxMap.put(c.getName(), contactInfoBox);
+        contactInfoBox.setCursor(Cursor.HAND);
+        contactInfoBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(currentSelectedContactInfoBox != null){
+                    currentSelectedContactInfoBox.setFocus(false);
+                }
+                currentSelectedContactInfoBox = contactInfoBox;
+                currentSelectedContactInfoBox.setFocus(true);
+
+                if(clientUnreadMsgRegisterMap.containsKey(c.getName())){
+                    clientUnreadMsgRegisterMap.put(c.getName(), 0);
+                    contactInfoBox.registerUnreadMsg(0);
+                }
+
+                /*Platform.runLater(() -> {
+                    mainChatController.getChatController()
+                            .setCurrentCollocutor(contactInfoBoxClientMap.get(contactInfoBox));
+                });*/
+            }
+        });
+        Platform.runLater(() -> {
+            contactListView.getItems().add(contactInfoBox);
+        });
     }
 
     public void leaveCurrentRoom(){
@@ -436,19 +412,25 @@ public class ToolbarController {
 
         spaceHandlerInstance.writeLeaveRoomInteraction(mainChatController.getCurrentClient(), currentRoom.getName());
 
+        spaceHandlerInstance.stopChatRoomInteractionListener();
+
+        clientContactInfoBoxMap.clear();
+        contactListView.getItems().clear();
+
         currentRoom = null;
 
         showNoRoomBg();
     }
 
-    private void enterRoom(){
+    private void enterRoom(String roomName){
         SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
 
-        spaceHandlerInstance.writeEnterRoomInteraction(mainChatController.getCurrentClient(), currentRoom.getName());
+        spaceHandlerInstance.writeEnterRoomInteraction(mainChatController.getCurrentClient(), roomName);
     }
 
     private void showNoRoomBg(){
         currentRoomIndicator.setVisible(false);
+        this.toolbarBg.setVisible(true);
         this.toolbarBg.setImage(noRoom);
         this.toolbarBg.setLayoutY(0);
         this.toolbarInfo.setText("Você não está em nenhuma sala");
@@ -456,7 +438,10 @@ public class ToolbarController {
     }
 
     private void showLonelyBg(){
+        System.out.println("Cliente ficou sozinho na sala, exibindo imagem de lonely :(");
+
         currentRoomIndicator.setVisible(true);
+        this.toolbarBg.setVisible(true);
         this.toolbarBg.setImage(lonely);
         this.toolbarBg.setLayoutY(80);
         this.toolbarInfo.setText("Acho que você é o único aqui");
@@ -465,5 +450,47 @@ public class ToolbarController {
 
     public ChatRoom getCurrentRoom(){
         return currentRoom;
+    }
+
+    public void onNewClientEnteredRoom(Client newClient){
+        currentRoom.getConnectedClientList().add(newClient);
+        notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(newClient.getName() + " entrou na sala")));
+        this.toolbarBg.setVisible(false);
+        currentRoomIndicator.setVisible(true);
+        contactListView.setVisible(true);
+
+        displayContact(newClient);
+    }
+
+    public void onClientLeftRoom(Client client){
+        System.out.println("Removendo cliente " + client.getName() + " da lista de contatos");
+
+        System.out.println("Existem os seguintes contatos na sala: ");
+        for(Client c: currentRoom.getConnectedClientList()){
+            System.out.println(c.getName());
+        }
+
+        currentRoom.getConnectedClientList().remove(client);
+        clientContactInfoBoxMap.remove(client.getName());
+
+        System.out.println("Clientes restantes na sala atual " + currentRoom.getName() + ": " +
+                currentRoom.getConnectedClientList().size());
+
+        for(Client c: currentRoom.getConnectedClientList()){
+            System.out.println(c.getName());
+        }
+
+
+        Platform.runLater(() -> {
+            notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(client.getName() + " saiu da sala")));
+
+            contactListView.getItems().removeIf(box -> box.getUserName().equals(client.getName()));
+
+            if(currentRoom.getConnectedClientList().stream()
+                    .filter(c -> !c.getName().equals(mainChatController.getCurrentClient().getName()))
+                    .count() == 0) {
+                showLonelyBg();
+            }
+        });
     }
 }

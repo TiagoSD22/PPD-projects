@@ -1,5 +1,6 @@
 package com.spatia.client.app.mainChat.toolbar;
 
+import com.spatia.common.Status;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -10,15 +11,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 public class ContactInfoBox extends GridPane {
-    /*private ImageView avatar;
+    private ImageView avatar;
     private Text userName;
     private Text userTypingStatus;
-    private Circle statusClip;
-    private Circle statusIndicator;
     private Label unreadMsgCounter;
     private StackPane unreadMsgPane;
 
-    ContactInfoBox(Image avatar, String userName, Status status){
+    ContactInfoBox(Image avatar, String userName){
         this.setVgap(10);
         this.setHgap(5);
         this.setBackground(new Background(new BackgroundFill(Color.valueOf("#292929"),
@@ -46,17 +45,7 @@ public class ContactInfoBox extends GridPane {
         this.avatar.setFitWidth(64);
         this.avatar.setFitHeight(64);
 
-        this.statusClip = new Circle(32);
-        this.statusIndicator = new Circle(7);
         this.userTypingStatus = new Text();
-
-        setUserStatus(status);
-        this.statusClip.setStrokeWidth(2);
-        this.statusClip.setFill(Color.valueOf("#2f2f2f"));
-
-        this.statusIndicator.setStrokeWidth(1);
-        this.statusIndicator.setTranslateX(50);
-        this.statusIndicator.setTranslateY(10);
 
         this.userName = new Text(userName);
         this.userName.setTranslateY(15);
@@ -77,32 +66,14 @@ public class ContactInfoBox extends GridPane {
         unreadMsgPane.setTranslateY(-10);
         unreadMsgPane.setVisible(false);
 
-        this.add(this.statusClip, 0, 0, 1, 2);
         this.add(this.avatar, 0, 0, 1, 2);
         this.add(this.userName, 1, 0, 3, 1);
         this.add(this.userTypingStatus, 1, 1, 3, 1);
-        this.add(this.statusIndicator, 0, 1, 1, 1);
         this.add(unreadMsgPane, 4, 0, 1, 1);
     }
 
     public void setAvatar(Image avatar){
         this.avatar.setImage(avatar);
-    }
-
-    public void setUserStatus(Status status){
-        String statusColor = "";
-
-        if(status.equals(Status.ONLINE)){
-            statusColor = "#087e8b";
-        }
-        else{
-            statusColor = "#707070";
-            this.userTypingStatus.setText("");
-        }
-
-        this.statusClip.setStroke(Color.valueOf(statusColor));
-        this.statusIndicator.setStroke(Color.valueOf(statusColor));
-        this.statusIndicator.setFill(Color.valueOf(statusColor));
     }
 
     public void setFocus(boolean focus){
@@ -126,7 +97,11 @@ public class ContactInfoBox extends GridPane {
         }
     }
 
-    public void setUserTypingStatus(TypingStatus typingStatus){
+    public String getUserName(){
+        return userName.getText();
+    }
+
+    /*public void setUserTypingStatus(TypingStatus typingStatus){
         if(typingStatus.equals(TypingStatus.TYPING)){
             this.userTypingStatus.setText("Digitando...");
         }

@@ -112,7 +112,7 @@
                               <Font name="Roboto Slab Regular" size="24.0" />
                            </font>
                         </Label>
-                        <ListView fx:id="contactListView" layoutY="50.0" prefHeight="588.0" prefWidth="384.0" style="-fx-background-color:#141414;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
+                        <ListView fx:id="contactListView" layoutY="50.0" prefHeight="588.0" prefWidth="384.0" style="-fx-background-color: #141414;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
                      </children></AnchorPane>
               </content>
             </Tab>

@@ -45,11 +45,13 @@ public class MainChatController {
 
                 }
                 else if(newScreen.equalsIgnoreCase("stop")){
-                    SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
-                    ChatRoom currentInRoom = toolbarController.getCurrentRoom();
+                    if(currentClient != null) {
+                        SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+                        ChatRoom currentInRoom = toolbarController.getCurrentRoom();
 
-                    String currentInRoomName = currentInRoom != null? currentInRoom.getName(): null;
-                    spaceHandlerInstance.writeCloseConnectionSolicitation(currentClient.getName(), currentInRoomName);
+                        String currentInRoomName = currentInRoom != null ? currentInRoom.getName() : null;
+                        spaceHandlerInstance.writeCloseConnectionSolicitation(currentClient.getName(), currentInRoomName);
+                    }
                 }
             }
         });
@@ -58,6 +60,8 @@ public class MainChatController {
     public void initControllers() {
         chatController.init(this);
         toolbarController.init(this);
+        SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+        spaceHandlerInstance.setMainChatController(this);
     }
 
 
