@@ -6,7 +6,7 @@ import com.gigaspaces.annotation.pojo.SpaceId;
 import java.io.Serializable;
 
 @SpaceClass
-public class Client implements Serializable {
+public class Client implements Serializable, Comparable<Client> {
     private String name;
     private String avatarName;
     private Status status;
@@ -43,5 +43,10 @@ public class Client implements Serializable {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public int compareTo(Client o) {
+        return name.compareTo(o.getName());
     }
 }

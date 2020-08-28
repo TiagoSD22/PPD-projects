@@ -4,17 +4,17 @@ import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.SortedSet;
 
 @SpaceClass
 public class ChatRoom implements Serializable, Comparable<ChatRoom>{
     private String name;
-    private List<Client> connectedClientList;
+    private SortedSet<Client> connectedClientList;
 
     public ChatRoom() {
     }
 
-    public ChatRoom(String name, List<Client> connectedClientList) {
+    public ChatRoom(String name, SortedSet<Client> connectedClientList) {
         this.name = name;
         this.connectedClientList = connectedClientList;
     }
@@ -28,11 +28,11 @@ public class ChatRoom implements Serializable, Comparable<ChatRoom>{
         this.name = name;
     }
 
-    public List<Client> getConnectedClientList() {
+    public SortedSet<Client> getConnectedClientList() {
         return connectedClientList;
     }
 
-    public void setConnectedClientList(List<Client> connectedClientList) {
+    public void setConnectedClientList(SortedSet<Client> connectedClientList) {
         this.connectedClientList = connectedClientList;
     }
 

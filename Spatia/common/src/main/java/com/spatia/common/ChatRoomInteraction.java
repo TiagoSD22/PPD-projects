@@ -8,14 +8,16 @@ public class ChatRoomInteraction {
     private InteractionType type;
     private String roomName;
     private Client client;
+    private Boolean notify;
 
     public ChatRoomInteraction() {
     }
 
-    public ChatRoomInteraction(InteractionType type, String roomName, Client client) {
+    public ChatRoomInteraction(InteractionType type, String roomName, Client client, Boolean notify) {
         this.type = type;
         this.roomName = roomName;
         this.client = client;
+        this.notify = notify;
     }
 
     public InteractionType getType() {
@@ -41,5 +43,13 @@ public class ChatRoomInteraction {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public Boolean getNotify() {
+        return notify;
+    }
+
+    public void setNotify(Boolean notify) {
+        this.notify = notify;
     }
 }
