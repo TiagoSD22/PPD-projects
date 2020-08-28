@@ -1,7 +1,6 @@
 package com.spatia.server;
 
 import com.spatia.common.CloseConnectionSolicitation;
-import com.spatia.common.ConnectionSolicitation;
 import org.openspaces.events.EventDriven;
 import org.openspaces.events.EventTemplate;
 import org.openspaces.events.TransactionalEvent;

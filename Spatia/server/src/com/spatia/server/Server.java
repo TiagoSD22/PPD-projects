@@ -2,6 +2,7 @@ package com.spatia.server;
 
 import com.gigaspaces.client.ChangeSet;
 import com.spatia.common.*;
+import net.jini.core.lease.Lease;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.GigaSpaceConfigurer;
 import org.openspaces.core.space.EmbeddedSpaceConfigurer;
@@ -9,7 +10,6 @@ import org.openspaces.events.notify.SimpleNotifyContainerConfigurer;
 import org.openspaces.events.notify.SimpleNotifyEventListenerContainer;
 import org.openspaces.events.polling.SimplePollingContainerConfigurer;
 import org.openspaces.events.polling.SimplePollingEventListenerContainer;
-import org.openspaces.memcached.protocol.Op;
 
 import java.io.Serializable;
 import java.util.*;
@@ -90,8 +90,10 @@ class Server {
     }
 
     private void registerChatRoomInteractionListener(){
+        ChatRoomInteraction template = new ChatRoomInteraction();
+        template.setNotify(false);
         chatRoomInteractionListener = new SimplePollingContainerConfigurer(applicationSpace)
-                .template(new ChatRoomInteraction())
+                .template(template)
                 .eventListenerAnnotation(new ChatRoomInteractionListener(this))
                 .pollingContainer();
     }
@@ -172,12 +174,18 @@ class Server {
 
         assert room != null;
         if(room.getConnectedClientList() == null){
-            room.setConnectedClientList(new ArrayList<>());
+            room.setConnectedClientList(new TreeSet<>());
         }
 
         room.getConnectedClientList().add(client);
 
+        ChatRoom template = new ChatRoom();
+        template.setName(roomName);
+        applicationSpace.change(template, new ChangeSet().addToCollection("connectedClientList", client));
+
         updateChatRoomRegisterInSpace();
+
+        applicationSpace.write(new ChatRoomInteraction(InteractionType.ENTER, roomName, client, true), 60000);
 
         if(removeEmptyRoomTaskMap.containsKey(room.getName())){ // sala estava vazia e marcada para ser removida
             System.out.println("Cancelando tarefa de remocao de sala " + room.getName());
@@ -198,7 +206,13 @@ class Server {
         assert room != null;
         room.getConnectedClientList().removeIf(c -> c.getName().equals(client.getName()));
 
+        ChatRoom template = new ChatRoom();
+        template.setName(roomName);
+        applicationSpace.change(template, new ChangeSet().removeFromCollection("connectedClientList", client));
+
         updateChatRoomRegisterInSpace();
+
+        applicationSpace.write(new ChatRoomInteraction(InteractionType.LEAVE, roomName, client, true), 60000);
 
         if(room.getConnectedClientList().size() == 0){
             System.out.println("Sala " + room.getName() + " ficou vazia e sera removida em 10min.");
@@ -215,6 +229,11 @@ class Server {
         System.out.println("Removendo sala " + roomName + " por inatividade apos"
                 + TIME_MINUTES_TO_REMOVE_EMPTY_ROOM + " min");
 
+        ChatRoom template = new ChatRoom();
+        template.setName(roomName);
+
+        applicationSpace.take(template); // removendo sala do espaco
+
         ChatRoom room = chatRoomRegister.getRegisteredRoomList().stream()
                 .filter(r -> r.getName().equals(roomName)).findFirst().orElse(null);
 
@@ -224,6 +243,11 @@ class Server {
     }
 
     void onChatRoomInteractionCreated(ChatRoomInteraction interactionData){
+        System.out.println("Nova interacao de usuario com sala reconhecida no espaco." +
+                "\nUsuario: " + interactionData.getClient().getName() +
+                "\nSala: " + interactionData.getRoomName() +
+                "\nInteracao do tipo: " + (interactionData.getType().equals(InteractionType.ENTER)? "Entrar": "Sair"));
+
         InteractionType type = interactionData.getType();
 
         String roomName = interactionData.getRoomName();
