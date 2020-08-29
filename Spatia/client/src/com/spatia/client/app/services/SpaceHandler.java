@@ -229,7 +229,7 @@ public class SpaceHandler {
         });
     }
 
-    public void onRoomMessageReceived(ChatRoomMessage msg){
+    private void onRoomMessageReceived(ChatRoomMessage msg){
         if(!msg.getSenderName().equals(mainChatController.getCurrentClient().getName())) {
             Platform.runLater(() -> {
                 mainChatController.onRoomChatMessageReceived(msg.getSenderName(), msg.getText());

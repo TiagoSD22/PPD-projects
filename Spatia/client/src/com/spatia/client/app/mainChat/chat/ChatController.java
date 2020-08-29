@@ -12,6 +12,7 @@ import com.spatia.common.Client;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.DropShadow;
@@ -166,16 +167,39 @@ public class ChatController {
         conversation.add(messageBox);
 
         if(currentCollocutor != null && currentCollocutor.getName().equals(sender) && !isRoomCurrentCollocutor){
+            if(messageArea.getChildren().size() == 0 ||
+                    ((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).isMyOwn()){
+                messageBox.setPadding(new Insets(15, 30, 0, 30));
+            }
+            else{
+                messageBox.setPadding(new Insets(0, 30, 0, 30));
+            }
             messageArea.getChildren().add(messageBox);
+            messageAreaPane.setVvalue(1);
         }
     }
 
     private void addRoomMessageToConversation(String sender, String text){
-        ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, true);
-        roomConversation.add(messageBox);
-
         if(isRoomCurrentCollocutor){
-            messageArea.getChildren().add(messageBox);
+            if(messageArea.getChildren().size() == 0 ||
+                    !((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).getSender()
+                            .equals(sender)){
+
+                ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, true);
+                roomConversation.add(messageBox);
+                messageBox.setPadding(new Insets(15, 30, 0, 30));
+
+                messageArea.getChildren().add(messageBox);
+            }
+            else{
+                ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, false);
+                roomConversation.add(messageBox);
+                messageBox.setPadding(new Insets(0, 30, 0, 30));
+
+                messageArea.getChildren().add(messageBox);
+            }
+
+            messageAreaPane.setVvalue(1);
         }
     }
 
@@ -194,7 +218,15 @@ public class ChatController {
             roomConversation.add(messageBox);
         }
 
+        if(messageArea.getChildren().size() == 0 ||
+                !((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).isMyOwn()){
+            messageBox.setPadding(new Insets(15, 30, 0, 30));
+        }
+        else{
+            messageBox.setPadding(new Insets(0, 30, 0, 30));
+        }
         messageArea.getChildren().add(messageBox);
+        messageAreaPane.setVvalue(1);
     }
 
     private void removeNewLineEvent() {
@@ -274,6 +306,8 @@ public class ChatController {
 
     public void onClientDisconnected(Client c){
         if(currentCollocutor != null && currentCollocutor.getName().equals(c.getName())){
+            currentCollocutor = null;
+            isRoomCurrentCollocutor = false;
             emptyChatBg.setVisible(true);
         }
     }
@@ -298,6 +332,7 @@ public class ChatController {
             setCurrentCollocutorName(mainChatController.getToolbarController().getCurrentRoom().getName());
         });
 
+        currentCollocutor = null;
         messageArea.getChildren().clear();
         messageArea.getChildren().addAll(roomConversation);
     }

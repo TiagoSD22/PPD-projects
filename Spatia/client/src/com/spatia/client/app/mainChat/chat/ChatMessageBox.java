@@ -12,6 +12,8 @@ import javafx.scene.text.TextFlow;
 class ChatMessageBox extends HBox {
     private TextFlow textArea;
     private Text text;
+    private String sender;
+    private boolean isMyOwn;
 
     ChatMessageBox(String text, boolean isMyOwn, String senderName, boolean showSender){
         textArea = new TextFlow();
@@ -25,6 +27,9 @@ class ChatMessageBox extends HBox {
         this.text.setFill(Color.valueOf("#000000"));
         this.text.setBoundsType(TextBoundsType.VISUAL);
 
+        this.isMyOwn = isMyOwn;
+        this.sender = senderName;
+
         if(showSender){
             Text sender = new Text(senderName + "\n");
             sender.setFont(new Font(10));
@@ -34,8 +39,6 @@ class ChatMessageBox extends HBox {
             this.textArea.getChildren().add(sender);
         }
         this.textArea.getChildren().add(this.text);
-
-        this.setPadding(new Insets(10, 30, 10, 30));
 
         getChildren().addAll(textArea);
 
@@ -49,5 +52,13 @@ class ChatMessageBox extends HBox {
             textArea.setBackground(new Background(new BackgroundFill(Color.valueOf("#ececec"),
                     null, null)));
         }
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public boolean isMyOwn() {
+        return isMyOwn;
     }
 }
