@@ -5,6 +5,8 @@ import com.j_spaces.core.client.EntryAlreadyInSpaceException;
 import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.menu.MenuController;
 import com.spatia.client.app.services.listeners.ChatRoomInteractionListener;
+import com.spatia.client.app.services.listeners.DirectMessageListener;
+import com.spatia.client.app.services.listeners.RoomMessageListener;
 import com.spatia.client.app.utils.ConnectionConfig;
 import com.spatia.common.*;
 import javafx.application.Platform;
@@ -14,6 +16,8 @@ import org.openspaces.core.space.CannotFindSpaceException;
 import org.openspaces.core.space.SpaceProxyConfigurer;
 import org.openspaces.events.notify.SimpleNotifyContainerConfigurer;
 import org.openspaces.events.notify.SimpleNotifyEventListenerContainer;
+import org.openspaces.events.polling.SimplePollingContainerConfigurer;
+import org.openspaces.events.polling.SimplePollingEventListenerContainer;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -22,6 +26,8 @@ public class SpaceHandler {
     private static SpaceHandler instance;
     private GigaSpace applicationSpace;
     private SimpleNotifyEventListenerContainer chatRoomInteractionListener;
+    private SimplePollingEventListenerContainer directMessageListener;
+    private SimpleNotifyEventListenerContainer roomMessageListener;
 
     private MenuController menuController;
     private MainChatController mainChatController;
@@ -56,10 +62,42 @@ public class SpaceHandler {
                 .notifyContainer();
 
         chatRoomInteractionListener.start();
+
+        startMessageListeners(room, mainChatController.getCurrentClient());
+    }
+
+    private void startMessageListeners(ChatRoom room, Client c){
+        startDirectMessageListener(c);
+        startRoomMessageListener(room);
+    }
+
+    private void startDirectMessageListener(Client c){
+        ChatMessage template = new ChatMessage();
+        template.setReceiverName(c.getName());
+
+        directMessageListener = new SimplePollingContainerConfigurer(applicationSpace)
+                .template(template)
+                .eventListenerAnnotation(new DirectMessageListener())
+                .pollingContainer();
+
+        directMessageListener.start();
+    }
+
+    private void startRoomMessageListener(ChatRoom room){
+        ChatRoomMessage template = new ChatRoomMessage();
+        template.setRoomName(room.getName());
+        roomMessageListener = new SimpleNotifyContainerConfigurer(applicationSpace)
+                .template(template)
+                .eventListenerAnnotation(new RoomMessageListener())
+                .notifyContainer();
+
+        roomMessageListener.start();
     }
 
     public void stopChatRoomInteractionListener(){
         chatRoomInteractionListener.stop();
+        directMessageListener.stop();
+        roomMessageListener.stop();
     }
 
     public void setMenuController(MenuController menuController){
@@ -161,5 +199,31 @@ public class SpaceHandler {
         template.setName(roomName);
 
         return applicationSpace.read(template);
+    }
+
+    public void writeDirectMessage(String sender, String receiver, String text){
+        ChatMessage msg = new ChatMessage(sender, receiver, text);
+
+        applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
+    }
+
+    public void writeRoomChatMessage(String room, String sender, String text){
+        ChatRoomMessage msg = new ChatRoomMessage(room, sender, text);
+
+        applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
+    }
+
+    public void onDirectMessageReceived(ChatMessage msg){
+        Platform.runLater(() -> {
+            mainChatController.onDirectMessageReceived(msg);
+        });
+    }
+
+    public void onRoomMessageReceived(ChatRoomMessage msg){
+        if(!msg.getSenderName().equals(mainChatController.getCurrentClient().getName())) {
+            Platform.runLater(() -> {
+                mainChatController.onRoomChatMessageReceived(msg.getSenderName(), msg.getText());
+            });
+        }
     }
 }

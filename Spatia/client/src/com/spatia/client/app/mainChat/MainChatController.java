@@ -6,6 +6,7 @@ import com.spatia.client.app.mainChat.chat.ChatController;
 import com.spatia.client.app.mainChat.toolbar.ToolbarController;
 import com.spatia.client.app.services.AudioService;
 import com.spatia.client.app.services.SpaceHandler;
+import com.spatia.common.ChatMessage;
 import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
 import javafx.fxml.FXML;
@@ -77,41 +78,15 @@ public class MainChatController {
         return currentClient;
     }
 
-    /*private void getContactList(){
-        msgh.getContactList();
-    }*/
-
-    /*public void onContactListReceived(List<Client> contactList){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-        for(Client c: contactList){
-            System.out.println("Contato recebido: " +
-                    "\nNome: " + c.getName() +
-                    "\nAvatar: " + c.getAvatarName() +
-                    "\nStatus: " + c.getStatus() +
-                    (c.getStatus().equals(Status.OFFLINE)? ("\nVisto por ultimo " + dateFormat.format(c.getLastSeen()))
-                            : "")
-            );
-        }
-
-        toolbarController.displayContactList(contactList);
+    public void onDirectMessageReceived(ChatMessage msg){
+        System.out.println("Nova mensagem de " + msg.getSenderName() + " recebida: " + msg.getText());
+        chatController.onMessageReceived(msg);
     }
 
-    public void onNewClientConnected(Client c){
-        toolbarController.displayContact(c);
-        AudioService.getInstance().playNewClientConnectedSound();
-        chatController.showNewClientConnectedNotification(c);
+    public void onRoomChatMessageReceived(String sender, String text){
+        System.out.println("Nova mensagem de " + sender + " recebida para a sala inteira: " + text);
+        chatController.onRoomMessageReceived(sender, text);
     }
-
-    public void onClientStatusUpdated(String clientName, Status newStatus, Date lastSeen){
-        toolbarController.updateClientStatus(clientName, newStatus, lastSeen);
-        chatController.updateClientStatus(clientName, newStatus, lastSeen);
-    }
-
-    public void onClientAvatarUpdated(String clientName, String newAvatar){
-        toolbarController.updateClientAvatar(clientName, newAvatar);
-        chatController.updateClientAvatar(clientName, newAvatar);
-    }*/
 }
 
 

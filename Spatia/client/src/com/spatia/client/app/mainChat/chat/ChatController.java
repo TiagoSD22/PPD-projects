@@ -5,14 +5,14 @@ import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.services.AudioService;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
+import com.spatia.client.app.services.SpaceHandler;
+import com.spatia.common.ChatMessage;
+import com.spatia.common.ChatRoomMessage;
 import com.spatia.common.Client;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -37,7 +37,7 @@ public class ChatController {
     @FXML
     private TextArea textInput;
     @FXML
-    private ListView messageArea;
+    private VBox messageArea;
     @FXML
     private ImageView currentCollocutorAvatar;
     @FXML
@@ -48,12 +48,16 @@ public class ChatController {
     private StackPane currentCollocutorInfoRegion;
     @FXML
     private StackPane emptyChatBg;
+    @FXML
+    private ScrollPane messageAreaPane;
 
     private JFXSnackbar notificationSnack;
     private Client currentCollocutor;
     private boolean isRoomCurrentCollocutor;
     private Circle currentCollocutorStatusInfo;
-    private HashMap<String, List<HBox>> conversationMap;
+    private HashMap<String, List<ChatMessageBox>> conversationMap;
+    private List<ChatMessageBox> chatConversation;
+    private List<ChatMessageBox> roomConversation;
     private Image roomIcon;
 
     public void init(MainChatController mainChatController) {
@@ -66,6 +70,8 @@ public class ChatController {
         sendMessageBt.setEffect(ds);
 
         conversationMap = new HashMap<>();
+        chatConversation = new ArrayList<>();
+        roomConversation = new ArrayList<>();
 
         this.mainChatController = mainChatController;
 
@@ -108,7 +114,18 @@ public class ChatController {
         String text = textInput.getText();
         if(!text.isEmpty()) {
             textInput.clear();
-            //mainChatController.getMessageHandler().sendMessageToBroker(currentCollocutor, text);
+            if(isRoomCurrentCollocutor){
+                SpaceHandler.getInstance().writeRoomChatMessage(
+                        mainChatController.getToolbarController().getCurrentRoom().getName(),
+                        mainChatController.getCurrentClient().getName(),
+                        text);
+            }
+            else{
+                SpaceHandler.getInstance().writeDirectMessage(
+                        mainChatController.getCurrentClient().getName(),
+                        currentCollocutor.getName(),
+                        text);
+            }
             addOwnMessageToConversation(text);
         }
     }
@@ -129,79 +146,49 @@ public class ChatController {
         }
     }*/
 
-    private void addIncomingMessageToConversation(String receiverName, String text) {
-        HBox messageBody = new HBox();
-
-        Label ta = new Label();
-        ta.setWrapText(true);
-        ta.setBackground(new Background(new BackgroundFill(Color.valueOf("#fcfcfc"),
-                null, null)));
-        ta.setText(text);
-        ta.setPrefSize(Label.USE_COMPUTED_SIZE, Label.USE_COMPUTED_SIZE);
-        ta.setPadding(new Insets(10, 7, 10, 7));
-
-        DropShadow ds = new DropShadow();
-        ds.setOffsetX(1.3);
-        ds.setOffsetY(1.3);
-        ds.setColor(Color.BLACK);
-
-        ta.setEffect(ds);
-
-        messageBody.getChildren().add(ta);
-        messageBody.setPadding(new Insets(5, 0, 5, 0));
-        messageBody.setAlignment(Pos.TOP_LEFT);
-        messageBody.setTranslateX(10);
-        messageBody.setMaxWidth(650);
-
-        if(!conversationMap.containsKey(receiverName)){
-            conversationMap.put(receiverName, new ArrayList<>());
+    private void addIncomingMessageToConversation(String sender, String text) {
+        if(!conversationMap.containsKey(sender)){
+            conversationMap.put(sender, new ArrayList<>());
         }
 
-        List<HBox> conversation = conversationMap.get(receiverName);
-        conversation.add(messageBody);
+        List<ChatMessageBox> conversation = conversationMap.get(sender);
 
-        /*if(currentCollocutor != null && currentCollocutor.getName().equals(receiverName)){
-            messageArea.getItems().add(messageBody);
-            messageArea.scrollTo(messageArea.getItems().size());
-        }*/
+        ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, false);
+        conversation.add(messageBox);
+
+        if(currentCollocutor != null && currentCollocutor.getName().equals(sender) && !isRoomCurrentCollocutor){
+            messageArea.getChildren().add(messageBox);
+        }
+    }
+
+    private void addRoomMessageToConversation(String sender, String text){
+        ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, true);
+        roomConversation.add(messageBox);
+
+        if(isRoomCurrentCollocutor){
+            messageArea.getChildren().add(messageBox);
+        }
     }
 
     private void addOwnMessageToConversation(String text) {
-        HBox messageBody = new HBox();
+        ChatMessageBox messageBox = new ChatMessageBox(text, true, "", false);
 
-        Label ta = new Label();
-        ta.setWrapText(true);
-        ta.setBackground(new Background(new BackgroundFill(Color.valueOf("#0ab9c2"),
-                null, null)));
-        ta.setText(text);
-        ta.setPrefSize(Label.USE_COMPUTED_SIZE, Label.USE_COMPUTED_SIZE);
-        ta.setPadding(new Insets(10, 7, 10, 7));
+        if(!isRoomCurrentCollocutor) {
+            if (!conversationMap.containsKey(currentCollocutor.getName())) {
+                conversationMap.put(currentCollocutor.getName(), new ArrayList<>());
+            }
 
-        DropShadow ds = new DropShadow();
-        ds.setOffsetX(1.3);
-        ds.setOffsetY(1.3);
-        ds.setColor(Color.BLACK);
-
-        ta.setEffect(ds);
-
-        messageBody.getChildren().add(ta);
-        messageBody.setPadding(new Insets(5, 0, 5, 0));
-        messageBody.setAlignment(Pos.TOP_RIGHT);
-        messageBody.setTranslateX(300);
-        messageBody.setMaxWidth(650);
-
-        /*if(!conversationMap.containsKey(currentCollocutor.getName())){
-            conversationMap.put(currentCollocutor.getName(), new ArrayList<>());
+            List<ChatMessageBox> conversation = conversationMap.get(currentCollocutor.getName());
+            conversation.add(messageBox);
+        }
+        else{
+            roomConversation.add(messageBox);
         }
 
-        List<HBox> conversation = conversationMap.get(currentCollocutor.getName());
-        conversation.add(messageBody);
-
-        messageArea.getItems().add(messageBody);
-        messageArea.scrollTo(messageArea.getItems().size());*/
+        messageArea.getChildren().add(messageBox);
     }
 
-    public void removeNewLineEvent() {
+    private void removeNewLineEvent() {
         textInput.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -234,7 +221,7 @@ public class ChatController {
         setCurrentCollocutorName(c.getName());
 
         if(collocutorChanged || isRoomCurrentCollocutor) {
-            messageArea.getItems().clear();
+            messageArea.getChildren().clear();
             textInput.clear();
             loadCurrentCollocutorConversation();
         }
@@ -250,57 +237,42 @@ public class ChatController {
         currentCollocutorName.setText(userName);
     }
 
-    /*private void setCurrentCollocutorStatus(Client c){
-        if(c.getStatus().equals(Status.ONLINE)){
-            currentCollocutorStatus.setText("online");
-            currentCollocutorStatus.setFill(Color.valueOf("#2f2f2f"));
-            currentCollocutorStatusInfo.setStroke(Color.valueOf("#087e8b"));
-        }
-        else{
-            SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY HH:mm");
-            currentCollocutorStatus.setText("Visto por último " + df.format(c.getLastSeen()));
-            currentCollocutorStatus.setFill(Color.valueOf("#2f2f2f"));
-            currentCollocutorStatusInfo.setStroke(Color.valueOf("#707070"));
-        }
-    }*/
-
-    /*public void onMessageReceived(ChatMessage msg){
-        if(currentCollocutor == null || !msg.getSender().getName().equals(currentCollocutor.getName())){
-            System.out.println("Registrando mensagem nao lida para o cliente " + msg.getSender().getName());
+    public void onMessageReceived(ChatMessage msg){
+        if(currentCollocutor == null || !msg.getSenderName().equals(currentCollocutor.getName())
+                || isRoomCurrentCollocutor){
+            System.out.println("Registrando mensagem nao lida para o cliente " + msg.getSenderName());
             Platform.runLater(() -> {
-                mainChatController.getToolbarController().registerUnreadMsg(msg.getSender());
+                mainChatController.getToolbarController().registerUnreadMsg(msg.getSenderName());
             });
         }
 
         AudioService.getInstance().playIncomingMessageSound();
 
-        addIncomingMessageToConversation(msg.getSender().getName(), msg.getText());
-    }*/
-
-    /*public void showNewClientConnectedNotification(Client c){
-        System.out.println("Novo cliente " + c.getName() + " conectado!");
-        notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(c.getName() + " entrou no servidor")));
+        addIncomingMessageToConversation(msg.getSenderName(), msg.getText());
     }
 
-    public void updateClientStatus(String clientName, Status newStatus, Date lastSeen){
-        if(currentCollocutor != null && currentCollocutor.getName().equals(clientName)){
-            currentCollocutor.setStatus(newStatus);
-            currentCollocutor.setLastSeen(lastSeen);
-            setCurrentCollocutor(currentCollocutor);
+    public void onRoomMessageReceived(String sender, String text){
+        if(!isRoomCurrentCollocutor){
+            System.out.println("Registrando nova mensagem nao lida na sala");
+            Platform.runLater(() -> {
+                mainChatController.getToolbarController().registerRoomUnreadMsg();
+            });
         }
+
+        AudioService.getInstance().playIncomingMessageSound();
+        addRoomMessageToConversation(sender, text);
     }
 
-    public void updateClientAvatar(String clientName, String newAvatar){
-        if(currentCollocutor != null && currentCollocutor.getName().equals(clientName)){
-            currentCollocutor.setAvatarName(newAvatar);
-            setCurrentCollocutor(currentCollocutor);
+    public void onClientDisconnected(Client c){
+        if(currentCollocutor != null && currentCollocutor.getName().equals(c.getName())){
+            emptyChatBg.setVisible(true);
         }
-    }*/
+    }
 
     private void loadCurrentCollocutorConversation(){
         if(conversationMap.containsKey(currentCollocutor.getName())) {
-            List<HBox> conversation = conversationMap.get(currentCollocutor.getName());
-            messageArea.getItems().addAll(conversation);
+            List<ChatMessageBox> conversation = conversationMap.get(currentCollocutor.getName());
+            messageArea.getChildren().addAll(conversation);
         }
     }
 
@@ -312,15 +284,21 @@ public class ChatController {
         isRoomCurrentCollocutor = value;
 
         Platform.runLater(() -> {
+            this.emptyChatBg.setVisible(false);
             setCurrentCollocutorAvatar(roomIcon);
-        });
-
-        Platform.runLater(() -> {
             setCurrentCollocutorName(mainChatController.getToolbarController().getCurrentRoom().getName());
         });
+
+        messageArea.getChildren().clear();
+        messageArea.getChildren().addAll(roomConversation);
     }
 
-    public void showEmptyChatBg(){
+    public void onRoomLeft(){
         this.emptyChatBg.setVisible(true);
+        currentCollocutor = null;
+        isRoomCurrentCollocutor = false;
+
+        conversationMap.clear();
+        roomConversation.clear();
     }
 }

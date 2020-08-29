@@ -97,9 +97,11 @@ public class ToolbarController {
     private TranslateTransition hideCreateRoomCard;
     private JFXSnackbar notificationSnack;
     private List<ChatRoomInfoBox> chatRoomInfoBoxList;
+    private ContactInfoBox roomBox;
     private ChatRoom currentRoom;
     private Image noRoom;
     private Image lonely;
+    private int roomUnreadMsg;
 
     public void init(MainChatController mainChatController) {
         this.mainChatController = mainChatController;
@@ -175,6 +177,8 @@ public class ToolbarController {
 
         noRoom = new Image(getClass().getResourceAsStream("/assets/Images/no_room.png"));
         lonely = new Image(getClass().getResourceAsStream("/assets/Images/lonely.png"));
+
+        roomUnreadMsg = 0;
     }
 
     private void loadShowCreateRoomCardAnimation(){
@@ -377,7 +381,7 @@ public class ToolbarController {
     private void createRoomInfoBox(){
         Image roomIcon = new Image(getClass().getResourceAsStream("/assets/Images/room.png"));
 
-        ContactInfoBox roomBox = new ContactInfoBox(roomIcon, currentRoom.getName(), true);
+        roomBox = new ContactInfoBox(roomIcon, currentRoom.getName(), true);
 
         roomBox.setCursor(Cursor.HAND);
         roomBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
@@ -389,8 +393,8 @@ public class ToolbarController {
                 currentSelectedContactInfoBox = roomBox;
                 currentSelectedContactInfoBox.setFocus(true);
 
-                if(clientUnreadMsgRegisterMap.containsKey(currentRoom.getName())){
-                    clientUnreadMsgRegisterMap.put(currentRoom.getName(), 0);
+                if(roomUnreadMsg > 0){
+                    roomUnreadMsg = 0;
                     roomBox.registerUnreadMsg(0);
                 }
 
@@ -451,10 +455,12 @@ public class ToolbarController {
 
         currentRoom = null;
 
+        roomUnreadMsg = 0;
+
         showNoRoomBg();
 
         Platform.runLater(() -> {
-            mainChatController.getChatController().showEmptyChatBg();
+            mainChatController.getChatController().onRoomLeft();
         });
     }
 
@@ -476,6 +482,7 @@ public class ToolbarController {
     private void showLonelyBg(){
         System.out.println("Cliente ficou sozinho na sala, exibindo imagem de lonely :(");
 
+        contactListView.getItems().clear();
         currentRoomIndicator.setVisible(true);
         this.toolbarBg.setVisible(true);
         this.toolbarBg.setImage(lonely);
@@ -489,7 +496,15 @@ public class ToolbarController {
     }
 
     public void onNewClientEnteredRoom(Client newClient){
+        if(currentRoom.getConnectedClientList().stream()
+                .filter(c -> !c.getName().equals(mainChatController.getCurrentClient().getName()))
+                .count() == 0){
+            createRoomInfoBox();
+        }
+
         currentRoom.getConnectedClientList().add(newClient);
+
+        AudioService.getInstance().playNewClientConnectedSound();
         notificationSnack.enqueue(new JFXSnackbar.SnackbarEvent(new Text(newClient.getName() + " entrou na sala")));
         this.toolbarBg.setVisible(false);
         currentRoomIndicator.setVisible(true);
@@ -509,11 +524,38 @@ public class ToolbarController {
 
             contactListView.getItems().removeIf(box -> box.getUserName().equals(client.getName()));
 
+            mainChatController.getChatController().onClientDisconnected(client);
+
             if(currentRoom.getConnectedClientList().stream()
                     .filter(c -> !c.getName().equals(mainChatController.getCurrentClient().getName()))
                     .count() == 0) {
                 showLonelyBg();
             }
         });
+    }
+
+    public void registerUnreadMsg(String senderName){
+        if(clientUnreadMsgRegisterMap.containsKey(senderName)){
+            int unreadMsgQtd = clientUnreadMsgRegisterMap.get(senderName);
+            unreadMsgQtd++;
+            clientUnreadMsgRegisterMap.put(senderName, unreadMsgQtd);
+        }
+        else{
+            clientUnreadMsgRegisterMap.put(senderName, 1);
+        }
+
+        Client sender = clientContactInfoBoxMap.keySet().stream()
+                .filter(client -> client.getName().equals(senderName))
+                .findFirst().orElse(null);
+
+        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(sender);
+
+        contactInfoBox.registerUnreadMsg(clientUnreadMsgRegisterMap.get(senderName));
+    }
+
+    public void registerRoomUnreadMsg(){
+        roomUnreadMsg++;
+
+        roomBox.registerUnreadMsg(roomUnreadMsg);
     }
 }

@@ -4,11 +4,13 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -22,11 +24,22 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </JFXButton>
-      <TextArea fx:id="textInput" layoutX="10.0" layoutY="670.0" prefHeight="40.0" prefWidth="818.0" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #d6d6d6;" wrapText="true">
+      <TextArea fx:id="textInput" layoutX="10.0" layoutY="670.0" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="818.0" promptText="Digite uma mensagem" style="-fx-background-radius: 20 20 20 20; -fx-background-color: #d6d6d6;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.topAnchor="670.0">
          <padding>
-            <Insets left="10.0" />
-         </padding></TextArea>
-      <ListView fx:id="messageArea" layoutY="79.0" prefHeight="585.0" prefWidth="896.0" />
+            <Insets left="10.0" top="5.0" />
+         </padding>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <font>
+            <Font name="Roboto Slab Regular" size="13.0" />
+         </font></TextArea>
+      <ListView fx:id="messageAreaLV" layoutY="79.0" prefHeight="585.0" prefWidth="896.0" />
+      <ScrollPane fx:id="messageAreaPane" hbarPolicy="NEVER" layoutY="79.0" pannable="true" prefHeight="585.0" prefWidth="896.0">
+        <content>
+            <VBox fx:id="messageArea" minHeight="582.0" prefWidth="896.0" spacing="5.0" />
+        </content>
+      </ScrollPane>
       <StackPane fx:id="currentCollocutorInfoRegion" alignment="CENTER_LEFT" maxHeight="70.0" minHeight="70.0" prefHeight="70.0" prefWidth="896.0" style="-fx-background-color: #fcfcfc;">
          <children>
             <ImageView fx:id="currentCollocutorAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" translateY="-1.0" x="-5.0">

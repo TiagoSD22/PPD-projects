@@ -64,7 +64,7 @@ public class ContactInfoBox extends GridPane {
         badge.setSmooth(true);
         unreadMsgPane.getChildren().addAll(badge, unreadMsgCounter);
         unreadMsgPane.setAlignment(Pos.CENTER);
-        unreadMsgPane.setTranslateX(-5);
+        unreadMsgPane.setTranslateX(30);
         unreadMsgPane.setTranslateY(-10);
         unreadMsgPane.setVisible(false);
 

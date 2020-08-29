@@ -177,7 +177,9 @@ public class MenuController {
                 userName = nicknameField.getText();
                 avatarImageName = (String)avatarSelect.getSelectionModel().getSelectedItem();
 
-                waitingConnectionResponseDialog.show();
+                if(!waitingConnectionResponseDialog.isVisible()) {
+                    waitingConnectionResponseDialog.show();
+                }
 
                 spaceHandlerInstance.writeConnectionSolicitation(userName, avatarImageName);
                 spaceHandlerInstance.startConnectionSolicitationResponseListener();
