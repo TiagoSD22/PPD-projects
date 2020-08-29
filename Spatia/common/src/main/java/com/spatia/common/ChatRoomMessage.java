@@ -1,19 +1,22 @@
 package com.spatia.common;
 
+import com.gigaspaces.annotation.pojo.FifoSupport;
 import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 
-@SpaceClass
+@SpaceClass(fifoSupport = FifoSupport.OPERATION)
 public class ChatRoomMessage {
     private String roomName;
     private String senderName;
     private String text;
+    private String forwardTo;
 
     public ChatRoomMessage(){}
 
-    public ChatRoomMessage(String roomName, String senderName, String text) {
+    public ChatRoomMessage(String roomName, String senderName, String forwardTo, String text) {
         this.roomName = roomName;
         this.senderName = senderName;
+        this.forwardTo = forwardTo;
         this.text = text;
     }
 
@@ -40,5 +43,13 @@ public class ChatRoomMessage {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getForwardTo() {
+        return forwardTo;
+    }
+
+    public void setForwardTo(String forwardTo) {
+        this.forwardTo = forwardTo;
     }
 }
