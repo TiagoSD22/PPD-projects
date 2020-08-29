@@ -489,6 +489,10 @@ public class ToolbarController {
         this.toolbarBg.setLayoutY(80);
         this.toolbarInfo.setText("Acho que você é o único aqui");
         contactListView.setVisible(false);
+
+        Platform.runLater(() -> {
+            mainChatController.getChatController().showEmptyBg();
+        });
     }
 
     public ChatRoom getCurrentRoom(){

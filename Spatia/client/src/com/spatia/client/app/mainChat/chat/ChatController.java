@@ -301,4 +301,8 @@ public class ChatController {
         conversationMap.clear();
         roomConversation.clear();
     }
+
+    public void showEmptyBg(){
+        emptyChatBg.setVisible(true);
+    }
 }

@@ -202,12 +202,14 @@ public class SpaceHandler {
     }
 
     public void writeDirectMessage(String sender, String receiver, String text){
+        System.out.println("Enviando mensagem direta para " + receiver + ": " + text);
         ChatMessage msg = new ChatMessage(sender, receiver, text);
 
         applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
     }
 
     public void writeRoomChatMessage(String room, String sender, String text){
+        System.out.println("Enviando mensagem para a sala " + room + ": " + text);
         ChatRoomMessage msg = new ChatRoomMessage(room, sender, text);
 
         applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
