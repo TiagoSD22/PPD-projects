@@ -2,7 +2,6 @@ package com.spatia.server;
 
 import com.gigaspaces.client.ChangeSet;
 import com.spatia.common.*;
-import net.jini.core.lease.Lease;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.GigaSpaceConfigurer;
 import org.openspaces.core.space.EmbeddedSpaceConfigurer;
