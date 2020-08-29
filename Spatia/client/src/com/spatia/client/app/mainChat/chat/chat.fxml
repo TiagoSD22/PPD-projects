@@ -3,7 +3,6 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
@@ -34,7 +33,6 @@
          <font>
             <Font name="Roboto Slab Regular" size="13.0" />
          </font></TextArea>
-      <ListView fx:id="messageAreaLV" layoutY="79.0" prefHeight="585.0" prefWidth="896.0" />
       <ScrollPane fx:id="messageAreaPane" hbarPolicy="NEVER" layoutY="79.0" pannable="true" prefHeight="585.0" prefWidth="896.0">
         <content>
             <VBox fx:id="messageArea" minHeight="582.0" prefWidth="896.0" spacing="5.0" />

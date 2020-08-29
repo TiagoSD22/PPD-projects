@@ -9,6 +9,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.scene.text.TextFlow;
 
+import java.io.Serializable;
+
 class ChatMessageBox extends HBox {
     private TextFlow textArea;
     private Text text;

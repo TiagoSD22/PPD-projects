@@ -24,7 +24,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -164,41 +166,43 @@ public class ChatController {
         List<ChatMessageBox> conversation = conversationMap.get(sender);
 
         ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, false);
+
+        if(conversation.size() == 0 ||
+                (conversation.get(conversation.size() - 1)).isMyOwn()){
+            messageBox.setPadding(new Insets(15, 30, 0, 30));
+        }
+        else{
+            messageBox.setPadding(new Insets(0, 30, 0, 30));
+        }
+
         conversation.add(messageBox);
 
-        if(currentCollocutor != null && currentCollocutor.getName().equals(sender) && !isRoomCurrentCollocutor){
-            if(messageArea.getChildren().size() == 0 ||
-                    ((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).isMyOwn()){
-                messageBox.setPadding(new Insets(15, 30, 0, 30));
-            }
-            else{
-                messageBox.setPadding(new Insets(0, 30, 0, 30));
-            }
+        if(currentCollocutor != null && currentCollocutor.getName().equals(sender)){
             messageArea.getChildren().add(messageBox);
             messageAreaPane.setVvalue(1);
         }
     }
 
     private void addRoomMessageToConversation(String sender, String text){
+        ChatMessageBox messageBox = null;
+
+        //TODO nao olhar pros filhos do messageArea, mas sim, para os itens do roomConversation
+        if(roomConversation.size() == 0 ||
+                !(roomConversation.get(roomConversation.size() - 1)).getSender()
+                        .equals(sender)){
+
+            messageBox = new ChatMessageBox(text, false, sender, true);
+            messageBox.setPadding(new Insets(15, 30, 0, 30));
+        }
+        else{
+            messageBox = new ChatMessageBox(text, false, sender, false);
+            messageBox.setPadding(new Insets(0, 30, 0, 30));
+        }
+
+        roomConversation.add(messageBox);
+
         if(isRoomCurrentCollocutor){
-            if(messageArea.getChildren().size() == 0 ||
-                    !((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).getSender()
-                            .equals(sender)){
-
-                ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, true);
-                roomConversation.add(messageBox);
-                messageBox.setPadding(new Insets(15, 30, 0, 30));
-
-                messageArea.getChildren().add(messageBox);
-            }
-            else{
-                ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, false);
-                roomConversation.add(messageBox);
-                messageBox.setPadding(new Insets(0, 30, 0, 30));
-
-                messageArea.getChildren().add(messageBox);
-            }
-
+            messageArea.getChildren().add(messageBox);
             messageAreaPane.setVvalue(1);
         }
     }
@@ -324,17 +328,18 @@ public class ChatController {
             textInput.clear();
         }
 
+        currentCollocutor = null;
+        messageArea.getChildren().clear();
+
         isRoomCurrentCollocutor = value;
 
         Platform.runLater(() -> {
             this.emptyChatBg.setVisible(false);
             setCurrentCollocutorAvatar(roomIcon);
             setCurrentCollocutorName(mainChatController.getToolbarController().getCurrentRoom().getName());
-        });
 
-        currentCollocutor = null;
-        messageArea.getChildren().clear();
-        messageArea.getChildren().addAll(roomConversation);
+            messageArea.getChildren().addAll(roomConversation);
+        });
     }
 
     public void onRoomLeft(){

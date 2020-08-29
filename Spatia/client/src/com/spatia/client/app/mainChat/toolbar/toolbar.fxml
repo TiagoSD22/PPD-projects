@@ -66,7 +66,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane fx:id="currentRoomIndicator" prefHeight="50.0" prefWidth="384.0" style="-fx-background-color: #858585;" visible="false">
+                        <GridPane fx:id="currentRoomIndicator" prefHeight="50.0" prefWidth="384.0" style="-fx-background-color: #3D3D3D;" visible="false">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -76,7 +76,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label fx:id="currentRoomNameLabel" text="Label" textFill="#141414" GridPane.columnIndex="1">
+                              <Label fx:id="currentRoomNameLabel" text="Label" textFill="#ececec" GridPane.columnIndex="1">
                                  <padding>
                                     <Insets left="5.0" />
                                  </padding>
@@ -84,7 +84,7 @@
                                     <Font name="Roboto Slab Regular" size="13.0" />
                                  </font>
                               </Label>
-                              <Label text="Sala atual:" textFill="#141414">
+                              <Label text="Sala atual:" textFill="#ececec">
                                  <font>
                                     <Font name="Roboto Slab Regular" size="13.0" />
                                  </font>
@@ -120,7 +120,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane prefHeight="50.0" prefWidth="384.0" style="-fx-background-color: #858585;">
+                        <GridPane prefHeight="50.0" prefWidth="384.0" style="-fx-background-color: #3D3D3D;">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -161,7 +161,7 @@
                               </JFXButton>
                            </children>
                         </GridPane>
-                        <ListView fx:id="roomListView" layoutY="50.0" prefHeight="588.0" prefWidth="384.0" style="-fx-background-color:#141414;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                        <ListView fx:id="roomListView" layoutY="50.0" prefHeight="588.0" prefWidth="384.0" style="-fx-background-color: #141414;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                            <effect>
                               <DropShadow />
                            </effect>
