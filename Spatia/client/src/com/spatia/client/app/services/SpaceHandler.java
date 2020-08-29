@@ -1,15 +1,16 @@
 package com.spatia.client.app.services;
 
+import com.gigaspaces.client.TakeModifiers;
 import com.gigaspaces.client.WriteModifiers;
 import com.j_spaces.core.client.EntryAlreadyInSpaceException;
 import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.menu.MenuController;
 import com.spatia.client.app.services.listeners.ChatRoomInteractionListener;
 import com.spatia.client.app.services.listeners.DirectMessageListener;
-import com.spatia.client.app.services.listeners.RoomMessageListener;
 import com.spatia.client.app.utils.ConnectionConfig;
 import com.spatia.common.*;
 import javafx.application.Platform;
+import net.jini.space.JavaSpace;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.GigaSpaceConfigurer;
 import org.openspaces.core.space.CannotFindSpaceException;
@@ -19,6 +20,7 @@ import org.openspaces.events.notify.SimpleNotifyEventListenerContainer;
 import org.openspaces.events.polling.SimplePollingContainerConfigurer;
 import org.openspaces.events.polling.SimplePollingEventListenerContainer;
 
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -27,7 +29,7 @@ public class SpaceHandler {
     private GigaSpace applicationSpace;
     private SimpleNotifyEventListenerContainer chatRoomInteractionListener;
     private SimplePollingEventListenerContainer directMessageListener;
-    private SimpleNotifyEventListenerContainer roomMessageListener;
+    private boolean runRoomMessageListener = false;
 
     private MenuController menuController;
     private MainChatController mainChatController;
@@ -84,20 +86,25 @@ public class SpaceHandler {
     }
 
     private void startRoomMessageListener(ChatRoom room){
-        ChatRoomMessage template = new ChatRoomMessage();
-        template.setRoomName(room.getName());
-        roomMessageListener = new SimpleNotifyContainerConfigurer(applicationSpace)
-                .template(template)
-                .eventListenerAnnotation(new RoomMessageListener())
-                .notifyContainer();
+        runRoomMessageListener = true;
+        new Thread(() -> {
+            ChatRoomMessage template = new ChatRoomMessage();
+            template.setRoomName(room.getName());
+            template.setForwardTo(mainChatController.getCurrentClient().getName());
+            while (runRoomMessageListener){
+                ChatRoomMessage msg = applicationSpace.take(template, JavaSpace.NO_WAIT, TakeModifiers.FIFO);
 
-        roomMessageListener.start();
+                if(msg != null){
+                    onRoomMessageReceived(msg);
+                }
+            }
+        }).start();
     }
 
     public void stopChatRoomInteractionListener(){
         chatRoomInteractionListener.stop();
         directMessageListener.stop();
-        roomMessageListener.stop();
+        runRoomMessageListener = false;
     }
 
     public void setMenuController(MenuController menuController){
@@ -208,11 +215,12 @@ public class SpaceHandler {
         applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
     }
 
-    public void writeRoomChatMessage(String room, String sender, String text){
+    public void writeRoomChatMessage(String room, String sender, List<String> forwardToList, String text){
         System.out.println("Enviando mensagem para a sala " + room + ": " + text);
-        ChatRoomMessage msg = new ChatRoomMessage(room, sender, text);
-
-        applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
+        for(String forwardTo: forwardToList){
+            ChatRoomMessage msg = new ChatRoomMessage(room, sender, forwardTo, text);
+            applicationSpace.write(msg, 5 * 60000); // mensagem fica no espaco por 5 minutos
+        }
     }
 
     public void onDirectMessageReceived(ChatMessage msg){

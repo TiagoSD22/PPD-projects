@@ -7,7 +7,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 import com.spatia.client.app.services.SpaceHandler;
 import com.spatia.common.ChatMessage;
-import com.spatia.common.ChatRoomMessage;
+import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -25,6 +25,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class ChatController {
@@ -115,10 +116,18 @@ public class ChatController {
         if(!text.isEmpty()) {
             textInput.clear();
             if(isRoomCurrentCollocutor){
-                SpaceHandler.getInstance().writeRoomChatMessage(
-                        mainChatController.getToolbarController().getCurrentRoom().getName(),
-                        mainChatController.getCurrentClient().getName(),
-                        text);
+                SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+
+                ChatRoom currentRoom = mainChatController.getToolbarController().getCurrentRoom();
+                Client currentClient = mainChatController.getCurrentClient();
+
+                List<String> forwardToList = currentRoom.getConnectedClientList().stream()
+                        .filter( c -> !c.getName().equals(currentClient.getName()))
+                        .map(Client::getName)
+                        .collect(Collectors.toList());
+
+                spaceHandlerInstance.writeRoomChatMessage(currentRoom.getName(),
+                        currentClient.getName(), forwardToList, text);
             }
             else{
                 SpaceHandler.getInstance().writeDirectMessage(
