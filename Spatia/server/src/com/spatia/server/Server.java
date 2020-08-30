@@ -12,7 +12,6 @@ import org.openspaces.events.polling.SimplePollingEventListenerContainer;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Server {
     private final int TIME_MINUTES_TO_REMOVE_EMPTY_ROOM = 10;
@@ -57,14 +56,6 @@ class Server {
         chatRoomCreatedListener.start();
         chatRoomInteractionListener.start();
         closeConnectionSolicitationListener.start();
-    }
-
-    private List<Client> getNotifiableRoomConnectedClientList(String roomName, Client c){
-        return chatRoomRegister.getRegisteredRoomList().stream()
-                .filter(room -> room.getName().equals(roomName)).findFirst().orElse(new ChatRoom())
-                .getConnectedClientList().stream().
-                        filter((client -> !client.getName().equals(c.getName())
-                                && client.getStatus().equals(Status.ONLINE))).collect(Collectors.toList());
     }
 
     private void registerConnectionSolicitationListener(){
@@ -127,7 +118,7 @@ class Server {
             if(c != null){ // usuario conhecido da aplicacao que estava offline e voltou a se conectar
                 System.out.println("Usuario " + c.getName() + " se reconectou ao servidor");
                 c.setStatus(Status.ONLINE);
-                if(!c.getAvatarName().equals(avatarImageName)){ // perceber alteracao de avatar e comunicar demais contatos
+                if(!c.getAvatarName().equals(avatarImageName)){ // perceber alteracao de avatar
                     c.setAvatarName(avatarImageName);
                 }
             }
