@@ -20,10 +20,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -179,6 +176,11 @@ public class ToolbarController {
         lonely = new Image(getClass().getResourceAsStream("/assets/Images/lonely.png"));
 
         roomUnreadMsg = 0;
+
+        soundBt.setTooltip(new Tooltip("Desativar sons de notificação"));
+        leaveCurrentRoomBt.setTooltip(new Tooltip("Sair desta sala"));
+        createRoomBt.setTooltip(new Tooltip("Criar nova sala"));
+        refreshRoomListBt.setTooltip(new Tooltip("Atualizar lista de salas"));
     }
 
     private void loadShowCreateRoomCardAnimation(){
@@ -214,9 +216,11 @@ public class ToolbarController {
         AudioService.getInstance().onMute();
         if(sound){
             soundBt.setGraphic(soundOnImage);
+            soundBt.setTooltip(new Tooltip("Desativar sons de notificação"));
         }
         else{
             soundBt.setGraphic(soundOffImage);
+            soundBt.setTooltip(new Tooltip("Ativar sons de notificação"));
         }
     }
 

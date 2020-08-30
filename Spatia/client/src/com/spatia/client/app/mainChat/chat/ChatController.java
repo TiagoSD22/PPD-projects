@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,9 +25,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import org.apache.commons.lang3.SerializationUtils;
-
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -101,6 +99,7 @@ public class ChatController {
         notificationSnack.setEffect(dropShadow);
 
         roomIcon = new Image(getClass().getResourceAsStream("/assets/Images/room.png"));
+        sendMessageBt.setTooltip(new Tooltip("Enviar mensagem"));
 
         /*textInput.textProperty().addListener((observable, oldValue, newValue) -> {
             if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
