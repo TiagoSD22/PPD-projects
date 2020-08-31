@@ -120,6 +120,7 @@ public class SpaceHandler {
         chatRoomInteractionListener.stop();
         directMessageListener.stop();
         runRoomMessageListener = false;
+        typingStatusListener.stop();
     }
 
     public void setMenuController(MenuController menuController){
