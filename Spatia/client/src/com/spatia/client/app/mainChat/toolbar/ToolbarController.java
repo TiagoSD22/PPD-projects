@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXButton;
 import com.spatia.client.app.services.SpaceHandler;
 import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
+import com.spatia.common.TypingStatus;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -565,5 +566,28 @@ public class ToolbarController {
         roomUnreadMsg++;
 
         roomBox.registerUnreadMsg(roomUnreadMsg);
+    }
+
+    public void updateClientTypingStatus(String senderName, TypingStatus typingStatus){
+        Client sender = clientContactInfoBoxMap.keySet().stream()
+                .filter(client -> client.getName().equals(senderName))
+                .findFirst().orElse(null);
+
+        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(sender);
+        contactInfoBox.setUserTypingStatus(typingStatus);
+    }
+
+    public void registerLastMessage(String contactName, String msg){
+        Client contact = clientContactInfoBoxMap.keySet().stream()
+                .filter(client -> client.getName().equals(contactName))
+                .findFirst().orElse(null);
+
+        ContactInfoBox contactInfoBox = clientContactInfoBoxMap.get(contact);
+        contactInfoBox.registerLastMessage(msg);
+    }
+
+    public void registerRoomLastMessage(String sender, String text){
+        roomBox.registerRoomLastMessage((sender.equals(mainChatController.getCurrentClient().getName())?
+                "Você: ": sender + ": ") + text);
     }
 }

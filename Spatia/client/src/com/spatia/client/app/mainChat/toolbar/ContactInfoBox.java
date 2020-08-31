@@ -1,9 +1,10 @@
 package com.spatia.client.app.mainChat.toolbar;
 
-import com.spatia.common.Status;
+import com.spatia.common.TypingStatus;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -14,9 +15,10 @@ import javafx.scene.text.Text;
 public class ContactInfoBox extends GridPane {
     private ImageView avatar;
     private Text userName;
-    private Text userTypingStatus;
+    private Label userTypingStatus;
     private Label unreadMsgCounter;
     private StackPane unreadMsgPane;
+    private String lastMessage = "";
 
     ContactInfoBox(Image avatar, String userName, boolean isRoom){
         this.setVgap(10);
@@ -47,12 +49,14 @@ public class ContactInfoBox extends GridPane {
         this.avatar.setFitWidth(60);
         this.avatar.setFitHeight(60);
 
-        this.userTypingStatus = new Text();
+        this.userTypingStatus = new Label();
 
         this.userName = new Text(isRoom? "Sala " + userName: userName);
         this.userName.setTranslateY(0);
         this.userName.setFill(Color.valueOf("#fcfcfc"));
-        this.userTypingStatus.setFill(Color.valueOf("#0ab9c2"));
+        this.userTypingStatus.setTextFill(Color.valueOf("#fcfcfc"));
+        this.userTypingStatus.setMaxWidth(220);
+        this.userTypingStatus.setWrapText(false);
 
         unreadMsgPane = new StackPane();
         unreadMsgCounter = new Label();
@@ -105,12 +109,28 @@ public class ContactInfoBox extends GridPane {
         return userName.getText();
     }
 
-    /*public void setUserTypingStatus(TypingStatus typingStatus){
+    public void setUserTypingStatus(TypingStatus typingStatus){
         if(typingStatus.equals(TypingStatus.TYPING)){
             this.userTypingStatus.setText("Digitando...");
+            this.userTypingStatus.setTextFill(Color.valueOf("#9FD3C7"));
         }
         else{
-            this.userTypingStatus.setText("");
+            this.userTypingStatus.setTextFill(Color.valueOf("#fcfcfc"));
+            this.userTypingStatus.setText(this.lastMessage);
         }
-    }*/
+    }
+
+    public void registerLastMessage(String msg){
+        lastMessage = msg;
+        if(!userTypingStatus.getText().equals("Digitando...")){
+            this.userTypingStatus.setText(lastMessage);
+            this.userTypingStatus.setTooltip(new Tooltip(lastMessage));
+        }
+    }
+
+    public void registerRoomLastMessage(String text){
+        lastMessage = text;
+        this.userTypingStatus.setText(text);
+        this.userTypingStatus.setTooltip(new Tooltip(lastMessage));
+    }
 }

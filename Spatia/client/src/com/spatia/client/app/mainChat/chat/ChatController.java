@@ -9,6 +9,7 @@ import com.spatia.client.app.services.SpaceHandler;
 import com.spatia.common.ChatMessage;
 import com.spatia.common.ChatRoom;
 import com.spatia.common.Client;
+import com.spatia.common.TypingStatus;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -101,16 +102,17 @@ public class ChatController {
         roomIcon = new Image(getClass().getResourceAsStream("/assets/Images/room.png"));
         sendMessageBt.setTooltip(new Tooltip("Enviar mensagem"));
 
-        /*textInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(oldValue.length() > 0 && newValue.length() == 0){ //parou de digitar
-                mainChatController.getMessageHandler()
-                        .sendTypingStatusMessageToBroker(mainChatController.getCurrentClient(), currentCollocutor, TypingStatus.STOPED);
+        textInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(!isRoomCurrentCollocutor) {
+                if (oldValue.length() > 0 && newValue.length() == 0) { //parou de digitar
+                    SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+                    spaceHandlerInstance.writeTypingStatus(currentCollocutor.getName(), TypingStatus.STOPED);
+                } else if (oldValue.length() == 0 && newValue.length() > 0) { //comecou a digitar
+                    SpaceHandler spaceHandlerInstance = SpaceHandler.getInstance();
+                    spaceHandlerInstance.writeTypingStatus(currentCollocutor.getName(), TypingStatus.TYPING);
+                }
             }
-            else if(oldValue.length() == 0 && newValue.length() > 0){ //comecou a digitar
-                mainChatController.getMessageHandler()
-                        .sendTypingStatusMessageToBroker(mainChatController.getCurrentClient(), currentCollocutor, TypingStatus.TYPING);
-            }
-        });*/
+        });
     }
 
     public void sendMessage() {
@@ -130,32 +132,41 @@ public class ChatController {
 
                 spaceHandlerInstance.writeRoomChatMessage(currentRoom.getName(),
                         currentClient.getName(), forwardToList, text);
+
+                Platform.runLater(() -> {
+                    mainChatController.getToolbarController().registerRoomLastMessage(
+                            mainChatController.getCurrentClient().getName(), text);
+                });
             }
             else{
                 SpaceHandler.getInstance().writeDirectMessage(
                         mainChatController.getCurrentClient().getName(),
                         currentCollocutor.getName(),
                         text);
+
+                Platform.runLater(() -> {
+                    mainChatController.getToolbarController().registerLastMessage(currentCollocutor.getName(), text);
+                });
             }
             addOwnMessageToConversation(text);
         }
     }
 
-    /*public void showTypingStatus(String senderName, TypingStatus typingStatus){
+    public void showTypingStatus(String senderName, TypingStatus typingStatus){
         if(currentCollocutor != null && currentCollocutor.getName().equals(senderName)){
             if(typingStatus.equals(TypingStatus.TYPING)) {
                 currentCollocutorStatus.setText("Digitando...");
-                currentCollocutorStatus.setFill(Color.valueOf("#0ab9c2"));
+                currentCollocutorStatus.setFill(Color.valueOf("#081521"));
             }
             else{
-                currentCollocutorStatus.setText(currentCollocutor.getStatus().getValue().toLowerCase());
-                currentCollocutorStatus.setFill(Color.valueOf("#2f2f2f"));
+                currentCollocutorStatus.setText("");
+                currentCollocutorStatus.setFill(Color.valueOf("#1D100C"));
             }
         }
         else{
             mainChatController.getToolbarController().updateClientTypingStatus(senderName, typingStatus);
         }
-    }*/
+    }
 
     private void addIncomingMessageToConversation(String sender, String text) {
         if(!conversationMap.containsKey(sender)){
@@ -299,6 +310,10 @@ public class ChatController {
             });
         }
 
+        Platform.runLater(() -> {
+            mainChatController.getToolbarController().registerLastMessage(msg.getSenderName(), msg.getText());
+        });
+
         AudioService.getInstance().playIncomingMessageSound();
 
         addIncomingMessageToConversation(msg.getSenderName(), msg.getText());
@@ -311,6 +326,10 @@ public class ChatController {
                 mainChatController.getToolbarController().registerRoomUnreadMsg();
             });
         }
+
+        Platform.runLater(() -> {
+            mainChatController.getToolbarController().registerRoomLastMessage(sender, text);
+        });
 
         AudioService.getInstance().playIncomingMessageSound();
         addRoomMessageToConversation(sender, text);
