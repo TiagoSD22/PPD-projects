@@ -7,6 +7,7 @@ import com.spatia.client.app.mainChat.MainChatController;
 import com.spatia.client.app.menu.MenuController;
 import com.spatia.client.app.services.listeners.ChatRoomInteractionListener;
 import com.spatia.client.app.services.listeners.DirectMessageListener;
+import com.spatia.client.app.services.listeners.TypingStatusListener;
 import com.spatia.client.app.utils.ConnectionConfig;
 import com.spatia.common.*;
 import javafx.application.Platform;
@@ -29,6 +30,7 @@ public class SpaceHandler {
     private GigaSpace applicationSpace;
     private SimpleNotifyEventListenerContainer chatRoomInteractionListener;
     private SimplePollingEventListenerContainer directMessageListener;
+    private SimplePollingEventListenerContainer typingStatusListener;
     private boolean runRoomMessageListener = false;
 
     private MenuController menuController;
@@ -71,6 +73,7 @@ public class SpaceHandler {
     private void startMessageListeners(ChatRoom room, Client c){
         startDirectMessageListener(c);
         startRoomMessageListener(room);
+        startTypingStatusListener(c);
     }
 
     private void startDirectMessageListener(Client c){
@@ -83,6 +86,18 @@ public class SpaceHandler {
                 .pollingContainer();
 
         directMessageListener.start();
+    }
+
+    private void startTypingStatusListener(Client c){
+        UpdateTypingStatus template = new UpdateTypingStatus();
+        template.setReceiver(c.getName());
+
+        typingStatusListener =  new SimplePollingContainerConfigurer(applicationSpace)
+                .template(template)
+                .eventListenerAnnotation(new TypingStatusListener())
+                .pollingContainer();
+
+        typingStatusListener.start();
     }
 
     private void startRoomMessageListener(ChatRoom room){
@@ -235,5 +250,21 @@ public class SpaceHandler {
                 mainChatController.onRoomChatMessageReceived(msg.getSenderName(), msg.getText());
             });
         }
+    }
+
+    public void onUpdateTypingStatusReceived(UpdateTypingStatus statusMsg){
+        System.out.println("Mensagem de atualizacao de status de digitacao recebida do cliente " +
+                statusMsg.getSender() + "\nNovo status: " + statusMsg.getTypingStatus());
+
+        Platform.runLater(() -> {
+            mainChatController.getChatController().showTypingStatus(statusMsg.getSender(), statusMsg.getTypingStatus());
+        });
+    }
+
+    public void writeTypingStatus(String receiver, TypingStatus status){
+        UpdateTypingStatus typingStatus = new UpdateTypingStatus(status, mainChatController.getCurrentClient().getName(),
+                receiver);
+
+        applicationSpace.write(typingStatus);
     }
 }
