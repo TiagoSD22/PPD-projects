@@ -163,16 +163,20 @@ public class ChatController {
         }
 
         List<ChatMessageBox> conversation = conversationMap.get(sender);
-
-        ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, false);
+        boolean drawBubbleIndicator = false;
+        Insets boxInsets;
 
         if(conversation.size() == 0 ||
                 (conversation.get(conversation.size() - 1)).isMyOwn()){
-            messageBox.setPadding(new Insets(15, 30, 0, 30));
+            boxInsets = new Insets(15, 30, 0, 30);
+            drawBubbleIndicator = true;
         }
         else{
-            messageBox.setPadding(new Insets(0, 30, 0, 30));
+            boxInsets = new Insets(0, 30, 0, 40);
         }
+
+        ChatMessageBox messageBox = new ChatMessageBox(text, false, sender, false, drawBubbleIndicator);
+        messageBox.setPadding(boxInsets);
 
         conversation.add(messageBox);
 
@@ -185,17 +189,16 @@ public class ChatController {
     private void addRoomMessageToConversation(String sender, String text){
         ChatMessageBox messageBox = null;
 
-        //TODO nao olhar pros filhos do messageArea, mas sim, para os itens do roomConversation
         if(roomConversation.size() == 0 ||
                 !(roomConversation.get(roomConversation.size() - 1)).getSender()
                         .equals(sender)){
 
-            messageBox = new ChatMessageBox(text, false, sender, true);
+            messageBox = new ChatMessageBox(text, false, sender, true, true);
             messageBox.setPadding(new Insets(15, 30, 0, 30));
         }
         else{
-            messageBox = new ChatMessageBox(text, false, sender, false);
-            messageBox.setPadding(new Insets(0, 30, 0, 30));
+            messageBox = new ChatMessageBox(text, false, sender, false, false);
+            messageBox.setPadding(new Insets(0, 30, 0, 40));
         }
 
         roomConversation.add(messageBox);
@@ -207,7 +210,20 @@ public class ChatController {
     }
 
     private void addOwnMessageToConversation(String text) {
-        ChatMessageBox messageBox = new ChatMessageBox(text, true, "", false);
+        Insets boxInsets;
+        boolean drawBubbleIndicator = false;
+
+        if(messageArea.getChildren().size() == 0 ||
+                !((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).isMyOwn()){
+            boxInsets = new Insets(15, 30, 0, 30);
+            drawBubbleIndicator = true;
+        }
+        else{
+            boxInsets = new Insets(0, 40, 0, 30);
+        }
+
+        ChatMessageBox messageBox = new ChatMessageBox(text, true, "", false, drawBubbleIndicator);
+        messageBox.setPadding(boxInsets);
 
         if(!isRoomCurrentCollocutor) {
             if (!conversationMap.containsKey(currentCollocutor.getName())) {
@@ -221,13 +237,6 @@ public class ChatController {
             roomConversation.add(messageBox);
         }
 
-        if(messageArea.getChildren().size() == 0 ||
-                !((ChatMessageBox)messageArea.getChildren().get(messageArea.getChildren().size() - 1)).isMyOwn()){
-            messageBox.setPadding(new Insets(15, 30, 0, 30));
-        }
-        else{
-            messageBox.setPadding(new Insets(0, 30, 0, 30));
-        }
         messageArea.getChildren().add(messageBox);
         messageAreaPane.setVvalue(1);
     }

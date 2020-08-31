@@ -35,7 +35,10 @@
          </font></TextArea>
       <ScrollPane fx:id="messageAreaPane" hbarPolicy="NEVER" layoutY="79.0" pannable="true" prefHeight="585.0" prefWidth="896.0">
         <content>
-            <VBox fx:id="messageArea" minHeight="582.0" prefWidth="896.0" spacing="5.0" />
+            <VBox fx:id="messageArea" minHeight="582.0" prefWidth="896.0" spacing="5.0">
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding></VBox>
         </content>
       </ScrollPane>
       <StackPane fx:id="currentCollocutorInfoRegion" alignment="CENTER_LEFT" maxHeight="70.0" minHeight="70.0" prefHeight="70.0" prefWidth="896.0" style="-fx-background-color: #fcfcfc;">
